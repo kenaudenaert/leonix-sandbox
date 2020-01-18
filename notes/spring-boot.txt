@@ -18,3 +18,5 @@ SpringBoot
 	org.springframework.boot.autoconfigure
 		(annotation) SpringBootApplication.class
 	-> support for spring-boot auto-conf.
+
+https://docs.spring.io/spring-boot/docs/current/reference/html/index.html
