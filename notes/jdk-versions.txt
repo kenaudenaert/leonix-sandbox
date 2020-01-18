@@ -36,5 +36,5 @@ JEP 266: More concurrency updates. A Java implementation of Reactive Streams, in
 Java SE 11
 ==========
 
-JEP 321: HTTP client (standard)[359]
-JEP 332: Transport Layer Security (TLS) 1.3[360]
+JEP 321: HTTP client (standard)
+JEP 332: Transport Layer Security (TLS) 1.3
