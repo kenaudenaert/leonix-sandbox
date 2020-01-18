@@ -1,0 +1,20 @@
+SpringBoot
+----------
+
+[spring-boot-starter.jar]
+	-> submodule of spring-boot-starters.
+	-> dependency for all other *-starter jars.
+	-> empty box: maven dependency that combines:
+		spring-boot & spring-boot-autoconfigure.
+
+[spring-boot.jar]
+	org.springframework.boot
+		SpringApplication.class
+	org.springframework.boot.builder
+		SpringApplicationBuilder.class
+	-> support for spring-boot application.
+
+[spring-boot-autoconfigure.jar]
+	org.springframework.boot.autoconfigure
+		(annotation) SpringBootApplication.class
+	-> support for spring-boot auto-conf.

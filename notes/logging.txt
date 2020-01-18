@@ -1,0 +1,8 @@
+Logging
+-------
+https://mvnrepository.com/open-source/logging-frameworks
+	
+	https://en.wikipedia.org/wiki/SLF4J
+	https://en.wikipedia.org/wiki/Log4j
+	
+	https://logging.apache.org/log4j/2.x/
