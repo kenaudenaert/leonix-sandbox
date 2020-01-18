@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SandboxApp {
 	
 	public static void main(String[] args) {
-		SpringApplication.run(SandboxApp.class, args);
+		SpringApplication application = new SpringApplication(SandboxApp.class);
+		application.run(args);
 	}
 }
