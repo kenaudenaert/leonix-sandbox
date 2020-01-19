@@ -3,6 +3,6 @@ package be.leonix.sandbox.service;
 /**
  * @author leonix
  */
-public interface BrickSetService {
+public interface MovieService {
 
 }

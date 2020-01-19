@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
  * @author leonix
  */
 @Repository
-public class BrickSetDatabase implements BrickSetRepository {
+public class MovieRepositoryImpl implements MovieRepository {
 
 }
