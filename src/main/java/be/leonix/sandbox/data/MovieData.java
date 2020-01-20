@@ -8,7 +8,11 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import be.leonix.sandbox.model.Movie;
+
 /**
+ * This class defines a movie as presented to the user.
+ * 
  * @author leonix
  */
 public class MovieData {
@@ -42,5 +46,13 @@ public class MovieData {
 	
 	public void setTags(Set<String> tags) {
 		this.tags = tags;
+	}
+	
+	public static MovieData map(Movie movie) {
+		MovieData data = new MovieData();
+		data.setTitle(movie.getTitle());
+		data.setDescription(movie.getDescription());
+		data.setTags(movie.getTags());
+		return data;
 	}
 }

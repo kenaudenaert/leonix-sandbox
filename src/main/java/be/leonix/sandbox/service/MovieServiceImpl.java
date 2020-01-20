@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import be.leonix.sandbox.data.MovieData;
 import be.leonix.sandbox.model.Movie;
 import be.leonix.sandbox.repository.MovieRepository;
 
@@ -20,7 +21,6 @@ public class MovieServiceImpl implements MovieService {
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(MovieServiceImpl.class);
 	
-	@SuppressWarnings("unused")
 	private final MovieRepository movieRepository;
 	
 	@Autowired
@@ -30,25 +30,29 @@ public class MovieServiceImpl implements MovieService {
 	
 	@Override
 	public List<Movie> findAllMovies() {
-		// TODO Auto-generated method stub
-		return null;
+		return movieRepository.findAllMovies();
 	}
 	
 	@Override
-	public Optional<Movie> findByTitle(String title) {
-		// TODO Auto-generated method stub
-		return null;
+	public Optional<Movie> findMovieById(String movieId) {
+		return movieRepository.findMovieById(movieId);
 	}
 	
 	@Override
-	public void save(Movie movie) {
-		// TODO Auto-generated method stub
-		
+	public Movie addMovie(MovieData movieData) {
+		Movie movie = new Movie();
+		movieRepository.addMovie(movie);
+		return movie;
 	}
 	
 	@Override
-	public void removeByTitle(String title) {
-		// TODO Auto-generated method stub
-		
+	public Optional<Movie> updateMovie(MovieData movieData) {
+		Optional<Movie> movie = movieRepository.findMovieById(movieData.getTitle());
+		if (movie.isPresent()) {
+			movieRepository.updateMovie(movie.get());
+			return movie;
+		} else {
+			return Optional.empty();
+		}
 	}
 }

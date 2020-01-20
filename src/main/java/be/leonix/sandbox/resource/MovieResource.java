@@ -9,6 +9,8 @@ import be.leonix.sandbox.data.MovieData;
 import be.leonix.sandbox.service.MovieService;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -19,6 +21,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 /**
  * @author leonix
@@ -27,10 +30,8 @@ import javax.ws.rs.core.Response;
 @Path("movies")
 public class MovieResource {
 	
-	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(MovieResource.class);
 	
-	@SuppressWarnings("unused")
 	private final MovieService movieService;
 	
 	@Autowired
@@ -41,24 +42,57 @@ public class MovieResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response findAllSets() {
-		return Response.ok().build();
+	public Response findAllMovies() {
+		logger.info("findAllMovies()");
+		
+		List<MovieData> movieDatas = movieService.findAllMovies().stream()
+				.map(MovieData::map).collect(Collectors.toList());
+		
+		return Response.ok(movieDatas).build();
 	}
 	
 	@GET
 	@Path("{movieId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response findById(@PathParam("movieId") String movieId) {
-		return Response.ok().build();
+	public Response findMovieById(@PathParam("movieId") String movieId) {
+		logger.info("findMovieById({})", movieId);
+		
+		Optional<MovieData> movieData = movieService.findMovieById(movieId)
+				.map(MovieData::map);
+		
+		if (movieData.isPresent()) {
+			return Response.ok(movieData).build();
+		} else {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+	}
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response addMovie(MovieData movieData) {
+		logger.info("addMovie({})", movieData.getTitle());
+		
+		MovieData addedData = MovieData.map(movieService.addMovie(movieData));
+		
+		return Response.ok(addedData).build();
 	}
 	
 	@PUT
-	@Path("{movieId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response updateOrderSet(@PathParam("movieId") String movieId, MovieData data) {
-		return Response.ok().build();
+	public Response updateMovie(MovieData movieData) {
+		logger.info("updateMovie({})", movieData.getTitle());
+		
+		Optional<MovieData> updatedData = movieService.updateMovie(movieData)
+				.map(MovieData::map);
+		
+		if (updatedData.isPresent()) {
+			return Response.ok(movieData).build();
+		} else {
+			return Response.status(Status.NOT_FOUND).build();
+		}
 	}
 	
 	@POST
