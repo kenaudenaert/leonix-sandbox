@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import be.leonix.sandbox.model.User;
+import be.leonix.sandbox.model.UserMongoMapping;
 
 /**
  * @author leonix
@@ -23,7 +24,7 @@ public class UserRepositoryImpl implements UserRepository {
 	
 	@Autowired
 	public UserRepositoryImpl(Jongo jongo) {
-		users = jongo.getCollection("users");
+		users = jongo.getCollection(UserMongoMapping.COLLECTION_NAME);
 	}
 	
 	@Override

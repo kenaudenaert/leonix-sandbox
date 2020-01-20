@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import be.leonix.sandbox.model.Movie;
+import be.leonix.sandbox.model.MovieMongoMapping;
 
 /**
  * @author leonix
@@ -23,7 +24,7 @@ public class MovieRepositoryImpl implements MovieRepository {
 	
 	@Autowired
 	public MovieRepositoryImpl(Jongo jongo) {
-		movies = jongo.getCollection("movies");
+		movies = jongo.getCollection(MovieMongoMapping.COLLECTION_NAME);
 	}
 	
 	@Override

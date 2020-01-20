@@ -2,14 +2,13 @@ package be.leonix.sandbox.model;
 
 import static be.leonix.sandbox.model.MovieMongoMapping.DESCRIPTION;
 import static be.leonix.sandbox.model.MovieMongoMapping.EXTERNAL_ID;
-import static be.leonix.sandbox.model.MovieMongoMapping.MOVIE_TYPE_ALIAS;
+import static be.leonix.sandbox.model.MovieMongoMapping.ID;
 import static be.leonix.sandbox.model.MovieMongoMapping.TAGS;
 import static be.leonix.sandbox.model.MovieMongoMapping.TITLE;
 
 import java.util.Set;
 
-import org.springframework.data.annotation.TypeAlias;
-import org.springframework.data.mongodb.core.mapping.Field;
+import org.bson.types.ObjectId;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -18,31 +17,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * 
  * @author leonix
  */
-@TypeAlias(MOVIE_TYPE_ALIAS)
 public class Movie {
 	
-	@Field(EXTERNAL_ID)
+	@JsonProperty(ID)
+	private ObjectId id;
+	@JsonProperty(TITLE)
+	private String title;
+	@JsonProperty(DESCRIPTION)
+	private String description;
+	@JsonProperty(TAGS)
+	private Set<String> tags;
 	@JsonProperty(EXTERNAL_ID)
 	private String externalId;
 	
-	@Field(TITLE)
-	@JsonProperty(TITLE)
-	private String title;
-	
-	@Field(DESCRIPTION)
-	@JsonProperty(DESCRIPTION)
-	private String description;
-	
-	@Field(TAGS)
-	@JsonProperty(TAGS)
-	private Set<String> tags;
-	
-	public String getExternalId() {
-		return externalId;
+	public ObjectId getId() {
+		return id;
 	}
 	
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
+	public void setId(ObjectId id) {
+		this.id = id;
 	}
 	
 	public String getTitle() {
@@ -67,5 +60,13 @@ public class Movie {
 	
 	public void setTags(Set<String> tags) {
 		this.tags = tags;
+	}
+	
+	public String getExternalId() {
+		return externalId;
+	}
+	
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 }

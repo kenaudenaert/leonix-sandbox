@@ -9,7 +9,7 @@ import be.leonix.sandbox.model.User;
  * @author leonix
  */
 public interface UserRepository {
-
+	
 	public List<User> findAll();
 	
 	public Optional<User> findByName(String userName);
