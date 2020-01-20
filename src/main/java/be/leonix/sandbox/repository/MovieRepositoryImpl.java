@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.MongoCursor;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import be.leonix.sandbox.model.Movie;
 
@@ -27,27 +27,30 @@ public class MovieRepositoryImpl implements MovieRepository {
 	}
 	
 	@Override
-	public List<Movie> findAllMovies() {
-		List<Movie> allMovies = new ArrayList<>();
+	public List<Movie> findAll() {
+		List<Movie> all = new ArrayList<>();
 		MongoCursor<Movie> cursor = movies.find().as(Movie.class);
-		cursor.forEach(movie -> allMovies.add(movie));
-		return allMovies;
+		cursor.forEach(movie -> all.add(movie));
+		return all;
 	}
 	
 	@Override
-	public Optional<Movie> findMovieById(String movieId) {
+	public Optional<Movie> findById(String movieId) {
 		return null;
 	}
 	
 	@Override
-	public void addMovie(Movie movie) {
-		// TODO Auto-generated method stub
+	public void insert(Movie movie) {
 		
 	}
 	
 	@Override
-	public void updateMovie(Movie movie) {
-		// TODO Auto-generated method stub
+	public void update(Movie movie) {
+		
+	}
+	
+	@Override
+	public void removeById(List<String> movieIds) {
 		
 	}
 }

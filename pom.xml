@@ -14,7 +14,7 @@
 		<version.pgsql>42.2.9</version.pgsql>
 		<version.h2db>1.4.200</version.h2db>
 		<version.mongo>3.12.0</version.mongo>
-		<version.jongo>1.3.0</version.jongo>
+		<version.jongo>1.4.0</version.jongo>
 		<version.flapdoodle>2.2.0</version.flapdoodle>
 		<version.slf4j>1.7.30</version.slf4j>
 		<version.log4j>2.13.0</version.log4j>
@@ -151,6 +151,13 @@
 			<groupId>org.jongo</groupId>
 			<artifactId>jongo</artifactId>
 			<version>${version.jongo}</version>
+			<exclusions>
+				<!-- Do not override spring managed version. -->
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>de.flapdoodle.embed</groupId>

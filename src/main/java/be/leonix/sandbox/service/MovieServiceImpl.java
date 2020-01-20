@@ -29,30 +29,35 @@ public class MovieServiceImpl implements MovieService {
 	}
 	
 	@Override
-	public List<Movie> findAllMovies() {
-		return movieRepository.findAllMovies();
+	public List<Movie> findAll() {
+		return movieRepository.findAll();
 	}
 	
 	@Override
-	public Optional<Movie> findMovieById(String movieId) {
-		return movieRepository.findMovieById(movieId);
+	public Optional<Movie> findById(String movieId) {
+		return movieRepository.findById(movieId);
 	}
 	
 	@Override
-	public Movie addMovie(MovieData movieData) {
+	public Movie create(MovieData movieData) {
 		Movie movie = new Movie();
-		movieRepository.addMovie(movie);
+		movieRepository.insert(movie);
 		return movie;
 	}
 	
 	@Override
-	public Optional<Movie> updateMovie(MovieData movieData) {
-		Optional<Movie> movie = movieRepository.findMovieById(movieData.getTitle());
+	public Optional<Movie> update(MovieData movieData) {
+		Optional<Movie> movie = movieRepository.findById(movieData.getTitle());
 		if (movie.isPresent()) {
-			movieRepository.updateMovie(movie.get());
+			movieRepository.update(movie.get());
 			return movie;
 		} else {
 			return Optional.empty();
 		}
+	}
+	
+	@Override
+	public void remove(List<String> movieIds) {
+		movieRepository.removeById(movieIds);
 	}
 }

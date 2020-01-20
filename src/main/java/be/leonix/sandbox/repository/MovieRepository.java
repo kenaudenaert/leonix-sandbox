@@ -9,12 +9,14 @@ import be.leonix.sandbox.model.Movie;
  * @author leonix
  */
 public interface MovieRepository {
-
-	public List<Movie> findAllMovies();
 	
-	public Optional<Movie> findMovieById(String movieId);
+	public List<Movie> findAll();
 	
-	public void addMovie(Movie movie);
+	public Optional<Movie> findById(String movieId);
 	
-	public void updateMovie(Movie movie);
+	public void insert(Movie movie);
+	
+	public void update(Movie movie);
+	
+	public void removeById(List<String> movieIds);
 }

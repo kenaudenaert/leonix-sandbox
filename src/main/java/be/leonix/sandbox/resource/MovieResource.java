@@ -42,10 +42,10 @@ public class MovieResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response findAllMovies() {
-		logger.info("findAllMovies()");
+	public Response findMovies() {
+		logger.info("findMovies()");
 		
-		List<MovieData> movieDatas = movieService.findAllMovies().stream()
+		List<MovieData> movieDatas = movieService.findAll().stream()
 				.map(MovieData::map).collect(Collectors.toList());
 		
 		return Response.ok(movieDatas).build();
@@ -58,7 +58,7 @@ public class MovieResource {
 	public Response findMovieById(@PathParam("movieId") String movieId) {
 		logger.info("findMovieById({})", movieId);
 		
-		Optional<MovieData> movieData = movieService.findMovieById(movieId)
+		Optional<MovieData> movieData = movieService.findById(movieId)
 				.map(MovieData::map);
 		
 		if (movieData.isPresent()) {
@@ -74,9 +74,9 @@ public class MovieResource {
 	public Response addMovie(MovieData movieData) {
 		logger.info("addMovie({})", movieData.getTitle());
 		
-		MovieData addedData = MovieData.map(movieService.addMovie(movieData));
+		MovieData resultData = MovieData.map(movieService.create(movieData));
 		
-		return Response.ok(addedData).build();
+		return Response.ok(resultData).build();
 	}
 	
 	@PUT
@@ -85,10 +85,10 @@ public class MovieResource {
 	public Response updateMovie(MovieData movieData) {
 		logger.info("updateMovie({})", movieData.getTitle());
 		
-		Optional<MovieData> updatedData = movieService.updateMovie(movieData)
+		Optional<MovieData> resultData = movieService.update(movieData)
 				.map(MovieData::map);
 		
-		if (updatedData.isPresent()) {
+		if (resultData.isPresent()) {
 			return Response.ok(movieData).build();
 		} else {
 			return Response.status(Status.NOT_FOUND).build();
@@ -100,6 +100,7 @@ public class MovieResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response removeMoviesById(List<String> movieIds) {
+		movieService.remove(movieIds);
 		return Response.ok().build();
 	}
 }

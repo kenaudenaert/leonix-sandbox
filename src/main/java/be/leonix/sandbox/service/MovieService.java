@@ -13,11 +13,13 @@ import be.leonix.sandbox.model.Movie;
  */
 public interface MovieService {
 	
-	public List<Movie> findAllMovies();
+	public List<Movie> findAll();
 	
-	public Optional<Movie> findMovieById(String movieId);
+	public Optional<Movie> findById(String movieId);
 	
-	public Movie addMovie(MovieData movieData);
+	public Movie create(MovieData movieData);
 	
-	public Optional<Movie> updateMovie(MovieData movieData);
+	public Optional<Movie> update(MovieData movieData);
+	
+	public void remove(List<String> movieIds);
 }
