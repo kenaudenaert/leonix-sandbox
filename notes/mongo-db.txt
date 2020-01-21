@@ -1,0 +1,52 @@
+Mongo-DB
+--------
+https://en.wikipedia.org/wiki/MongoDB
+https://www.mongodb.com/
+
+https://docs.mongodb.com/manual/
+https://docs.mongodb.com/manual/introduction/
+
+https://docs.mongodb.com/manual/core/databases-and-collections/
+https://docs.mongodb.com/manual/core/document/
+https://docs.mongodb.com/manual/reference/bson-types/
+
+https://docs.mongodb.com/manual/installation/
+https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/
+https://docs.mongodb.com/master/tutorial/enable-authentication/
+
+Creating Mongo database and users
+=================================
+# Start server without authentication.
+mongod --bind_ip_all --port 27017 --dbpath /Users/leonix/mongo-data
+
+# Connect without authentication.
+mongo localhost:27017
+
+# Create mongo management user.
+use admin
+db.createUser(
+  {
+    user: "admin_user",
+    pwd:  "admin_pass",
+    roles: [ { role: "userAdminAnyDatabase", db: "admin" }, "readWriteAnyDatabase" ]
+  }
+)
+
+# Create sandbox database user.
+use sandbox
+db.createUser(
+  {
+    user: "sandbox_user",
+    pwd:  "sandbox_pass",
+    roles: [ { role: "readWrite", db: "sandbox" } ]
+  }
+)
+
+# Start server with authentication.
+mongod --bind_ip_all --port 27017 --dbpath /Users/leonix/mongo-data --auth
+
+# Connect with authentication.
+mongo localhost:27017/sandbox -u sandbox_user -p sandbox_pass
+
+# Connect using sandbox database-URI.
+mongodb://sandbox_user:sandbox_pass@localhost:27017/sandbox
