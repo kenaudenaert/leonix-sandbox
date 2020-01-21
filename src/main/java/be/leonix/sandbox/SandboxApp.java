@@ -4,8 +4,12 @@ import java.util.Arrays;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {
+	// We don't need an in memory UserDetailsManager with an auto-generated password
+	UserDetailsServiceAutoConfiguration.class
+})
 public class SandboxApp {
 
 	public static void main(String[] args) {
