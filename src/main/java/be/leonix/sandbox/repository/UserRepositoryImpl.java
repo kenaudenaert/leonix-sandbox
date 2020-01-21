@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.jongo.Jongo;
-import org.jongo.MongoCollection;
-import org.jongo.MongoCursor;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 import be.leonix.sandbox.model.User;
 import be.leonix.sandbox.model.UserMongoMapping;
@@ -20,18 +19,18 @@ import be.leonix.sandbox.model.UserMongoMapping;
 @Repository
 public class UserRepositoryImpl implements UserRepository {
 	
-	private final MongoCollection users;
+	private final MongoCollection<User> users;
 	
 	@Autowired
-	public UserRepositoryImpl(Jongo jongo) {
-		users = jongo.getCollection(UserMongoMapping.COLLECTION_NAME);
+	public UserRepositoryImpl(MongoDatabase mongoDatabase) {
+		users = mongoDatabase.getCollection(
+				UserMongoMapping.COLLECTION_NAME, User.class);
 	}
 	
 	@Override
 	public List<User> findAll() {
 		List<User> all = new ArrayList<>();
-		MongoCursor<User> cursor = users.find().as(User.class);
-		cursor.forEach(movie -> all.add(movie));
+		users.find().into(all);
 		return all;
 	}
 	
