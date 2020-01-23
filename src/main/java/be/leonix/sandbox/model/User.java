@@ -4,6 +4,8 @@ import static be.leonix.sandbox.model.UserMongoMapping.EMAIL_ADDRESS;
 import static be.leonix.sandbox.model.UserMongoMapping.ENCODED_PASSWORD;
 import static be.leonix.sandbox.model.UserMongoMapping.FULL_NAME;
 import static be.leonix.sandbox.model.UserMongoMapping.ID;
+import static be.leonix.sandbox.model.UserMongoMapping.LOCALE;
+import static be.leonix.sandbox.model.UserMongoMapping.PHONE_NUMBER;
 import static be.leonix.sandbox.model.UserMongoMapping.ROLES;
 import static be.leonix.sandbox.model.UserMongoMapping.SALT;
 import static be.leonix.sandbox.model.UserMongoMapping.USERNAME;
@@ -36,6 +38,10 @@ public class User {
 	private String fullName;
 	@JsonProperty(EMAIL_ADDRESS)
 	private String emailAddress;
+	@JsonProperty(PHONE_NUMBER)
+	private String phoneNumber;
+	@JsonProperty(LOCALE)
+	private String locale;
 	
 	public ObjectId getId() {
 		return id;
@@ -91,5 +97,21 @@ public class User {
 	
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
+	}
+	
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+	
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+	
+	public String getLocale() {
+		return locale;
+	}
+	
+	public void setLocale(String locale) {
+		this.locale = locale;
 	}
 }
