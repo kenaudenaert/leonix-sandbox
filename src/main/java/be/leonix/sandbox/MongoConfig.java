@@ -13,12 +13,12 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
 @Configuration
-public class MongoDBConfig extends AbstractMongoClientConfiguration {
+public class MongoConfig extends AbstractMongoClientConfiguration {
 	
 	private String uri;
 	private String databaseName;
 	
-	public MongoDBConfig(@Value("${sandbox.mongo.uri}") String uri) {
+	public MongoConfig(@Value("${sandbox.mongo.uri}") String uri) {
 		this.uri = uri;
 		
 		databaseName = new MongoClientURI(uri).getDatabase();
