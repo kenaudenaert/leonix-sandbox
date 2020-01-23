@@ -1,0 +1,35 @@
+Spring
+======
+
+https://en.wikipedia.org/wiki/Spring_Framework
+
+https://spring.io
+https://spring.io/guides --> look for a way to get started !!
+
+https://spring.io/projects/spring-framework
+
+SPRING-CORE
+===========
+https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/index.html
+https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/overview.html#overview
+https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#spring-core
+
+Spring 2.5 added support for JSR-250 annotations such as @PostConstruct and @PreDestroy.
+Spring 3.0 added support for JSR-330 annotations such as @Inject and @Named.
+
+Like @Resource, the @PostConstruct and @PreDestroy annotation types were a part of the standard
+Java libraries from JDK 6 to 8. However, the entire javax.annotation package got separated from
+the core Java modules in JDK 9 and eventually removed in JDK 11. (use jakarta-annotations-api).
+
+https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#beans-standard-annotations-limitations
+	@Inject, @Named
+https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#beans-java
+	@Bean, @Configuration
+https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#beans-environment
+	@Profile, @PropertySource
+https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#null-safety
+	@NonNull, @NonNullApi, @NonNullFields, @Nullable
+
+SPRING-TEST
+===========
+https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/testing.html#testing
