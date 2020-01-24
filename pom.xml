@@ -7,9 +7,14 @@
 	<version>0.0.1-SNAPSHOT</version>
 	
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.11</maven.compiler.source>
+		<maven.compiler.target>1.11</maven.compiler.target>
+		
 		<version.inject>1</version.inject>
 		<version.jaxrs>2.0</version.jaxrs>
-		<version.boot>2.2.3.RELEASE</version.boot>
+		
+		<version.boot>2.2.4.RELEASE</version.boot>
 		<version.mysql>8.0.18</version.mysql>
 		<version.pgsql>42.2.9</version.pgsql>
 		<version.h2db>1.4.200</version.h2db>
@@ -28,14 +33,22 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.11</source>
-					<target>1.11</target>
-				</configuration>
+				<version>3.8.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.22.2</version>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${version.boot}</version>
 			</plugin>
 		</plugins>
 	</build>
@@ -184,22 +197,9 @@
 			<version>${version.slf4j}</version>
 			<scope>runtime</scope>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>${version.log4j}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${version.log4j}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
 			<version>${version.log4j}</version>
 			<scope>runtime</scope>
 		</dependency>
