@@ -16,7 +16,7 @@ import be.leonix.sandbox.model.UserMongoMapping;
 /**
  * @author leonix
  */
-@Repository
+@Repository("userRepository")
 public class UserRepositoryImpl implements UserRepository {
 	
 	private final MongoCollection<User> users;

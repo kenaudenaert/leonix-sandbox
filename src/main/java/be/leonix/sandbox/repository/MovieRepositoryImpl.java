@@ -17,7 +17,7 @@ import be.leonix.sandbox.model.MovieMongoMapping;
 /**
  * @author leonix
  */
-@Repository
+@Repository("movieRepository")
 public class MovieRepositoryImpl implements MovieRepository {
 	
 	private final MongoCollection<Movie> movies;
