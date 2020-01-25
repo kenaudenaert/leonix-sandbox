@@ -30,7 +30,7 @@ public class MovieRepositoryImpl implements MovieRepository {
 	
 	@Override
 	public List<Movie> findAll() {
-		return movies.find().into(new ArrayList<>());
+		return movies.find(Movie.class).into(new ArrayList<>());
 	}
 	
 	@Override

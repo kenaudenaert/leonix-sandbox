@@ -1,47 +1,42 @@
-package be.leonix.sandbox;
-
-import java.util.Objects;
+package be.leonix.sandbox.mongo;
 
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 
 import com.mongodb.MongoClientSettings;
-import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
 @Configuration
 @ComponentScan("be.leonix.sandbox.repository")
-public class MongoConfig extends AbstractMongoClientConfiguration {
+public class EmbeddedMongoConfig extends AbstractMongoClientConfiguration {
 	
-	private final String uri;
-	private final String databaseName;
+	private final EmbeddedMongo embeddedMongo;
 	
-	public MongoConfig(@Value("${sandbox.mongo.uri}") String uri) {
-		this.uri = uri;
-		
-		databaseName = new MongoClientURI(uri).getDatabase();
-		if (Objects.isNull(databaseName)) {
-			throw new IllegalArgumentException("no database name found in db connection uri: " + uri);
-		}
+	public EmbeddedMongoConfig() {
+		embeddedMongo = new EmbeddedMongo("localhost", 12345);
+	}
+	
+	@Bean(destroyMethod = "stop")
+	public EmbeddedMongo mongoDb() {
+		return embeddedMongo;
 	}
 	
 	@Override
 	public MongoClient mongoClient() {
-		return MongoClients.create(uri);
+		return MongoClients.create("mongodb://" + embeddedMongo.getMongodHost() + ":" + embeddedMongo.getMongodPort());
 	}
 	
 	@Override
 	protected String getDatabaseName() {
-		return databaseName;
+		return "sandboxtest";
 	}
 	
 	@Bean

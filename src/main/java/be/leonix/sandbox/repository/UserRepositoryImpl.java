@@ -29,9 +29,7 @@ public class UserRepositoryImpl implements UserRepository {
 	
 	@Override
 	public List<User> findAll() {
-		List<User> all = new ArrayList<>();
-		users.find().into(all);
-		return all;
+		return users.find(User.class).into(new ArrayList<>());
 	}
 	
 	@Override
