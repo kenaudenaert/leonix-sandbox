@@ -1,4 +1,4 @@
-package be.leonix.sandbox;
+package be.leonix.sandbox.mongo;
 
 import java.util.Objects;
 
@@ -6,6 +6,7 @@ import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -52,6 +53,6 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
 				defaultCodecRegistry, CodecRegistries.fromProviders(pojoCodecProvider));
 		
-		return mongoClient().getDatabase(getDatabaseName()).withCodecRegistry(codecRegistry);
+		return mongoClient().getDatabase(getDatabaseName()).withCodecRegistry(defaultCodecRegistry);
 	}
 }
