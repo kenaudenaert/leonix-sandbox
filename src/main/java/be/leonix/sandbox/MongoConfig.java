@@ -15,8 +15,8 @@ import com.mongodb.client.MongoDatabase;
 @Configuration
 public class MongoConfig extends AbstractMongoClientConfiguration {
 	
-	private String uri;
-	private String databaseName;
+	private final String uri;
+	private final String databaseName;
 	
 	public MongoConfig(@Value("${sandbox.mongo.uri}") String uri) {
 		this.uri = uri;
