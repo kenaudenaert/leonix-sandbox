@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -42,7 +43,8 @@ public class MovieRepositoryImpl implements MovieRepository {
 	
 	@Override
 	public void insert(Movie movie) {
-		
+		movie.setId(new ObjectId());
+		movies.insertOne(movie);
 	}
 	
 	@Override

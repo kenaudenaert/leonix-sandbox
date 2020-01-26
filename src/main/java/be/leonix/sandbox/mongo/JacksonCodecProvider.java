@@ -9,7 +9,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * A {@link CodecProvider} that provides a {@link JacksonCodec} for each type.
+ * A {@link CodecProvider} that creates a {@link JacksonCodec} for each type.
  *
  * @author leonix
  */
@@ -23,6 +23,6 @@ public class JacksonCodecProvider implements CodecProvider {
 	
 	@Override
 	public <T> Codec<T> get(Class<T> type, CodecRegistry registry) {
-		return new JacksonCodec<>(objectMapper, registry, type);
+		return new JacksonCodec<T>(objectMapper, registry, type);
 	}
 }

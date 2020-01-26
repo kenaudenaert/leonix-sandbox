@@ -5,7 +5,6 @@ import java.util.Objects;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.PojoCodecProvider;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -47,12 +46,12 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 	
 	@Bean
 	public MongoDatabase mongoDatabase() {
-		CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
+		CodecProvider codecProvider = new JacksonCodecProvider(new JacksonObjectMapper());
 		
 		CodecRegistry defaultCodecRegistry = MongoClientSettings.getDefaultCodecRegistry();
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-				defaultCodecRegistry, CodecRegistries.fromProviders(pojoCodecProvider));
+				defaultCodecRegistry, CodecRegistries.fromProviders(codecProvider));
 		
-		return mongoClient().getDatabase(getDatabaseName()).withCodecRegistry(defaultCodecRegistry);
+		return mongoClient().getDatabase(getDatabaseName()).withCodecRegistry(codecRegistry);
 	}
 }
