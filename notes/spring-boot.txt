@@ -3,18 +3,37 @@ SpringBoot
 
 [spring-boot-starter.jar]
 	-> submodule of spring-boot-starters.
-	-> dependency for all other *-starter jars.
-	-> empty box: maven dependency that combines:
-		spring-boot & spring-boot-autoconfigure.
+	-> depends on spring-boot-autoconfigure and spring-boot.
+	-> dependency for all other pring-*-starter jars.
+	-> empty box: only used for dependencies.
 
-[spring-boot.jar]
-	org.springframework.boot
-		SpringApplication.class
-	org.springframework.boot.builder
-		SpringApplicationBuilder.class
-	-> support for spring-boot application.
-
-[spring-boot-autoconfigure.jar]
-	org.springframework.boot.autoconfigure
-		(annotation) SpringBootApplication.class
-	-> support for spring-boot auto-conf.
+[spring-boot-autoconfigure.jar] -> uses spring-boot !!
+	-> support for spring-boot auto-configuration
+		org.springframework.boot.autoconfigure:
+			annotation: @SpringBootApplication
+				-> uses @EnableAutoConfiguration
+			annotation: @EnableAutoConfiguration
+				-> uses META-INF/spring-factories.
+		org.springframework.boot.autoconfigure.condition:
+			-> Defines (spring-context) @Conditional annotations:
+				@ConditionalOnBean
+				@ConditionalOnClass
+				@ConditionalOnCloudPlatform
+				@ConditionalOnExpression
+				@ConditionalOnJava
+				@ConditionalOnJndi
+				@ConditionalOnMissingBean
+				@ConditionalOnMissingClass
+				@ConditionalOnNotWebApplication
+				@ConditionalOnProperty
+				@ConditionalOnResource
+				@ConditionalOnSingleCandidate
+				@ConditionalOnWebApplication
+	-> provides META-INF/spring-factories.
+	
+[spring-boot.jar] -> uses spring-core (and others).
+	-> support for spring-boot 'application' (micro-service).
+		org.springframework.boot:
+			class: SpringApplication 
+				-> The spring boot application !!
+	-> provides META-INF/spring-factories.
