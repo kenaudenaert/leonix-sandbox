@@ -8,7 +8,6 @@ import org.bson.codecs.configuration.CodecRegistry;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 
@@ -19,7 +18,6 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
 @Configuration
-@ComponentScan("be.leonix.sandbox.repository")
 public class MongoConfig extends AbstractMongoClientConfiguration {
 	
 	private final String uri;
@@ -34,6 +32,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 		}
 	}
 	
+	@Bean
 	@Override
 	public MongoClient mongoClient() {
 		return MongoClients.create(uri);
@@ -45,13 +44,13 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 	}
 	
 	@Bean
-	public MongoDatabase mongoDatabase() {
+	public MongoDatabase mongoDatabase(MongoClient mongoClient) {
 		CodecProvider codecProvider = new JacksonCodecProvider(new JacksonObjectMapper());
 		
 		CodecRegistry defaultCodecRegistry = MongoClientSettings.getDefaultCodecRegistry();
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
 				defaultCodecRegistry, CodecRegistries.fromProviders(codecProvider));
 		
-		return mongoClient().getDatabase(getDatabaseName()).withCodecRegistry(codecRegistry);
+		return mongoClient.getDatabase(getDatabaseName()).withCodecRegistry(codecRegistry);
 	}
 }

@@ -3,6 +3,7 @@ package be.leonix.sandbox.repository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -13,6 +14,7 @@ import be.leonix.sandbox.mongo.MongoConfig;
 
 @SpringJUnitConfig
 @ContextConfiguration(classes={MongoConfig.class})
+@ComponentScan({"be.leonix.sandbox.repository", "be.leonix.sandbox.mongo"})
 @TestPropertySource("classpath:config/sandbox.properties")
 public class MovieRepositoryTest {
 	
@@ -21,10 +23,10 @@ public class MovieRepositoryTest {
 	
 	@Test
 	void checkEmptyRepository() {
-	//	Assertions.assertTrue(movieRepository.findAll().isEmpty());
+		Assertions.assertFalse(movieRepository.findAll().isEmpty());
 		Movie movie = new Movie();
 		movie.setTitle("My first movie");
 		movieRepository.insert(movie);
-		Assertions.assertFalse(movieRepository.findAll().isEmpty());
+		// Assertions.assertFalse(movieRepository.findAll().isEmpty());
 	}
 }
