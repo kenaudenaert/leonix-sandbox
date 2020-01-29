@@ -1,0 +1,29 @@
+SPRING-BOOT-MONGO
+-----------------
+[spring-boot-autoconfigure-jar]
+
+org.springframework.boot.autoconfigure.mongo:
+	class MongoAutoConfiguration (mongo-driver)
+	class MongoProperties (configures a mongo-client)
+		prefix = "spring.mongodb"
+		
+org.springframework.boot.autoconfigure.mongo.embedded:
+	class EmbeddedMongoAutoConfiguration (needs flapdoodle)
+	class EmbeddedMongoProperties (configures a mongo-server)
+		prefix = "spring.mongodb.embedded"
+
+org.springframework.boot.autoconfigure.data.mongo:
+	class MongoDataAutoConfiguration
+	class MongoDataConfiguration
+	
+	class MongoDbFactoryConfiguration
+		-> bean class org.springframework.data.mongodb.core.SimpleMongoDbFactory
+	class MongoDbFactoryDependentConfiguration
+		-> bean org.springframework.data.mongodb.core.convert.MappingMongoConverter
+		-> bean org.springframework.data.mongodb.core.convert.MongoCustomConversions
+		-> bean org.springframework.data.mongodb.core.mapping.MongoMappingContext
+	class MongoRepositoriesAutoConfiguration
+	
+SPRING-MONGO
+------------
+[spring-data-mongo.jar]
