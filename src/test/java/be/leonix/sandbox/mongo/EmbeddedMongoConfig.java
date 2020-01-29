@@ -12,7 +12,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
-@Configuration
+//@Configuration
 public class EmbeddedMongoConfig extends AbstractMongoClientConfiguration {
 	
 	private final EmbeddedMongo embeddedMongo;
