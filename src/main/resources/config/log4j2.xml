@@ -9,7 +9,7 @@
 		<Logger name="be.leonix.sandbox" level="info" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
-		<Root level="info">
+		<Root level="warn">
 			<AppenderRef ref="Console" />
 		</Root>
 	</Loggers>
