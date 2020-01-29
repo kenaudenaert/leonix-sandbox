@@ -9,7 +9,7 @@ https://spring.io/guides --> look for a way to get started !!
 https://spring.io/projects/spring-framework
 
 SPRING-CORE
-===========
+-----------
 https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/index.html
 https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/overview.html#overview
 https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#spring-core
@@ -31,5 +31,53 @@ https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/
 	@NonNull, @NonNullApi, @NonNullFields, @Nullable
 
 SPRING-TEST
-===========
+-----------
 https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/testing.html#testing
+
+Spring Summary
+==============
+[spring-beans.jar]
+	org.springframework.beans.factory.annotation:
+		annotation: @Autowired
+		annotation: @Qualifier
+		annotation: @Value
+
+[spring-context.jar]
+	org.springframework.context:
+		interface: ApplicationContext (and related interfaces)
+	org.springframework.context.annotation:
+		annotation: @Bean
+		annotation: @ComponentScan(s)
+		annotation: @Conditional         (creation test)
+		annotation: @Configuration
+		annotation: @DependsOn           (creation order)
+		annotation: @Import
+		annotation: @ImportResource
+		annotation: @Lazy                (lazy creation)
+		annotation: @Primary             (preferred bean)
+		annotation: @Profile
+		annotation: @PropertySource(s)
+		annotation: @Scope               (bean has scope)
+	org.springframework.context.support:
+		class: AnnotationConfigWebApplicationContext
+			(and other ApplicationContext implementations)
+	org.springframework.stereotype:
+		annotation: @Component
+		annotation: @Controller
+		annotation: @Repository
+		annotation: @Service
+
+[spring-test.jar]
+	org.springframework.test.annotation:
+		annotation: @DirtiesContext
+		annotation: @Repeat
+		annotation: @Timed
+	org.springframework.test.context:
+		annotation: @ActiveProfiles
+		annotation: @ContextConfiguration
+		annotation: @TestPropertySource(s)
+		
+	org.springframework.test.context.junit.jupiter:
+		annotation: @SpringJUnitConfig
+	org.springframework.test.context.junit.jupiter.web:
+		annotation: @SpringJUnitWebConfig

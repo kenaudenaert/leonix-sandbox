@@ -1,6 +1,18 @@
 SpringBoot
 ==========
 
+https://spring.io/projects/spring-boot
+
+https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started.html#getting-started
+https://docs.spring.io/spring-boot/docs/current/reference/html/using-spring-boot.html#using-boot
+https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html#production-ready
+
+https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features
+	--> All the various starters are explained !!
+
+SpringBoot Summary
+==================
+
 [spring-boot-starter.jar]
 	-> submodule of spring-boot-starters.
 	-> depends on spring-boot-autoconfigure and spring-boot.
@@ -15,7 +27,7 @@ SpringBoot
 			annotation: @EnableAutoConfiguration
 				-> uses META-INF/spring-factories.
 		org.springframework.boot.autoconfigure.condition:
-			-> Defines (spring-context) @Conditional annotations:
+			-> Defines @Conditional annotations:
 				@ConditionalOnBean
 				@ConditionalOnClass
 				@ConditionalOnCloudPlatform
@@ -37,3 +49,9 @@ SpringBoot
 			class: SpringApplication 
 				-> The spring boot application !!
 	-> provides META-INF/spring-factories.
+
+[spring-boot-test.jar]
+	org.springframework.boot.test.context:
+	annotation: @SpringBootTest
+	annotation: @TestComponent
+	annotation: @TestConfiguration
