@@ -45,7 +45,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 	
 	@Bean
 	public MongoDatabase mongoDatabase(MongoClient mongoClient) {
-		CodecProvider codecProvider = new JacksonCodecProvider(new JacksonObjectMapper());
+		CodecProvider codecProvider = new JacksonCodecProvider(new MongoObjectMapper());
 		
 		CodecRegistry defaultCodecRegistry = MongoClientSettings.getDefaultCodecRegistry();
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(

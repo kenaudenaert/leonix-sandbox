@@ -4,19 +4,19 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * The (configured) {@link ObjectMapper} for Jackson (de)serialization.
+ * The {@link ObjectMapper} for Mongo document conversion.
  * 
  * @author leonix
  */
-public class JacksonObjectMapper extends ObjectMapper {
+public class MongoObjectMapper extends ObjectMapper {
 	
 	private static final long serialVersionUID = 1L;
 	
-	public JacksonObjectMapper() {
+	public MongoObjectMapper() {
 		this(null);
 	}
 	
-	public JacksonObjectMapper(JsonFactory jsonFactory) {
+	public MongoObjectMapper(JsonFactory jsonFactory) {
 		super(jsonFactory);
 	}
 }
