@@ -3,10 +3,9 @@ Spring
 
 https://en.wikipedia.org/wiki/Spring_Framework
 
-https://spring.io
-https://spring.io/guides --> look for a way to get started !!
-
 https://spring.io/projects/spring-framework
+
+https://spring.io/guides --> look for a way to get started !!
 
 SPRING-CORE
 -----------
@@ -34,50 +33,63 @@ SPRING-TEST
 -----------
 https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/testing.html#testing
 
-Spring Summary
-==============
+Spring-Core Summary
+===================
 [spring-beans.jar]
 	org.springframework.beans.factory.annotation:
-		annotation: @Autowired
-		annotation: @Qualifier
-		annotation: @Value
+		annotation: @Autowired   (similar to javax.inject.@Inject)
+		annotation: @Qualifier   (similar to javax.inject.@Named)
+		annotation: @Value       (reference value from properties)
 
 [spring-context.jar]
 	org.springframework.context:
 		interface: ApplicationContext (and related interfaces)
+		
 	org.springframework.context.annotation:
-		annotation: @Bean
-		annotation: @ComponentScan(s)
-		annotation: @Conditional         (creation test)
-		annotation: @Configuration
-		annotation: @DependsOn           (creation order)
-		annotation: @Import
-		annotation: @ImportResource
-		annotation: @Lazy                (lazy creation)
-		annotation: @Primary             (preferred bean)
-		annotation: @Profile
-		annotation: @PropertySource(s)
-		annotation: @Scope               (bean has scope)
+		annotation: @Bean                (configuration by annotation)
+		annotation: @Configuration       (configuration by annotation)
+		annotation: @ComponentScan(s)    (location of components)
+		annotation: @PropertySource(s)   (location of properties)
+		annotation: @Import              (import configuration beans)
+		annotation: @ImportResource      (import configuration files)
+		
+		annotation: @Conditional         (specify creation condition)
+		annotation: @Profile             (only creation when profile)
+		annotation: @DependsOn           (specify creation ordering)
+		annotation: @Lazy                (specify lazy creation)
+		annotation: @Primary             (specify preferred bean)
+		annotation: @Scope               (a bean can have a scope)
+		
 	org.springframework.context.support:
 		class: AnnotationConfigWebApplicationContext
 			(and other ApplicationContext implementations)
+			
 	org.springframework.stereotype:
 		annotation: @Component
-		annotation: @Controller
-		annotation: @Repository
-		annotation: @Service
+		annotation: @Controller   (stereotype for frontend-layer)
+		annotation: @Repository   (stereotype for backend-layer)
+		annotation: @Service      (stereotype for service-layer)
 
+Spring-Test Summary
+===================
 [spring-test.jar]
 	org.springframework.test.annotation:
-		annotation: @DirtiesContext
-		annotation: @Repeat
-		annotation: @Timed
+		annotation: @DirtiesContext (do not reuse context, since modified)
+		
 	org.springframework.test.context:
-		annotation: @ActiveProfiles
-		annotation: @ContextConfiguration
-		annotation: @TestPropertySource(s)
+		annotation: @ActiveProfiles         (specify active profiles for testing)
+		annotation: @ContextConfiguration   (specify context configuration classes)
+		annotation: @TestPropertySource(s)  (override all properties for testing)
 		
 	org.springframework.test.context.junit.jupiter:
 		annotation: @SpringJUnitConfig
+			(@ExtendWith(SpringExtension.class) + @ContextConfiguration)
+			
+		annotation: @DisabledIf           (conditional test(class/method)-execution)
+		annotation: @DisabledIfCondition  (conditional test(class/method)-execution)
+		annotation: @EnabledIf            (conditional test(class/method)-execution)
+		annotation: @EnabledIfCondition   (conditional test(class/method)-execution)
+		
 	org.springframework.test.context.junit.jupiter.web:
 		annotation: @SpringJUnitWebConfig
+			(@ExtendWith(SpringExtension.class) + @ContextConfiguration + @WebAppConfiguration)
