@@ -1,5 +1,5 @@
-SpringBoot
-==========
+Spring-Boot
+===========
 
 https://spring.io/projects/spring-boot
 
@@ -10,8 +10,8 @@ https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-
 https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features
 	--> All the various starters are explained !!
 
-SpringBoot Summary
-==================
+Spring-Boot Summary
+===================
 
 [spring-boot-starter.jar]
 	-> submodule of spring-boot-starters.
@@ -20,38 +20,41 @@ SpringBoot Summary
 	-> empty box: only used for dependencies.
 
 [spring-boot-autoconfigure.jar] -> uses spring-boot !!
-	-> support for spring-boot auto-configuration
-		org.springframework.boot.autoconfigure:
-			annotation: @SpringBootApplication
-				-> uses @EnableAutoConfiguration
-			annotation: @EnableAutoConfiguration
-				-> uses META-INF/spring-factories.
-		org.springframework.boot.autoconfigure.condition:
-			-> Defines @Conditional annotations:
-				@ConditionalOnBean
-				@ConditionalOnClass
-				@ConditionalOnCloudPlatform
-				@ConditionalOnExpression
-				@ConditionalOnJava
-				@ConditionalOnJndi
-				@ConditionalOnMissingBean
-				@ConditionalOnMissingClass
-				@ConditionalOnNotWebApplication
-				@ConditionalOnProperty
-				@ConditionalOnResource
-				@ConditionalOnSingleCandidate
-				@ConditionalOnWebApplication
+	-> support for spring-boot auto-configuration.
 	-> provides META-INF/spring-factories.
+	
+	org.springframework.boot.autoconfigure:
+		annotation: @SpringBootApplication
+			-> uses @EnableAutoConfiguration
+			
+		annotation: @EnableAutoConfiguration
+			-> uses META-INF/spring-factories.
+	
+	org.springframework.boot.autoconfigure.condition:
+		-> Defines @Conditional annotations:
+		annotation: @ConditionalOnBean
+		annotation: @ConditionalOnClass
+		annotation: @ConditionalOnCloudPlatform
+		annotation: @ConditionalOnExpression
+		annotation: @ConditionalOnJava
+		annotation: @ConditionalOnJndi
+		annotation: @ConditionalOnMissingBean
+		annotation: @ConditionalOnMissingClass
+		annotation: @ConditionalOnNotWebApplication
+		annotation: @ConditionalOnProperty
+		annotation: @ConditionalOnResource
+		annotation: @ConditionalOnSingleCandidate
+		annotation: @ConditionalOnWebApplication
 	
 [spring-boot.jar] -> uses spring-core (and others).
 	-> support for spring-boot 'application' (micro-service).
-		org.springframework.boot:
-			class: SpringApplication 
-				-> The spring boot application !!
 	-> provides META-INF/spring-factories.
-
+		org.springframework.boot:
+			class: SpringApplication (support using autoconfig)
+				-> The spring boot application !!
+	
 [spring-boot-test.jar]
 	org.springframework.boot.test.context:
-	annotation: @SpringBootTest
-	annotation: @TestComponent
-	annotation: @TestConfiguration
+		annotation: @TestComponent      (a component for testing only)
+		annotation: @TestConfiguration  (a configuration for testing only)
+		annotation: @SpringBootTest     (searches for spring-boot-app...)
