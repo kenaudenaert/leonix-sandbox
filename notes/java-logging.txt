@@ -1,0 +1,13 @@
+Logging
+-------
+https://mvnrepository.com/open-source/logging-frameworks
+	
+https://en.wikipedia.org/wiki/Java_logging_framework
+
+	https://en.wikipedia.org/wiki/SLF4J
+		http://www.slf4j.org
+		-> version 2 will support fluent api/lambda syntax
+		
+	https://en.wikipedia.org/wiki/Log4j
+		https://logging.apache.org/log4j/2.x/
+		-> version 2 supports slf4j markers (like logback).

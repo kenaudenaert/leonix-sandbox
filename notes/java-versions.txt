@@ -1,0 +1,40 @@
+JDK-versions
+------------
+
+https://en.wikipedia.org/wiki/Java_version_history
+
+Java SE 7
+=========
+
+JSR 203: Java NIO (java.nio.file).
+
+These small language changes (grouped under a project named Coin):
+	- Strings in switch statement.
+	- Automatic resource management in try-statement.
+	- Type inference for generic instance creation (<>).
+	- Simplified varargs method declaration.
+	- Allowing underscores in numeric literals.
+	- Catching multiple exception types.
+
+Java SE 8
+=========
+
+JSR 310, JEP 150: Date and time API.
+JSR 335, JEP 126: Language-level support for lambda expressions (closures)
+	under Project Lambda and default methods (virtual extension methods).
+
+Java SE 9
+=========
+
+JSR 376: Modularization of the JDK under Project Jigsaw (Java Platform Module System).
+JEP 266: More concurrency updates. A Java implementation of Reactive Streams, including a 
+	new Flow class that included the interfaces previously provided by Reactive Streams.
+
+	https://en.wikipedia.org/wiki/Java_Platform_Module_System
+		-> module-info.class files now exist (import/export definitions) !!
+		
+Java SE 11
+==========
+
+JEP 321: HTTP client (standard)
+JEP 332: Transport Layer Security (TLS) 1.3
