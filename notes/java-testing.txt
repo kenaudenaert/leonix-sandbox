@@ -1,0 +1,12 @@
+Testing
+-------
+https://mvnrepository.com/open-source/testing-frameworks
+	
+	https://en.wikipedia.org/wiki/JUnit
+		https://junit.org/junit5/
+		
+	https://en.wikipedia.org/wiki/TestNG
+		https://testng.org/doc/
+	
+	https://en.wikipedia.org/wiki/Mockito
+		https://site.mockito.org
