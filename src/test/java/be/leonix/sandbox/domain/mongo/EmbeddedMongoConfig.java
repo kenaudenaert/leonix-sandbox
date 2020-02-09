@@ -4,7 +4,7 @@ import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+//import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 
 import com.mongodb.MongoClientSettings;
@@ -13,7 +13,6 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
 import be.leonix.sandbox.domain.mongo.JacksonCodecProvider;
-import be.leonix.sandbox.domain.mongo.JacksonObjectMapper;
 
 //@Configuration
 public class EmbeddedMongoConfig extends AbstractMongoClientConfiguration {
@@ -41,7 +40,7 @@ public class EmbeddedMongoConfig extends AbstractMongoClientConfiguration {
 	
 	@Bean
 	public MongoDatabase mongoDatabase() {
-		CodecProvider codecProvider = new JacksonCodecProvider(new JacksonObjectMapper());
+		CodecProvider codecProvider = new JacksonCodecProvider(new MongoObjectMapper());
 		
 		CodecRegistry defaultCodecRegistry = MongoClientSettings.getDefaultCodecRegistry();
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
