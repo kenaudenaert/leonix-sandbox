@@ -14,10 +14,10 @@ import org.springframework.boot.context.config.ConfigFileApplicationListener;
 	// We don't need an in memory UserDetailsManager with an auto-generated password
 	UserDetailsServiceAutoConfiguration.class
 })
-public class SandboxApplication {
+public class SandboxApp {
 	
 	public static void main(String[] args) {
-		SpringApplication application = new SpringApplication(SandboxApplication.class);
+		SpringApplication application = new SpringApplication(SandboxApp.class);
 		
 		// Ensure that we are using the application properties we need.
 		String configName = ConfigFileApplicationListener.CONFIG_NAME_PROPERTY;
