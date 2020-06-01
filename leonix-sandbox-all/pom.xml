@@ -19,6 +19,6 @@
 	</developers>
 
 	<modules>
-
+		<module>leonix-sandbox</module>
 	</modules>
 </project>
