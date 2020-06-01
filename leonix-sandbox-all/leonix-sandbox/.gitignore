@@ -1,0 +1,8 @@
+# MacOSX Eclipse Maven
+.DS_Store
+.settings/
+.classpath
+.project
+target/
+test-output/
+bin/
