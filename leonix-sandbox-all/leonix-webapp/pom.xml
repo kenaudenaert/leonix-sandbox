@@ -3,33 +3,19 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
-	<!-- POM file generated with GWT webAppCreator -->
+	
 	<groupId>be.leonix</groupId>
 	<artifactId>leonix-webapp</artifactId>
 	<packaging>war</packaging>
 	<version>1.0.0-SNAPSHOT</version>
-
+	
 	<properties>
-		<!-- Convenience property to set the GWT version -->
-		<gwtVersion>2.7.0</gwtVersion>
-		<!-- Note: GWT needs at least java 1.6 -->
+		<gwtVersion>2.8.2</gwtVersion>
+		<!-- Avoid Java 9 problems with java-modules. -->
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 	
-	<dependencyManagement>
-		<dependencies>
-			<!-- ensure all GWT deps use the same version (unless overridden) -->
-			<dependency>
-				<groupId>com.google.gwt</groupId>
-				<artifactId>gwt</artifactId>
-				<version>${gwtVersion}</version>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
@@ -62,7 +48,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
+	
 	<build>
 		<plugins>
 			<!-- GWT Maven Plugin -->
@@ -101,34 +87,13 @@
 					<includes>**/Test*.java,**/*Test.java,**/*TestCase.java</includes>
 				</configuration>
 			</plugin>
-
+			
 			<!-- Skip normal test execution, we use gwt:test instead -->
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.17</version>
 				<configuration>
 					<skip>true</skip>
-				</configuration>
-			</plugin>
-
-			<!-- NOTE: this is only needed if you use "mvn eclipse:eclipse". -->
-			<!-- You can remove this plugin if you intend to only use the Maven integration 
-				in Eclipse, or another IDE -->
-			<plugin>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.7</version>  <!-- Note 2.8 does not work with AspectJ aspect path -->
-				<configuration>
-					<downloadSources>true</downloadSources>
-					<downloadJavadocs>false</downloadJavadocs>
-					<wtpversion>2.0</wtpversion>
-					<additionalBuildcommands>
-						<buildCommand>
-							<name>com.google.gwt.eclipse.core.gwtProjectValidator</name>
-						</buildCommand>
-					</additionalBuildcommands>
-					<additionalProjectnatures>
-						<projectnature>com.google.gwt.eclipse.core.gwtNature</projectnature>
-					</additionalProjectnatures>
 				</configuration>
 			</plugin>
 		</plugins>
