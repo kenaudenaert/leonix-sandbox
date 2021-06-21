@@ -32,7 +32,7 @@ public class Leonix_webapp implements EntryPoint {
 	 * Create a remote service proxy to talk to the server-side Greeting service.
 	 */
 	private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
-
+	
 	/**
 	 * This is the entry point method.
 	 */
@@ -118,6 +118,8 @@ public class Leonix_webapp implements EntryPoint {
 				textToServerLabel.setText(textToServer);
 				serverResponseLabel.setText("");
 				greetingService.greetServer(textToServer, new AsyncCallback<String>() {
+					
+					@Override
 					public void onFailure(Throwable caught) {
 						// Show the RPC error message to the user
 						dialogBox.setText("Remote Procedure Call - Failure");
@@ -126,7 +128,8 @@ public class Leonix_webapp implements EntryPoint {
 						dialogBox.center();
 						closeButton.setFocus(true);
 					}
-
+					
+					@Override
 					public void onSuccess(String result) {
 						dialogBox.setText("Remote Procedure Call");
 						serverResponseLabel.removeStyleName("serverResponseLabelError");
@@ -137,7 +140,7 @@ public class Leonix_webapp implements EntryPoint {
 				});
 			}
 		}
-
+		
 		// Add a handler to send the name to the server
 		MyHandler handler = new MyHandler();
 		sendButton.addClickHandler(handler);
