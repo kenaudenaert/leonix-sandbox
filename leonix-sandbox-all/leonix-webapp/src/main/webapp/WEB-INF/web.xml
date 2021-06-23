@@ -16,6 +16,6 @@
 	
 	<!-- Default page to serve -->
 	<welcome-file-list>
-		<welcome-file>Leonix_webapp.html</welcome-file>
+		<welcome-file>LeonixWebApp.html</welcome-file>
 	</welcome-file-list>
 </web-app>

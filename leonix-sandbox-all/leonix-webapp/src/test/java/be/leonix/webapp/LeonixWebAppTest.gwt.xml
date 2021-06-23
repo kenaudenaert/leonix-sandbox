@@ -5,7 +5,7 @@
 	so that your app can take advantage of the latest GWT module capabilities. -->
 <module rename-to='leonix_webapp'>
 	<!-- Inherit our applications main module. -->
-	<inherits name='be.leonix.webapp.Leonix_webapp' />
+	<inherits name='be.leonix.webapp.LeonixWebApp' />
 	
 	<!-- Specify the path to any remote services. -->
 	<servlet path="/leonix_webapp/greet" class="be.leonix.webapp.server.GreetingServiceImpl" />

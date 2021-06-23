@@ -9,15 +9,15 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 /**
  * GWT JUnit tests must extend GWTTestCase.
  */
-public class Leonix_webappTest extends GWTTestCase {
+public class LeonixWebAppTest extends GWTTestCase {
 
 	/**
 	 * Must refer to a valid module that sources this class.
 	 */
 	public String getModuleName() {
-		return "be.leonix.webapp.Leonix_webappJUnit";
+		return "be.leonix.webapp.LeonixWebAppTest";
 	}
-
+	
 	/**
 	 * Tests the FieldVerifier.
 	 */
@@ -44,14 +44,15 @@ public class Leonix_webappTest extends GWTTestCase {
 		// after this test method returns. This line tells the test runner to wait
 		// up to 10 seconds before timing out.
 		delayTestFinish(10000);
-
+		
 		// Send a request to the server.
 		greetingService.greetServer("GWT User", new AsyncCallback<String>() {
+			@Override
 			public void onFailure(Throwable caught) {
 				// The request resulted in an unexpected error.
 				fail("Request failure: " + caught.getMessage());
 			}
-
+			@Override
 			public void onSuccess(String result) {
 				// Verify that the response is correct.
 				assertTrue(result.startsWith("Hello, GWT User!"));
