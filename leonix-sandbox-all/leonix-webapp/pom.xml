@@ -9,11 +9,20 @@
 	<packaging>war</packaging>
 	<version>1.0.0-SNAPSHOT</version>
 	
+	<developers>
+		<developer>
+			<name>Ken Audenaert</name>
+		</developer>
+	</developers>
+	
 	<properties>
-		<gwtVersion>2.8.2</gwtVersion>
 		<!-- Avoid Java 9 problems with java-modules. -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		
+		<gwtVersion>2.8.2</gwtVersion>
 	</properties>
 	
 	<dependencies>
