@@ -20,19 +20,20 @@
 		<maven.compiler.source>1.11</maven.compiler.source>
 		<maven.compiler.target>1.11</maven.compiler.target>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
+		
 		<spring.version>5.2.6.RELEASE</spring.version>
+		<version.h2db>1.4.200</version.h2db>
 		<version.mysql>8.0.18</version.mysql>
 		<version.pgsql>42.2.9</version.pgsql>
-		<version.h2db>1.4.200</version.h2db>
 		
 		<version.slf4j>1.7.30</version.slf4j>
 		<version.log4j>2.13.0</version.log4j>
+		
 		<version.junit>5.5.2</version.junit>
 		<version.assertj>3.14.0</version.assertj>
 		<version.mockito>3.2.4</version.mockito>
 	</properties>
-
+	
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -146,9 +147,15 @@
 	</profiles>
 
 	<dependencies>
+		<!-- Spring Framework -->
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
@@ -160,8 +167,10 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		
+		<!-- classic JSP -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
@@ -175,6 +184,7 @@
 			<scope>runtime</scope>
 		</dependency>
 		
+		<!-- Supported by Tomcat 8.5+ -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
@@ -206,7 +216,7 @@
 			<version>${version.log4j}</version>
 			<scope>runtime</scope>
 		</dependency>
-
+		
 		<!-- testing -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

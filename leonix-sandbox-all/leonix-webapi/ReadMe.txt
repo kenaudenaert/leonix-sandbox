@@ -1,3 +1,8 @@
+Apache Tomcat
+=============
+http://tomcat.apache.org/whichversion.html
+	=> Using 8.5.x (used by SLIMS 6.7)
+
 Spring-5.2.x
 ============
 https://www.baeldung.com/spring-web-contexts
