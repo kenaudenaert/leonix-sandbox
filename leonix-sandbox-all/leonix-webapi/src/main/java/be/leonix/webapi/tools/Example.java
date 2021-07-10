@@ -4,6 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.PostConstruct;
 
 @Component
 public class Example {
@@ -12,15 +15,16 @@ public class Example {
 	
 	@Autowired
 	public Example() {
-		logger.info("Example: " + this);
+		logger.info("Example::new");
 	}
 	
-	@Component
-	public static class Listener {
-		
-		@Autowired
-		public Listener(Example ex) {
-			logger.info("Listener: " + ex);
-		}
+	@PostConstruct
+	public void registerListener() {
+		logger.info("Example::registerListener ");
+	}
+	
+	@Transactional
+	public void foobar() {
+		logger.info("Example::foobar");
 	}
 }
