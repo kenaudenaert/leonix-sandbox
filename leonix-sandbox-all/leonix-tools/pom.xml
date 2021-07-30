@@ -17,8 +17,14 @@
 		<maven.compiler.source>1.11</maven.compiler.source>
 		<maven.compiler.target>1.11</maven.compiler.target>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		
+		<version.slf4j>1.7.30</version.slf4j>
+		<version.log4j>2.13.0</version.log4j>
+		<version.junit>5.5.2</version.junit>
+		<version.assertj>3.14.0</version.assertj>
+		<version.mockito>3.2.4</version.mockito>
 	</properties>
-
+	
 	<build>
 		<pluginManagement>
 			<plugins>
