@@ -22,5 +22,6 @@
 		<module>leonix-server</module>
 		<module>leonix-webapp</module>
 		<module>leonix-webapi</module>
+		<module>leonix-tools</module>
 	</modules>
 </project>
