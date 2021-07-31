@@ -86,7 +86,7 @@ public final class RefactorTool {
 					
 					logger.info("Refactor src-directory: {} (count={})", srcDir, javaFiles.size());
 					for (File javaFile : javaFiles) {
-						fileRefactor.refactorFile(javaFile, RefactorMode.UPDATE_FILE);
+						fileRefactor.refactorFile(javaFile, RefactorMode.LOG_CHANGE);
 					}
 				}
 			}
