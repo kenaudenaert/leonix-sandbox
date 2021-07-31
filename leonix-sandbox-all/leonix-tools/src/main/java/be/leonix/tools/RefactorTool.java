@@ -30,7 +30,7 @@ public final class RefactorTool {
 	/**
 	 * Finds the source-folders in the specified project-directory.
 	 */
-	protected static List<File> findSourceFolders(File projectDir) {
+	private static List<File> findSourceFolders(File projectDir) {
 		Objects.requireNonNull(projectDir);
 		if (! projectDir.isDirectory()) {
 			throw new IllegalArgumentException("Invalid project-dir: " + projectDir);
@@ -38,7 +38,7 @@ public final class RefactorTool {
 		
 		IOFileFilter fileFilter = FileFilterUtils.falseFileFilter();
 		
-		List<File> sourceFiles = new ArrayList<File>();
+		List<File> sourceFiles = new ArrayList<>();
 		for (File file : FileUtils.listFilesAndDirs(projectDir, fileFilter, gitFilter)) {
 			if (sourceFolders.contains(file.getName())) {
 				sourceFiles.add(file);
@@ -50,7 +50,7 @@ public final class RefactorTool {
 	/**
 	 * Finds the Java sources in the specified source-directory.
 	 */
-	protected static List<File> findJavaSources(File sourceDir) {
+	private static List<File> findJavaSources(File sourceDir) {
 		Objects.requireNonNull(sourceDir);
 		if (! sourceDir.isDirectory()) {
 			throw new IllegalArgumentException("Invalid source-dir: " + sourceDir);
@@ -58,7 +58,7 @@ public final class RefactorTool {
 		
 		IOFileFilter fileFilter = FileFilterUtils.suffixFileFilter(".java");
 		
-		List<File> sourceFiles = new ArrayList<File>();
+		List<File> sourceFiles = new ArrayList<>();
 		for (File file : FileUtils.listFiles(sourceDir, fileFilter, gitFilter)) {
 			sourceFiles.add(file);
 		}
@@ -66,21 +66,27 @@ public final class RefactorTool {
 	}
 	
 	/**
-	 * The application for executing some code-refactors.
+	 * The application for executing code-refactors.
 	 */
 	public static void main(String[] args) {
 		try {
-			File projectDir = new File("/Users/leonix/github/leonix-framework");
+			Set<String> projectDirs = Set.of(
+				"/Users/leonix/github/leonix-sandbox",
+				"/Users/leonix/github/leonix-sandbox",
+				"/Users/leonix/github/leonix-sandbox"
+			);
 			
 			FileRefactor fileRefactor = new LineBasedRefactor(new DiamondRefactor());
 			
 			logger.info("Starting refactor.");
-			for (File srcDir : findSourceFolders(projectDir)) {
-				List<File> javaFiles = findJavaSources(srcDir);
-				logger.info("Found src-directory: {} (count={})", srcDir, javaFiles.size());
-				
-				for (File javaFile : javaFiles) {
-					fileRefactor.refactorFile(javaFile, RefactorMode.LOG_CHANGE);
+			for (String projectDir : projectDirs) {
+				for (File srcDir : findSourceFolders(new File(projectDir))) {
+					List<File> javaFiles = findJavaSources(srcDir);
+					
+					logger.info("Refactor src-directory: {} (count={})", srcDir, javaFiles.size());
+					for (File javaFile : javaFiles) {
+						fileRefactor.refactorFile(javaFile, RefactorMode.UPDATE_FILE);
+					}
 				}
 			}
 			logger.info("Finished refactor.");

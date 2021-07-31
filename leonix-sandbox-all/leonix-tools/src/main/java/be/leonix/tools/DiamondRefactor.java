@@ -12,12 +12,12 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class DiamondRefactor implements LineRefactor {
 	
-	private static final Pattern ARRAY_LIST = Pattern.compile(
-			"(=\\s+new\\s+ArrayList\\s*<)[\\s\\w]+(>\\s*\\(\\s*\\)\\s*;)");
+	private static final Pattern DIAMOND = Pattern.compile(
+			"(=\\s+new\\s+[\\w,]+\\s*<)[\\s\\w,]+(>\\s*\\(\\s*\\)\\s*;)");
 	
 	@Override
 	public String refactorLine(String sourceLine) {
-		return refactorLine(sourceLine, ARRAY_LIST);
+		return refactorLine(sourceLine, DIAMOND);
 	}
 	
 	protected String refactorLine(String sourceLine, Pattern pattern) {
@@ -33,8 +33,9 @@ public final class DiamondRefactor implements LineRefactor {
 				}
 				// Execute refactor for pattern.
 				// String reference = matcher.group();
-				for (int group = 1; group <= matcher.groupCount(); group++)
+				for (int group = 1; group <= matcher.groupCount(); group++) {
 					builder.append(matcher.group(group));
+				}
 				offset = matcher.end();
 			}
 			// Copy unmatched trailing section.

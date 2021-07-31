@@ -43,36 +43,37 @@ public class LineBasedRefactor implements FileRefactor {
 						try (BufferedWriter writer = new BufferedWriter(fileWriter)) {
 							
 							int lineNumber = 0;
-							String line = reader.readLine();
-							while (line != null) {
+							String oldLine = reader.readLine();
+							while (oldLine != null) {
 								lineNumber++;
-								String newLine = line;
+								String newLine = oldLine;
 								for (LineRefactor lineRefactor : lineRefactors) {
 									newLine = lineRefactor.refactorLine(newLine);
 								}
-								if (! StringUtils.equals(line, newLine)) {
+								if (! StringUtils.equals(oldLine, newLine)) {
+									logger.info(">> {} @ line {}", sourceFile, lineNumber);
+									
 									if (mode == RefactorMode.UPDATE_FILE) {
 										writer.write(newLine);
 										writer.write('\n');
 										
 									} else if (mode == RefactorMode.ADD_COMMENT) {
-										writer.write(line);
+										writer.write(oldLine);
 										writer.write(" // REFACTOR");
 										writer.write('\n');
 										
 									} else if (mode == RefactorMode.LOG_CHANGE) {
-										logger.info(">> {} @ line {}", sourceFile, lineNumber);
-										logger.info(">> --- {}", line);
-										logger.info(">> +++ {}", newLine);
+										logger.info(">> --- {}", oldLine.trim());
+										logger.info(">> +++ {}", newLine.trim());
 										
-										writer.write(line);
+										writer.write(oldLine);
 										writer.write('\n');
 									}
 								} else {
-									writer.write(line);
+									writer.write(oldLine);
 									writer.write('\n');
 								}
-								line = reader.readLine();
+								oldLine = reader.readLine();
 							}
 						}
 					}
