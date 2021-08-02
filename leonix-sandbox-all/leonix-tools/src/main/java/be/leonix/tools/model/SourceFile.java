@@ -2,7 +2,7 @@ package be.leonix.tools.model;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +28,7 @@ public final class SourceFile {
 	public SourceFile(File sourceFile) {
 		this.sourceFile = Objects.requireNonNull(sourceFile);
 		try {
-			String content = FileUtils.readFileToString(sourceFile,Charset.defaultCharset());
+			String content = FileUtils.readFileToString(sourceFile, StandardCharsets.UTF_8);
 			if (StringUtils.isNotEmpty(content)) {
 				int lineNumber = 0;
 				int lineOffset = 0;
