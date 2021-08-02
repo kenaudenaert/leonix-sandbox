@@ -94,7 +94,7 @@ public class LineBasedRefactor implements FileRefactor {
 				return sourceLine;
 			}
 		}
-		return resultLine;
+		return sourceLine;
 	}
 	
 	private String getLineEnding(File sourceFile) {

@@ -71,9 +71,9 @@ public final class RefactorTool {
 	public static void main(String[] args) {
 		try {
 			Set<String> projectDirs = Set.of(
-				"/Users/leonix/github/leonix-maventools",
-				"/Users/leonix/github/leonix-framework",
-				"/Users/leonix/github/leonix-deploytools",
+			//	"/Users/leonix/github/leonix-maventools",
+			//	"/Users/leonix/github/leonix-framework",
+			//	"/Users/leonix/github/leonix-deploytools",
 				"/Users/leonix/github/leonix-sandbox"
 			);
 			
