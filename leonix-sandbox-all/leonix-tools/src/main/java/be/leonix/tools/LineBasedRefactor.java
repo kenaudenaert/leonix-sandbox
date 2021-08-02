@@ -1,9 +1,7 @@
 package be.leonix.tools;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,6 +12,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import be.leonix.tools.model.SourceFile;
+import be.leonix.tools.model.SourceLine;
 
 /**
  * A {@link FileRefactor} using a set of {@link LineRefactor} implementations.
@@ -36,31 +37,25 @@ public class LineBasedRefactor implements FileRefactor {
 		try {
 			FileUtils.deleteQuietly(refactorFile);
 			
-			// Must retain the original line-ending!
-			String eol = getLineEnding(sourceFile);
+			SourceFile source = new SourceFile(sourceFile);
 			
-			try (FileReader fileReader = new FileReader(sourceFile)) {
-				try (BufferedReader reader = new BufferedReader(fileReader)) {
+			try (FileWriter fileWriter = new FileWriter(refactorFile)) {
+				try (BufferedWriter writer = new BufferedWriter(fileWriter)) {
 					
-					try (FileWriter fileWriter = new FileWriter(refactorFile)) {
-						try (BufferedWriter writer = new BufferedWriter(fileWriter)) {
-							
-							int lineNumber = 0;
-							String oldLine = reader.readLine();
-							while (oldLine != null) {
-								lineNumber++;
-								String lineInfo = sourceFile.getName() + " @ line " + lineNumber;
-								String newLine = refactorFileLine(lineInfo, oldLine, mode);
-								
-								// Check for last file-line!
-								oldLine = reader.readLine();
-								writer.write(newLine);
-								writer.write(eol);
-							}
+					for (SourceLine sourceLine : source.getSourceLines()) {
+						String oldLine = sourceLine.getLineContent();
+						
+						String lineInfo = sourceFile.getName() + " @ line " + sourceLine.getLineNumber();
+						String newLine = refactorFileLine(lineInfo, oldLine, mode);
+						
+						writer.write(newLine);
+						if (sourceLine.getLineEnding() != null) {
+							writer.write(sourceLine.getLineEnding());
 						}
 					}
 				}
 			}
+			
 			FileUtils.deleteQuietly(sourceFile);
 			FileUtils.moveFile(refactorFile, sourceFile);
 			
@@ -91,23 +86,5 @@ public class LineBasedRefactor implements FileRefactor {
 			}
 		}
 		return sourceLine;
-	}
-	
-	private String getLineEnding(File sourceFile) {
-		try (FileReader fileReader = new FileReader(sourceFile)) {
-			try (BufferedReader reader = new BufferedReader(fileReader)) {
-				int i = -1;
-				while ((i = reader.read()) != -1) {
-					if (i == '\r') {
-						return "\r\n";
-					} else if (i == '\n') {
-						return "\n";
-					}
-				}
-				return "\n";
-			}
-		} catch (RuntimeException | IOException ex) {
-			throw new RuntimeException("Could not read source-file: " + sourceFile, ex);
-		}
 	}
 }
