@@ -54,12 +54,8 @@ public class LineBasedRefactor implements FileRefactor {
 								
 								// Check for last file-line!
 								oldLine = reader.readLine();
-								if (oldLine != null) {
-									writer.write(newLine);
-									writer.write(eol);
-								} else {
-									writer.write(newLine);
-								}
+								writer.write(newLine);
+								writer.write(eol);
 							}
 						}
 					}
