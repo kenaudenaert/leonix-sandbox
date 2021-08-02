@@ -36,6 +36,9 @@ public class LineBasedRefactor implements FileRefactor {
 		try {
 			FileUtils.deleteQuietly(refactorFile);
 			
+			// Must retain the original line-ending!
+			String eol = getLineEnding(sourceFile);
+			
 			try (FileReader fileReader = new FileReader(sourceFile)) {
 				try (BufferedReader reader = new BufferedReader(fileReader)) {
 					
@@ -46,34 +49,17 @@ public class LineBasedRefactor implements FileRefactor {
 							String oldLine = reader.readLine();
 							while (oldLine != null) {
 								lineNumber++;
-								String newLine = oldLine;
-								for (LineRefactor lineRefactor : lineRefactors) {
-									newLine = lineRefactor.refactorLine(newLine);
-								}
-								if (! StringUtils.equals(oldLine, newLine)) {
-									logger.info(">> {} @ line {}", sourceFile, lineNumber);
-									
-									if (mode == RefactorMode.UPDATE_FILE) {
-										writer.write(newLine);
-										writer.write('\n');
-										
-									} else if (mode == RefactorMode.ADD_COMMENT) {
-										writer.write(oldLine);
-										writer.write(" // REFACTOR");
-										writer.write('\n');
-										
-									} else if (mode == RefactorMode.LOG_CHANGE) {
-										logger.info(">> --- {}", oldLine.trim());
-										logger.info(">> +++ {}", newLine.trim());
-										
-										writer.write(oldLine);
-										writer.write('\n');
-									}
-								} else {
-									writer.write(oldLine);
-									writer.write('\n');
-								}
+								String lineInfo = sourceFile.getName() + " @ line " + lineNumber;
+								String newLine = refactorFileLine(lineInfo, oldLine, mode);
+								
+								// Check for last file-line!
 								oldLine = reader.readLine();
+								if (oldLine != null) {
+									writer.write(newLine);
+									writer.write(eol);
+								} else {
+									writer.write(newLine);
+								}
 							}
 						}
 					}
@@ -86,6 +72,46 @@ public class LineBasedRefactor implements FileRefactor {
 			throw new RuntimeException("Could not refactor source-file: " + sourceFile, ex);
 		} finally {
 			FileUtils.deleteQuietly(refactorFile);
+		}
+	}
+	
+	private String refactorFileLine(String sourceLineInfo, String sourceLine, RefactorMode mode) {
+		String resultLine = sourceLine;
+		for (LineRefactor lineRefactor : lineRefactors) {
+			resultLine = lineRefactor.refactorLine(resultLine);
+		}
+		if (! StringUtils.equals(resultLine, sourceLine)) {
+			logger.info(">> {}", sourceLineInfo);
+			if (mode == RefactorMode.UPDATE_FILE) {
+				return resultLine;
+				
+			} else if (mode == RefactorMode.ADD_COMMENT) {
+				return resultLine + "// REFACTOR";
+				
+			} else if (mode == RefactorMode.LOG_CHANGE) {
+				logger.info(">> --- {}", sourceLine.trim());
+				logger.info(">> +++ {}", resultLine.trim());
+				return sourceLine;
+			}
+		}
+		return resultLine;
+	}
+	
+	private String getLineEnding(File sourceFile) {
+		try (FileReader fileReader = new FileReader(sourceFile)) {
+			try (BufferedReader reader = new BufferedReader(fileReader)) {
+				int i = -1;
+				while ((i = reader.read()) != -1) {
+					if (i == '\r') {
+						return "\r\n";
+					} else if (i == '\n') {
+						return "\n";
+					}
+				}
+				return "\n";
+			}
+		} catch (RuntimeException | IOException ex) {
+			throw new RuntimeException("Could not read source-file: " + sourceFile, ex);
 		}
 	}
 }
