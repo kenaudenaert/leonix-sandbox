@@ -16,7 +16,7 @@ public final class DiamondRefactor implements LineRefactor {
 	
 	private static final Pattern DIAMOND = Pattern.compile(
 			"(=\\s+new\\s+[\\w\\.]+\\s*<)" +	// new package.Generic<
-			"[\\w.\\s,]+" +						// package.Foo, Bar
+			"[\\w\\.\\s,]+" +					// package.Foo, Bar
 			"(>\\s*\\(\\s*\\)\\s*;)");			// >();
 	
 	@Override

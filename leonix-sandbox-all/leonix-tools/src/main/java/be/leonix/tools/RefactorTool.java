@@ -80,10 +80,11 @@ public final class RefactorTool {
 				"/Users/audenaer/Genohm/slims-repo"
 			);
 			
-			FileRefactor fileRefactor = new LineBasedRefactor();
+			FileRefactor fileRefactor = new LineBasedRefactor(new DiamondRefactor());
 			
 			logger.info("Starting refactor.");
 			for (String projectDir : projectDirs) {
+				
 				File directory = new File(projectDir);
 				if (directory.isDirectory()) {
 					for (File srcDir : findSourceFolders(directory)) {
