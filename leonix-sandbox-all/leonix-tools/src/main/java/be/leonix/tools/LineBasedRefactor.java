@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,8 +39,8 @@ public class LineBasedRefactor implements FileRefactor {
 			FileUtils.deleteQuietly(refactorFile);
 			
 			SourceFile source = new SourceFile(sourceFile);
-			
-			try (FileWriter fileWriter = new FileWriter(refactorFile)) {
+			long changeCount = 0;
+			try (FileWriter fileWriter = new FileWriter(refactorFile, StandardCharsets.UTF_8)) {
 				try (BufferedWriter writer = new BufferedWriter(fileWriter)) {
 					
 					for (SourceLine sourceLine : source.getSourceLines()) {
@@ -47,7 +48,9 @@ public class LineBasedRefactor implements FileRefactor {
 						
 						String lineInfo = sourceFile.getName() + " @ line " + sourceLine.getLineNumber();
 						String newLine = refactorFileLine(lineInfo, oldLine, mode);
-						
+						if (! StringUtils.equals(oldLine, newLine)) {
+							changeCount++;
+						}
 						writer.write(newLine);
 						if (sourceLine.getLineEnding() != null) {
 							writer.write(sourceLine.getLineEnding());
@@ -55,10 +58,11 @@ public class LineBasedRefactor implements FileRefactor {
 					}
 				}
 			}
-			
-			FileUtils.deleteQuietly(sourceFile);
-			FileUtils.moveFile(refactorFile, sourceFile);
-			
+			// Only update file when any changes!
+			if (changeCount > 0) {
+				FileUtils.deleteQuietly(sourceFile);
+				FileUtils.moveFile(refactorFile, sourceFile);
+			}
 		} catch (RuntimeException | IOException ex) {
 			throw new RuntimeException("Could not refactor source-file: " + sourceFile, ex);
 		} finally {

@@ -76,19 +76,25 @@ public final class RefactorTool {
 			//	"/Users/leonix/github/leonix-maventools",
 			//	"/Users/leonix/github/leonix-framework",
 			//	"/Users/leonix/github/leonix-deploytools",
-				"/Users/leonix/github/leonix-sandbox"
+				"/Users/leonix/github/leonix-sandbox",
+				"/Users/audenaer/Genohm/slims-repo"
 			);
 			
-			FileRefactor fileRefactor = new LineBasedRefactor(new DiamondRefactor());
+			FileRefactor fileRefactor = new LineBasedRefactor();
 			
 			logger.info("Starting refactor.");
 			for (String projectDir : projectDirs) {
-				for (File srcDir : findSourceFolders(new File(projectDir))) {
-					List<File> javaFiles = findJavaSources(srcDir);
-					
-					logger.info("Refactor src-directory: {} (count={})", srcDir, javaFiles.size());
-					for (File javaFile : javaFiles) {
-						fileRefactor.refactorFile(javaFile, RefactorMode.LOG_CHANGE);
+				File directory = new File(projectDir);
+				if (directory.isDirectory()) {
+					for (File srcDir : findSourceFolders(directory)) {
+						if (! srcDir.getAbsolutePath().contains("platform-api")) {
+							continue;
+						}
+						List<File> javaFiles = findJavaSources(srcDir);
+						logger.info("Refactor src-directory: {} (count={})", srcDir, javaFiles.size());
+						for (File javaFile : javaFiles) {
+							fileRefactor.refactorFile(javaFile, RefactorMode.UPDATE_FILE);
+						}
 					}
 				}
 			}
