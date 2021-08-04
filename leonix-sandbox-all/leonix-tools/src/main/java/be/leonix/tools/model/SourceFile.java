@@ -17,9 +17,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * This class encapsulates an editable (readable and writeable) source-file.
+ * This class encapsulates an editable source-file.
  * 
- * @author leonix
+ * @author Ken Audenaert
  */
 public final class SourceFile {
 	

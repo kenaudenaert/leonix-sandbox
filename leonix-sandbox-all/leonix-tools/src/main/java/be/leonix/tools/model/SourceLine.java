@@ -3,9 +3,9 @@ package be.leonix.tools.model;
 import java.util.Objects;
 
 /**
- * This class encapsulates a source-line (with 1-based line-numbering).
+ * This class encapsulates an editable source-line.
  * 
- * @author leonix
+ * @author Ken Audenaert
  */
 public final class SourceLine {
 	
