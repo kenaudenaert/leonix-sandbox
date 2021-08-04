@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,18 +26,28 @@ public final class SourceFile {
 	private static final Pattern EOL_PATTERN = Pattern.compile("\r?\n");
 	
 	private final File sourceFile;
+	private final Charset sourceEncoding;
 	private final List<SourceLine> sourceLines;
 	
 	public SourceFile(File sourceFile) {
-		this.sourceFile = Objects.requireNonNull(sourceFile);
-		this.sourceLines = new ArrayList<>();
+		this(sourceFile, StandardCharsets.UTF_8);
+	}
+	
+	public SourceFile(File sourceFile, Charset sourceEncoding) {
+		this.sourceFile     = Objects.requireNonNull(sourceFile);
+		this.sourceEncoding = Objects.requireNonNull(sourceEncoding);
+		
+		sourceLines = new ArrayList<>();
 		loadContents();
 	}
 	
+	/**
+	 * Loads (reads from disk) the content of this source-file.
+	 */
 	public void loadContents() {
 		sourceLines.clear();
 		try {
-			String content = FileUtils.readFileToString(sourceFile, StandardCharsets.UTF_8);
+			String content = FileUtils.readFileToString(sourceFile, sourceEncoding);
 			if (StringUtils.isNotEmpty(content)) {
 				int lineNumber = 0;
 				int lineOffset = 0;
@@ -64,11 +75,14 @@ public final class SourceFile {
 		}
 	}
 	
+	/**
+	 * Saves (writes to disk) the content of this source-file.
+	 */
 	public void saveContents() {
 		File outputFile = new File(FileUtils.getTempDirectory(), sourceFile.getName());
 		FileUtils.deleteQuietly(outputFile);
 		try {
-			try (FileWriter fileWriter = new FileWriter(outputFile, StandardCharsets.UTF_8)) {
+			try (FileWriter fileWriter = new FileWriter(outputFile, sourceEncoding)) {
 				try (BufferedWriter writer = new BufferedWriter(fileWriter)) {
 					
 					for (SourceLine sourceLine : sourceLines) {
@@ -104,12 +118,25 @@ public final class SourceFile {
 	}
 	
 	/**
+	 * Returns the import-lines for this source-file.
+	 */
+	public List<SourceLine> getImportLines() {
+		List<SourceLine> importLines = new ArrayList<>();
+		for (SourceLine sourceLine : sourceLines) {
+			if (sourceLine.getLineContent().trim().startsWith("import ")) {
+				importLines.add(sourceLine);
+			}
+		}
+		return importLines;
+	}
+	
+	/**
 	 * Returns the import-line for the given class or null.
 	 */
 	public SourceLine getImportLine(String className) {
 		String importText = "import " + className + ";";
 		for (SourceLine sourceLine : sourceLines) {
-			if (sourceLine.getLineContent().contains(importText)) {
+			if (sourceLine.getLineContent().trim().contains(importText)) {
 				return sourceLine;
 			}
 		}
@@ -130,15 +157,5 @@ public final class SourceFile {
 			sourceLines.add(sourceLines.indexOf(importLines.iterator().next()), importLine);
 		}
 		return importLine;
-	}
-	
-	public List<SourceLine> getImportLines() {
-		List<SourceLine> importLines = new ArrayList<>();
-		for (SourceLine sourceLine : sourceLines) {
-			if (sourceLine.getLineContent().startsWith("import ")) {
-				importLines.add(sourceLine);
-			}
-		}
-		return importLines;
 	}
 }
