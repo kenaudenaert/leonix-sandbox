@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import be.leonix.tools.model.SourceFile;
 import be.leonix.tools.model.SourceLine;
@@ -18,8 +16,6 @@ import be.leonix.tools.model.SourceLine;
  * @author Ken Audenaert
  */
 public class LineBasedRefactor implements FileRefactor {
-	
-	private static final Logger logger = LoggerFactory.getLogger(LineBasedRefactor.class);
 	
 	private final List<LineRefactor> lineRefactors = new ArrayList<>();
 	
@@ -36,7 +32,8 @@ public class LineBasedRefactor implements FileRefactor {
 			String oldLine = sourceLine.getLineContent();
 			
 			String lineInfo = sourceFile.getName() + " @ line " + sourceLine.getLineNumber();
-			String newLine = refactorFileLine(lineInfo, oldLine, context.getMode());
+			String newLine = refactorFileLine(lineInfo, oldLine, context);
+			
 			if (! StringUtils.equals(oldLine, newLine)) {
 				sourceLine.setLineContent(newLine);
 				changeCount++;
@@ -47,22 +44,22 @@ public class LineBasedRefactor implements FileRefactor {
 		}
 	}
 	
-	private String refactorFileLine(String sourceLineInfo, String sourceLine, RefactorMode mode) {
+	private String refactorFileLine(String sourceLineInfo, String sourceLine, RefactorContext context) {
 		String resultLine = sourceLine;
 		for (LineRefactor lineRefactor : lineRefactors) {
 			resultLine = lineRefactor.refactorLine(resultLine);
 		}
 		if (! StringUtils.equals(resultLine, sourceLine)) {
-			logger.info(">> {}", sourceLineInfo);
-			if (mode == RefactorMode.UPDATE_FILE) {
+			context.addInfo(">> " + sourceLineInfo);
+			if (context.getMode() == RefactorMode.UPDATE_FILE) {
 				return resultLine;
 				
-			} else if (mode == RefactorMode.ADD_COMMENT) {
+			} else if (context.getMode() == RefactorMode.ADD_COMMENT) {
 				return resultLine + "// REFACTOR";
 				
-			} else if (mode == RefactorMode.LOG_CHANGE) {
-				logger.info(">> --- {}", sourceLine.trim());
-				logger.info(">> +++ {}", resultLine.trim());
+			} else if (context.getMode() == RefactorMode.LOG_CHANGE) {
+				context.addInfo(">> --- " + sourceLine.trim());
+				context.addInfo(">> +++ " + resultLine.trim());
 				return sourceLine;
 			}
 		}

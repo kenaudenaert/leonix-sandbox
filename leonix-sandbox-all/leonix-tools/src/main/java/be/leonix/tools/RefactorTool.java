@@ -80,14 +80,15 @@ public final class RefactorTool {
 				"/Users/audenaer/Genohm/slims-repo"
 			);
 			
-			FileRefactor fileRefactor = new LineBasedRefactor(new DiamondRefactor());
-			
 			RefactorContext context = new RefactorContext(RefactorMode.UPDATE_FILE);
 			logger.info("Starting refactor.");
+			
+			FileRefactor fileRefactor = new LineBasedRefactor(new DiamondRefactor());
 			for (String projectDir : projectDirs) {
 				
 				File directory = new File(projectDir);
 				if (directory.isDirectory()) {
+					
 					for (File srcDir : findSourceFolders(directory)) {
 						if (! srcDir.getAbsolutePath().contains("platform-api")) {
 							continue;
@@ -101,6 +102,7 @@ public final class RefactorTool {
 				}
 			}
 			logger.info("Finished refactor.");
+			context.logInfo();
 			
 		} catch (RuntimeException | Error ex) {
 			logger.error(ex.getMessage(), ex);
