@@ -1,7 +1,7 @@
 package be.leonix.tools.model;
 
 /**
- * This class encapsulates a source-line.
+ * This class encapsulates a source-line (with 1-based line-numbers).
  * 
  * @author leonix
  */
@@ -12,11 +12,11 @@ public final class SourceLine {
 	private final String lineEnding;
 	
 	public SourceLine(long lineNumber, String lineContent, String lineEnding) {
-		if (lineNumber <= 0) {
-			throw new IllegalArgumentException("Invalid line-number.");
+		if (lineNumber < 0) {
+			throw new IllegalArgumentException("Invalid (negative) line-number.");
 		}
 		if (lineContent == null) {
-			throw new IllegalArgumentException("Invalid line-content.");
+			throw new IllegalArgumentException("Invalid (missing) line-content.");
 		}
 		this.lineNumber  = lineNumber;
 		this.lineContent = lineContent;
