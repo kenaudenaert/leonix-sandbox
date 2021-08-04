@@ -115,4 +115,30 @@ public final class SourceFile {
 		}
 		return null;
 	}
+	
+	/**
+	 * Adds and returns the import-line for the given class.
+	 */
+	public SourceLine addImportLine(String className) {
+		SourceLine importLine = getImportLine(className);
+		if (importLine == null) {
+			String importText = "import " + className + ";";
+			String lineEnding = sourceLines.iterator().next().getLineEnding();
+			importLine = new SourceLine(0, importText, lineEnding);
+			
+			List<SourceLine> importLines = getImportLines();
+			sourceLines.add(sourceLines.indexOf(importLines.iterator().next()), importLine);
+		}
+		return importLine;
+	}
+	
+	public List<SourceLine> getImportLines() {
+		List<SourceLine> importLines = new ArrayList<>();
+		for (SourceLine sourceLine : sourceLines) {
+			if (sourceLine.getLineContent().startsWith("import ")) {
+				importLines.add(sourceLine);
+			}
+		}
+		return importLines;
+	}
 }
