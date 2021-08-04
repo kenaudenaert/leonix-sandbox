@@ -1,6 +1,8 @@
 package be.leonix.tools.model;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -23,10 +25,16 @@ public final class SourceFile {
 	private static final Pattern EOL_PATTERN = Pattern.compile("\r?\n");
 	
 	private final File sourceFile;
-	private final List<SourceLine> sourceLines = new ArrayList<>();
+	private final List<SourceLine> sourceLines;
 	
 	public SourceFile(File sourceFile) {
 		this.sourceFile = Objects.requireNonNull(sourceFile);
+		this.sourceLines = new ArrayList<>();
+		loadContents();
+	}
+	
+	public void loadContents() {
+		sourceLines.clear();
 		try {
 			String content = FileUtils.readFileToString(sourceFile, StandardCharsets.UTF_8);
 			if (StringUtils.isNotEmpty(content)) {
@@ -52,7 +60,32 @@ public final class SourceFile {
 				}
 			}
 		} catch (RuntimeException | IOException ex) {
-			throw new RuntimeException("Could not read source-file: " + sourceFile, ex);
+			throw new RuntimeException("Could not load source-file: " + sourceFile, ex);
+		}
+	}
+	
+	public void saveContents() {
+		File outputFile = new File(FileUtils.getTempDirectory(), sourceFile.getName());
+		FileUtils.deleteQuietly(outputFile);
+		try {
+			try (FileWriter fileWriter = new FileWriter(outputFile, StandardCharsets.UTF_8)) {
+				try (BufferedWriter writer = new BufferedWriter(fileWriter)) {
+					
+					for (SourceLine sourceLine : sourceLines) {
+						writer.write(sourceLine.getLineContent());
+						if (sourceLine.getLineEnding() != null) {
+							writer.write(sourceLine.getLineEnding());
+						}
+					}
+				}
+			}
+			FileUtils.deleteQuietly(sourceFile);
+			FileUtils.moveFile(outputFile, sourceFile);
+			
+		} catch (RuntimeException | IOException ex) {
+			throw new RuntimeException("Could not save source-file: " + sourceFile, ex);
+		} finally {
+			FileUtils.deleteQuietly(outputFile);
 		}
 	}
 	
@@ -68,5 +101,18 @@ public final class SourceFile {
 	 */
 	public List<SourceLine> getSourceLines() {
 		return Collections.unmodifiableList(sourceLines);
+	}
+	
+	/**
+	 * Returns the import-line for the given class or null.
+	 */
+	public SourceLine getImportLine(String className) {
+		String importText = "import " + className + ";";
+		for (SourceLine sourceLine : sourceLines) {
+			if (sourceLine.getLineContent().contains(importText)) {
+				return sourceLine;
+			}
+		}
+		return null;
 	}
 }
