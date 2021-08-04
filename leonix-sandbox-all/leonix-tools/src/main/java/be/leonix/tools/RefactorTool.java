@@ -90,11 +90,11 @@ public final class RefactorTool {
 				if (directory.isDirectory()) {
 					
 					for (File srcDir : findSourceFolders(directory)) {
-						if (! srcDir.getAbsolutePath().contains("platform-api")) {
-							continue;
-						}
+//						if (! srcDir.getAbsolutePath().contains("platform-api")) {
+//							continue;
+//						}
 						List<File> javaFiles = findJavaSources(srcDir);
-						logger.info("Refactor src-directory: {} (count={})", srcDir, javaFiles.size());
+						logger.info("Refactor sources: {} (count={})", srcDir, javaFiles.size());
 						for (File javaFile : javaFiles) {
 							fileRefactor.refactorFile(javaFile, context);
 						}

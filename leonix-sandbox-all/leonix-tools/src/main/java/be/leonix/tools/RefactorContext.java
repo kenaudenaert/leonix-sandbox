@@ -19,7 +19,7 @@ public final class RefactorContext {
 	
 	public RefactorContext(RefactorMode mode) {
 		this.mode = Objects.requireNonNull(mode);
-		infoLines = new ArrayList<String>();
+		infoLines = new ArrayList<>();
 	}
 	
 	public RefactorMode getMode() {
