@@ -10,7 +10,7 @@ import java.io.File;
 public interface FileRefactor {
 	
 	/**
-	 * Refactors the specified source-file using the specified mode.
+	 * Refactors the specified source-file using the specified context.
 	 */
-	public void refactorFile(File sourceFile, RefactorMode mode);
+	public void refactorFile(File sourceFile, RefactorContext context);
 }

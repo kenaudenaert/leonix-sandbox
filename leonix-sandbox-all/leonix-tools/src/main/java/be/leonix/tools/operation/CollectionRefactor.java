@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import be.leonix.tools.FileRefactor;
-import be.leonix.tools.RefactorMode;
+import be.leonix.tools.RefactorContext;
 import be.leonix.tools.model.SourceFile;
 import be.leonix.tools.model.SourceLine;
 
@@ -22,7 +22,7 @@ public class CollectionRefactor implements FileRefactor {
 			"=\\s+Lists\\s*\\.\\s*newArrayList\\s*\\(\\s*\\);");
 	
 	@Override
-	public void refactorFile(File sourceFile, RefactorMode mode) {
+	public void refactorFile(File sourceFile, RefactorContext context) {
 		SourceFile source = new SourceFile(sourceFile);
 		
 		SourceLine importLists = source.getImportLine("com.google.common.collect.Lists");

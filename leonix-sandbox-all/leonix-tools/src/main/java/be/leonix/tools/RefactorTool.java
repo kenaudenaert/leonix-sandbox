@@ -82,6 +82,7 @@ public final class RefactorTool {
 			
 			FileRefactor fileRefactor = new LineBasedRefactor(new DiamondRefactor());
 			
+			RefactorContext context = new RefactorContext(RefactorMode.UPDATE_FILE);
 			logger.info("Starting refactor.");
 			for (String projectDir : projectDirs) {
 				
@@ -94,7 +95,7 @@ public final class RefactorTool {
 						List<File> javaFiles = findJavaSources(srcDir);
 						logger.info("Refactor src-directory: {} (count={})", srcDir, javaFiles.size());
 						for (File javaFile : javaFiles) {
-							fileRefactor.refactorFile(javaFile, RefactorMode.UPDATE_FILE);
+							fileRefactor.refactorFile(javaFile, context);
 						}
 					}
 				}

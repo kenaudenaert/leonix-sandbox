@@ -1,15 +1,10 @@
 package be.leonix.tools;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,40 +28,22 @@ public class LineBasedRefactor implements FileRefactor {
 	}
 	
 	@Override
-	public void refactorFile(File sourceFile, RefactorMode mode) {
-		File refactorFile = new File(FileUtils.getTempDirectory(), sourceFile.getName());
-		try {
-			FileUtils.deleteQuietly(refactorFile);
+	public void refactorFile(File sourceFile, RefactorContext context) {
+		
+		SourceFile source = new SourceFile(sourceFile);
+		long changeCount = 0;
+		for (SourceLine sourceLine : source.getSourceLines()) {
+			String oldLine = sourceLine.getLineContent();
 			
-			SourceFile source = new SourceFile(sourceFile);
-			long changeCount = 0;
-			try (FileWriter fileWriter = new FileWriter(refactorFile, StandardCharsets.UTF_8)) {
-				try (BufferedWriter writer = new BufferedWriter(fileWriter)) {
-					
-					for (SourceLine sourceLine : source.getSourceLines()) {
-						String oldLine = sourceLine.getLineContent();
-						
-						String lineInfo = sourceFile.getName() + " @ line " + sourceLine.getLineNumber();
-						String newLine = refactorFileLine(lineInfo, oldLine, mode);
-						if (! StringUtils.equals(oldLine, newLine)) {
-							changeCount++;
-						}
-						writer.write(newLine);
-						if (sourceLine.getLineEnding() != null) {
-							writer.write(sourceLine.getLineEnding());
-						}
-					}
-				}
+			String lineInfo = sourceFile.getName() + " @ line " + sourceLine.getLineNumber();
+			String newLine = refactorFileLine(lineInfo, oldLine, context.getMode());
+			if (! StringUtils.equals(oldLine, newLine)) {
+				sourceLine.setLineContent(newLine);
+				changeCount++;
 			}
-			// Only update file when any changes!
-			if (changeCount > 0) {
-				FileUtils.deleteQuietly(sourceFile);
-				FileUtils.moveFile(refactorFile, sourceFile);
-			}
-		} catch (RuntimeException | IOException ex) {
-			throw new RuntimeException("Could not refactor source-file: " + sourceFile, ex);
-		} finally {
-			FileUtils.deleteQuietly(refactorFile);
+		}
+		if (changeCount > 0) {
+			source.saveContents();
 		}
 	}
 	
