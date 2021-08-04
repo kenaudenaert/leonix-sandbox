@@ -1,15 +1,17 @@
 package be.leonix.tools.model;
 
+import java.util.Objects;
+
 /**
- * This class encapsulates a source-line (with 1-based line-numbers).
+ * This class encapsulates a source-line (with 1-based line-numbering).
  * 
  * @author leonix
  */
 public final class SourceLine {
 	
-	private final long   lineNumber;
-	private final String lineContent;
-	private final String lineEnding;
+	private final long lineNumber;
+	private String lineContent;
+	private String lineEnding;
 	
 	public SourceLine(long lineNumber, String lineContent, String lineEnding) {
 		if (lineNumber < 0) {
@@ -38,9 +40,23 @@ public final class SourceLine {
 	}
 	
 	/**
+	 * Changes the (non-null) line-content.
+	 */
+	public void setLineContent(String lineContent) {
+		this.lineContent = Objects.requireNonNull(lineContent);
+	}
+	
+	/**
 	 * Returns the (optional) line-ending.
 	 */
 	public String getLineEnding() {
 		return lineEnding;
+	}
+	
+	/**
+	 * Changes the (optional) line-ending.
+	 */
+	public void setLineEnding(String lineEnding) {
+		this.lineEnding = lineEnding;
 	}
 }

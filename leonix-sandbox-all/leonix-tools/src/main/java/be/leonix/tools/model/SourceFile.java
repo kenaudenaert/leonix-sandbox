@@ -17,7 +17,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * This class encapsulates a source-file.
+ * This class encapsulates an editable (readable and writeable) source-file.
  * 
  * @author leonix
  */
