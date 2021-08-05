@@ -49,7 +49,7 @@ public final class SourceTree {
 	 */
 	private static List<File> findJavaSourceFiles(File directory) {
 		IOFileFilter fileFilter = FileFilterUtils.suffixFileFilter(".java");
-		IOFileFilter dirFilter  = FileFilterUtils.falseFileFilter();
+		IOFileFilter dirFilter  = FileFilterUtils.trueFileFilter();
 		
 		List<File> sourceFiles = new ArrayList<>();
 		for (File file : FileUtils.listFiles(directory, fileFilter, dirFilter)) {
