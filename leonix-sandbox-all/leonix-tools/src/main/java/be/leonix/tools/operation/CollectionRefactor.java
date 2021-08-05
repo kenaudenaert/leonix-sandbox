@@ -1,6 +1,5 @@
 package be.leonix.tools.operation;
 
-import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,24 +11,22 @@ import be.leonix.tools.model.SourceFile;
 import be.leonix.tools.model.SourceLine;
 
 /**
- * A {@link FileRefactor} that refactors code to use Java collections. 
+ * A {@link FileRefactor} that refactors code to use Java Collections API. 
  * 
  * @author Ken Audenaert
  */
-public class CollectionRefactor implements FileRefactor {
+public final class CollectionRefactor implements FileRefactor {
 	
 	private static final Pattern GUAVA_LIST = Pattern.compile(
 			"=\\s+Lists\\s*\\.\\s*newArrayList\\s*\\(\\s*\\);");
 	
 	@Override
-	public void refactorFile(File sourceFile, RefactorContext context) {
-		SourceFile source = new SourceFile(sourceFile);
+	public boolean refactorFile(SourceFile sourceFile, RefactorContext context) {
+		long changeCount = 0;
 		
-		SourceLine importLists = source.getImportLine("com.google.common.collect.Lists");
+		SourceLine importLists = sourceFile.getImportLine("com.google.common.collect.Lists");
 		if (importLists != null) {
-			long changeCount = 0;
-			
-			for (SourceLine sourceLine : source.getSourceLines()) {
+			for (SourceLine sourceLine : sourceFile.getSourceLines()) {
 				String oldLine = sourceLine.getLineContent();
 				String newLine = refactorLine(oldLine, GUAVA_LIST);
 				if (! StringUtils.equals(oldLine, newLine)) {
@@ -37,10 +34,11 @@ public class CollectionRefactor implements FileRefactor {
 				}
 			}
 			if (changeCount > 0) {
-				source.addImportLine("java.util.ArrayList");
-				source.saveContents();
+				sourceFile.addImportLine("java.util.ArrayList");
+				sourceFile.saveContents();
 			}
 		}
+		return (changeCount > 0);
 	}
 	
 	protected String refactorLine(String sourceLine, Pattern pattern) {

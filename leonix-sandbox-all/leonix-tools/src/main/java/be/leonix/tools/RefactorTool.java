@@ -48,7 +48,7 @@ public final class RefactorTool {
 						List<SourceFile> javaFiles = sourceTree.getSourceFiles();
 						logger.info("Sources: {} (count={})", sourceTree.getRootDir(), javaFiles.size());
 						for (SourceFile javaFile : javaFiles) {
-							fileRefactor.refactorFile(javaFile.getSourceFile(), context);
+							fileRefactor.refactorFile(javaFile, context);
 						}
 					}
 				}

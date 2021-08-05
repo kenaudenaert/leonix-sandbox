@@ -6,6 +6,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import be.leonix.tools.LineRefactor;
+import be.leonix.tools.RefactorContext;
+import be.leonix.tools.model.SourceLine;
 
 /**
  * A {@link LineRefactor} that refactors code to use the diamond syntax. 
@@ -20,8 +22,14 @@ public final class DiamondRefactor implements LineRefactor {
 			"(>\\s*\\(\\s*\\)\\s*;)");			// >();
 	
 	@Override
-	public String refactorLine(String sourceLine) {
-		return refactorLine(sourceLine, DIAMOND);
+	public boolean refactorLine(SourceLine sourceLine, RefactorContext context) {
+		String oldLine = sourceLine.getLineContent();
+		String newLine = refactorLine(oldLine, DIAMOND);
+		if (! StringUtils.equals(oldLine, newLine)) {
+			sourceLine.setLineContent(newLine);
+			return true;
+		}
+		return false;
 	}
 	
 	protected String refactorLine(String sourceLine, Pattern pattern) {

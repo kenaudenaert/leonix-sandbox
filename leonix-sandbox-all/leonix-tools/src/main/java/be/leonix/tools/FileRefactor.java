@@ -1,9 +1,9 @@
 package be.leonix.tools;
 
-import java.io.File;
+import be.leonix.tools.model.SourceFile;
 
 /**
- * A refactor operation that transforms at a source-file.
+ * A refactor operation that transforms at a {@link SourceFile}.
  * 
  * @author Ken Audenaert
  */
@@ -11,6 +11,8 @@ public interface FileRefactor {
 	
 	/**
 	 * Refactors the specified source-file using the specified context.
+	 * 
+	 * @return Whether the source-file has been updated.
 	 */
-	public void refactorFile(File sourceFile, RefactorContext context);
+	public boolean refactorFile(SourceFile sourceFile, RefactorContext context);
 }
