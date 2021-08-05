@@ -1,4 +1,4 @@
-package be.leonix.tools;
+package be.leonix.tools.refactor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import be.leonix.tools.model.SourceFile;
-import be.leonix.tools.model.SourceLine;
+import be.leonix.tools.refactor.model.SourceFile;
+import be.leonix.tools.refactor.model.SourceLine;
 
 /**
  * A {@link FileRefactor} using a set of {@link LineRefactor} implementations.

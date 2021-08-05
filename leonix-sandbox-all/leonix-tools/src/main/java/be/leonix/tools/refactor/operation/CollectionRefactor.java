@@ -1,15 +1,15 @@
-package be.leonix.tools.operation;
+package be.leonix.tools.refactor.operation;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
-import be.leonix.tools.FileRefactor;
-import be.leonix.tools.RefactorContext;
-import be.leonix.tools.RefactorMode;
-import be.leonix.tools.model.SourceFile;
-import be.leonix.tools.model.SourceLine;
+import be.leonix.tools.refactor.FileRefactor;
+import be.leonix.tools.refactor.RefactorContext;
+import be.leonix.tools.refactor.RefactorMode;
+import be.leonix.tools.refactor.model.SourceFile;
+import be.leonix.tools.refactor.model.SourceLine;
 
 /**
  * A {@link FileRefactor} that refactors code to use Java Collections API. 

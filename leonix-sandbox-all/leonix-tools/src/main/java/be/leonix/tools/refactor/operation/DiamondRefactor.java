@@ -1,13 +1,13 @@
-package be.leonix.tools.operation;
+package be.leonix.tools.refactor.operation;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
-import be.leonix.tools.LineRefactor;
-import be.leonix.tools.RefactorContext;
-import be.leonix.tools.model.SourceLine;
+import be.leonix.tools.refactor.LineRefactor;
+import be.leonix.tools.refactor.RefactorContext;
+import be.leonix.tools.refactor.model.SourceLine;
 
 /**
  * A {@link LineRefactor} that refactors code to use the diamond syntax. 

@@ -1,4 +1,4 @@
-package be.leonix.tools.model;
+package be.leonix.tools.refactor.model;
 
 import java.util.Objects;
 

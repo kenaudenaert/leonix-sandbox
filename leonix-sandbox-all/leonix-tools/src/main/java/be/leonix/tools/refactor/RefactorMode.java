@@ -1,4 +1,4 @@
-package be.leonix.tools;
+package be.leonix.tools.refactor;
 
 /**
  * Enumeration of the possible refactoring modes.
@@ -6,8 +6,6 @@ package be.leonix.tools;
  * @author Ken Audenaert
  */
 public enum RefactorMode {
-	/** Do not change, just add a comment. */
-	ADD_COMMENT,
 	/** Do not change, only log the changes. */
 	LOG_CHANGE,
 	/** Perform the changes in the files. */

@@ -1,4 +1,4 @@
-package be.leonix.tools;
+package be.leonix.tools.refactor;
 
 import java.io.File;
 import java.util.List;
@@ -7,10 +7,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import be.leonix.tools.model.SourceFile;
-import be.leonix.tools.model.SourceRepo;
-import be.leonix.tools.model.SourceTree;
-import be.leonix.tools.operation.DiamondRefactor;
+import be.leonix.tools.refactor.model.SourceFile;
+import be.leonix.tools.refactor.model.SourceRepo;
+import be.leonix.tools.refactor.model.SourceTree;
+import be.leonix.tools.refactor.operation.DiamondRefactor;
 
 /**
  * The application (tool) for refactoring Java source files.

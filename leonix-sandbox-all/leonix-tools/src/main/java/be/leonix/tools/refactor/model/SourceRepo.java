@@ -1,4 +1,4 @@
-package be.leonix.tools.model;
+package be.leonix.tools.refactor.model;
 
 import java.io.File;
 import java.util.ArrayList;

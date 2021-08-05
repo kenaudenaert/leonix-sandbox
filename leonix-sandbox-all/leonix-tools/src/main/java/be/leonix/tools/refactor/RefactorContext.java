@@ -1,4 +1,4 @@
-package be.leonix.tools;
+package be.leonix.tools.refactor;
 
 import java.util.ArrayList;
 import java.util.Collections;
