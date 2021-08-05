@@ -10,9 +10,7 @@ import be.leonix.tools.model.SourceLine;
 public interface LineRefactor {
 	
 	/**
-	 * Refactors the specified source-line using the specified context.
-	 * 
-	 * @return Whether the source-line has been updated.
+	 * Refactors the specified source-line using the specified refactor-context.
 	 */
-	public boolean refactorLine(SourceLine sourceLine, RefactorContext context);
+	public void refactorLine(SourceLine sourceLine, RefactorContext context);
 }

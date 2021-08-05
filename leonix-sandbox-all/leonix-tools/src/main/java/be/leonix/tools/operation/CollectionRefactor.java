@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import be.leonix.tools.FileRefactor;
 import be.leonix.tools.RefactorContext;
+import be.leonix.tools.RefactorMode;
 import be.leonix.tools.model.SourceFile;
 import be.leonix.tools.model.SourceLine;
 
@@ -21,27 +22,28 @@ public final class CollectionRefactor implements FileRefactor {
 			"=\\s+Lists\\s*\\.\\s*newArrayList\\s*\\(\\s*\\);");
 	
 	@Override
-	public boolean refactorFile(SourceFile sourceFile, RefactorContext context) {
-		long changeCount = 0;
-		
+	public void refactorFile(SourceFile sourceFile, RefactorContext context) {
 		SourceLine importLists = sourceFile.getImportLine("com.google.common.collect.Lists");
 		if (importLists != null) {
+			long changeCount = 0;
+			
 			for (SourceLine sourceLine : sourceFile.getSourceLines()) {
 				String oldLine = sourceLine.getLineContent();
+				
 				String newLine = refactorLine(oldLine, GUAVA_LIST);
 				if (! StringUtils.equals(oldLine, newLine)) {
+					sourceLine.setLineContent(newLine);
 					changeCount++;
 				}
 			}
-			if (changeCount > 0) {
+			if (context.getMode() == RefactorMode.UPDATE_FILE && changeCount > 0) {
 				sourceFile.addImportLine("java.util.ArrayList");
 				sourceFile.saveContents();
 			}
 		}
-		return (changeCount > 0);
 	}
 	
-	protected String refactorLine(String sourceLine, Pattern pattern) {
+	private String refactorLine(String sourceLine, Pattern pattern) {
 		StringBuilder builder = new StringBuilder();
 		if (StringUtils.isNotEmpty(sourceLine)) {
 			

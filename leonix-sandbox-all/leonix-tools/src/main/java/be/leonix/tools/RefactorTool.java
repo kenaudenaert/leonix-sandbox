@@ -42,10 +42,12 @@ public final class RefactorTool {
 			for (String repoPath : repoPaths) {
 				File repoDir = new File(repoPath);
 				if (repoDir.isDirectory()) {
-					
 					SourceRepo sourceRepo = new SourceRepo(repoDir);
+					
+					logger.info("Repository: {}", sourceRepo.getRepoDir());
 					for (SourceTree sourceTree : sourceRepo.getSourceTrees()) {
 						List<SourceFile> javaFiles = sourceTree.getSourceFiles();
+						
 						logger.info("Sources: {} (count={})", sourceTree.getRootDir(), javaFiles.size());
 						for (SourceFile javaFile : javaFiles) {
 							fileRefactor.refactorFile(javaFile, context);

@@ -22,17 +22,15 @@ public final class DiamondRefactor implements LineRefactor {
 			"(>\\s*\\(\\s*\\)\\s*;)");			// >();
 	
 	@Override
-	public boolean refactorLine(SourceLine sourceLine, RefactorContext context) {
+	public void refactorLine(SourceLine sourceLine, RefactorContext context) {
 		String oldLine = sourceLine.getLineContent();
 		String newLine = refactorLine(oldLine, DIAMOND);
 		if (! StringUtils.equals(oldLine, newLine)) {
 			sourceLine.setLineContent(newLine);
-			return true;
 		}
-		return false;
 	}
 	
-	protected String refactorLine(String sourceLine, Pattern pattern) {
+	private String refactorLine(String sourceLine, Pattern pattern) {
 		StringBuilder builder = new StringBuilder();
 		if (StringUtils.isNotEmpty(sourceLine)) {
 			
