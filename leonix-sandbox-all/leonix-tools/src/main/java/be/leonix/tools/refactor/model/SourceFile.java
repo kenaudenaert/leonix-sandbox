@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -114,7 +113,7 @@ public final class SourceFile {
 	 * Returns the source-lines for the source-file.
 	 */
 	public List<SourceLine> getSourceLines() {
-		return Collections.unmodifiableList(sourceLines);
+		return sourceLines;
 	}
 	
 	/**
