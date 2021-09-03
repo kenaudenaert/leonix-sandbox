@@ -32,6 +32,10 @@ public final class SourceRepo {
 		if (! repoDir.isDirectory()) {
 			throw new IllegalArgumentException("Invalid repo-dir: " + repoDir);
 		}
+		File gitRepo = new File(repoDir, ".git");
+		if (! gitRepo.isDirectory()) {
+			throw new IllegalArgumentException("Invalid git-repo: " + repoDir);
+		}
 		this.sourceTrees = findSourceDirectories(repoDir).stream()
 				.map(SourceTree::new).collect(Collectors.toList());
 	}
