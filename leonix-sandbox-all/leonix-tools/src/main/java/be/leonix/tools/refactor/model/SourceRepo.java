@@ -1,6 +1,7 @@
 package be.leonix.tools.refactor.model;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 /**
  * This class encapsulates a source-repo.
@@ -26,6 +29,7 @@ public final class SourceRepo {
 	
 	private final File repoDir;
 	private final List<SourceTree> sourceTrees;
+	private final Git git;
 	
 	public SourceRepo(File repoDir) {
 		this.repoDir = Objects.requireNonNull(repoDir);
@@ -35,6 +39,11 @@ public final class SourceRepo {
 		File gitRepo = new File(repoDir, ".git");
 		if (! gitRepo.isDirectory()) {
 			throw new IllegalArgumentException("Invalid git-repo: " + repoDir);
+		}
+		try {
+			git = Git.open(repoDir);
+		} catch (IOException | RuntimeException ex) {
+			throw new RuntimeException("Could not open git-repo.", ex);
 		}
 		this.sourceTrees = findSourceDirectories(repoDir).stream()
 				.map(SourceTree::new).collect(Collectors.toList());
@@ -52,6 +61,19 @@ public final class SourceRepo {
 	 */
 	public List<SourceTree> getSourceTrees() {
 		return Collections.unmodifiableList(sourceTrees);
+	}
+	
+	/**
+	 * Commits all the changes in this source-repository.
+	 */
+	public void commitChanges(SourceAuthor author, String message) {
+		Objects.requireNonNull(author);
+		Objects.requireNonNull(message);
+		try {
+			git.commit().setAuthor(author.getName(), author.getEmail()).setMessage(message).call();
+		} catch (GitAPIException ex) {
+			throw new RuntimeException("Could not commit changes.", ex);
+		}
 	}
 	
 	/**

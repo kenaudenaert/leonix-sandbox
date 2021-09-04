@@ -7,6 +7,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import be.leonix.tools.refactor.model.SourceAuthor;
 import be.leonix.tools.refactor.model.SourceFile;
 import be.leonix.tools.refactor.model.SourceRepo;
 import be.leonix.tools.refactor.model.SourceTree;
@@ -53,6 +54,8 @@ public final class RefactorTool {
 							fileRefactor.refactorFile(javaFile, context);
 						}
 					}
+					SourceAuthor autor = new SourceAuthor("Ken Audenaert", "ken.audenaert@telenet.be");
+					sourceRepo.commitChanges(autor, "added git support.");
 				}
 			}
 			logger.info("Finished refactor.");
