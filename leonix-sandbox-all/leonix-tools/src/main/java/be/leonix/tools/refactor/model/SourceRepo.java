@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.eclipse.jgit.api.AddCommand;
+import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
@@ -70,7 +72,16 @@ public final class SourceRepo {
 		Objects.requireNonNull(author);
 		Objects.requireNonNull(message);
 		try {
-			git.commit().setAuthor(author.getName(), author.getEmail()).setMessage(message).call();
+			AddCommand addCommand = git.add();
+			addCommand.addFilepattern(".");
+			addCommand.setUpdate(true); // do not stage new files.
+			addCommand.call();
+			
+			CommitCommand commit = git.commit();
+			commit.setAuthor(author.getName(), author.getEmail());
+			commit.setMessage(message);
+			commit.call();
+			
 		} catch (GitAPIException ex) {
 			throw new RuntimeException("Could not commit changes.", ex);
 		}
