@@ -107,14 +107,17 @@ public final class MetaInfo {
 		File[] metaInfoFiles = metaInfoDir.listFiles();
 		if (metaInfoFiles != null) {
 			for (File metaInfoFile : metaInfoFiles) {
-				MetaInfo metaInfo = new MetaInfo(metaInfoFile);
-				for (String literal : metaInfo.getMetaConstants().keySet()) {
-					if (literal.equals("tbfl_fk_datatype")) {
-						// DataSourceField 
-						continue; // Skip this one -> do it manual !!
-					}
-					if (metaInfos.putIfAbsent(literal, metaInfo) != null) {
-						throw new RuntimeException("Found override: {}" + literal);
+				if (metaInfoFile.getName().endsWith("Meta.java")) {
+					
+					MetaInfo metaInfo = new MetaInfo(metaInfoFile);
+					for (String literal : metaInfo.getMetaConstants().keySet()) {
+						if (literal.equals("tbfl_fk_datatype")) {
+							// DataSourceField 
+							continue; // Skip this one -> do it manual !!
+						}
+						if (metaInfos.putIfAbsent(literal, metaInfo) != null) {
+							throw new RuntimeException("Found override: {}" + literal);
+						}
 					}
 				}
 			}
