@@ -11,7 +11,7 @@ import be.leonix.tools.refactor.model.SourceAuthor;
 import be.leonix.tools.refactor.model.SourceFile;
 import be.leonix.tools.refactor.model.SourceRepo;
 import be.leonix.tools.refactor.model.SourceTree;
-import be.leonix.tools.refactor.operation.DiamondRefactor;
+import be.leonix.tools.refactor.operation.MetaInfoRefactor;
 
 /**
  * The application (tool) for refactoring Java source files.
@@ -27,13 +27,14 @@ public final class RefactorTool {
 	 */
 	public static void main(String[] args) {
 		try {
-			FileRefactor fileRefactor = new LineBasedRefactor(new DiamondRefactor());
+			FileRefactor fileRefactor = new MetaInfoRefactor(new File(
+					"/Users/audenaer/Genohm/slims-repo/platform-api-model/gen-src/com/genohm/slims/common/model"));
 			
 			Set<String> repoPaths = Set.of(
 			//	"/Users/leonix/github/leonix-maventools",
 			//	"/Users/leonix/github/leonix-framework",
 			//	"/Users/leonix/github/leonix-deploytools",
-				"/Users/leonix/github/leonix-sandbox",
+			//	"/Users/leonix/github/leonix-sandbox",
 				"/Users/audenaer/Genohm/slims-repo"
 			);
 			
@@ -47,15 +48,18 @@ public final class RefactorTool {
 					
 					logger.info("Repository: {}", sourceRepo.getRepoDir());
 					for (SourceTree sourceTree : sourceRepo.getSourceTrees()) {
+						if (! sourceTree.getRootDir().getPath().contains("platform")) {
+							continue;
+						}
+
 						List<SourceFile> javaFiles = sourceTree.getSourceFiles();
-						
 						logger.info("Sources: {} (count={})", sourceTree.getRootDir(), javaFiles.size());
 						for (SourceFile javaFile : javaFiles) {
 							fileRefactor.refactorFile(javaFile, context);
 						}
 					}
 					SourceAuthor autor = new SourceAuthor("Ken Audenaert", "ken.audenaert@telenet.be");
-					sourceRepo.commitChanges(autor, "added git support.");
+					// sourceRepo.commitChanges(autor, "added git support.");
 				}
 			}
 			logger.info("Finished refactor.");

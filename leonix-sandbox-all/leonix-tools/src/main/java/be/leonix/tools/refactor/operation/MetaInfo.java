@@ -37,7 +37,7 @@ public final class MetaInfo {
 		if (! fileName.endsWith("Meta.java")) {
 			throw new RuntimeException("Invalid (type-name) MetaInfo file: " + fileName);
 		}
-		infoClass = StringUtils.removeEnd(fileName, "Meta.java");
+		infoClass = StringUtils.removeEnd(fileName, ".java");
 		
 		// Get the package and constants.
 		try (FileReader fileReader = new FileReader(metaInfoFile, StandardCharsets.UTF_8)) {

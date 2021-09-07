@@ -26,7 +26,7 @@ public final class MetaInfoRefactor implements FileRefactor {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MetaInfoRefactor.class);
 	
-	private static final Pattern META_INFO_REF = Pattern.compile("\"([\\w_])\"" );
+	private static final Pattern META_INFO_REF = Pattern.compile("\"([\\w_]+)\"" );
 	
 	private final Map<String, MetaInfo> metaInfos;
 	
@@ -37,15 +37,17 @@ public final class MetaInfoRefactor implements FileRefactor {
 	
 	@Override
 	public void refactorFile(SourceFile sourceFile, RefactorContext context) {
+		if (sourceFile.getSourceFile().getParentFile().getAbsolutePath().endsWith("com/genohm/slims/common/model")) {
+			return;
+		}
 		long changeCount = 0;
 		
 		Set<MetaInfo> addedMetaInfo = new HashSet<>();
 		for (SourceLine sourceLine : sourceFile.getSourceLines()) {
 			String oldLine = sourceLine.getLineContent();
-			
-			StringBuilder builder = new StringBuilder();
 			if (StringUtils.isNotEmpty(oldLine)) {
-				
+				StringBuilder builder = new StringBuilder();
+
 				int offset = 0;
 				Matcher matcher = META_INFO_REF.matcher(oldLine);
 				while (matcher.find(offset)) {
@@ -54,33 +56,32 @@ public final class MetaInfoRefactor implements FileRefactor {
 						builder.append(oldLine.substring(offset, matcher.start()));
 					}
 					// Execute refactor for pattern.
-					// String reference = matcher.group();
-					for (int group = 1; group <= matcher.groupCount(); group++) {
-						String reference = matcher.group(1);
-						
-						MetaInfo metaInfo = metaInfos.get(reference);
-						if (metaInfo != null) {
-							builder.append(metaInfo.getInfoClass());
-							builder.append(".");
-							builder.append(metaInfo.getMetaConstants().get(reference));
-							
-							changeCount++;
-							addedMetaInfo.add(metaInfo);
-						} else {
-							builder.append(matcher.group());
-						}
+					String keyReference = matcher.group(1);
+					MetaInfo metaInfo = metaInfos.get(keyReference);
+					if (metaInfo != null) {
+						String keyConstant = metaInfo.getMetaConstants().get(keyReference);
+						builder.append(metaInfo.getInfoClass());
+						builder.append(".");
+						builder.append(keyConstant);
+
+						changeCount++;
+						addedMetaInfo.add(metaInfo);
+					} else {
+						builder.append(matcher.group());
 					}
+
 					offset = matcher.end();
 				}
 				// Copy unmatched trailing section.
 				if (offset < oldLine.length()) {
 					builder.append(oldLine.substring(offset));
 				}
-			}
-			String newLine = builder.toString();
-			if (! StringUtils.equals(oldLine, newLine)) {
-				sourceLine.setLineContent(newLine);
-				changeCount++;
+
+				String newLine = builder.toString();
+				if (!StringUtils.equals(oldLine, newLine)) {
+					sourceLine.setLineContent(newLine);
+					changeCount++;
+				}
 			}
 		}
 		if (context.getMode() == RefactorMode.UPDATE_FILE && changeCount > 0) {
@@ -89,9 +90,5 @@ public final class MetaInfoRefactor implements FileRefactor {
 			}
 			sourceFile.saveContents();
 		}
-	}
-	
-	public static void main(String[] args) {
-		new MetaInfoRefactor(new File("/Users/leonix/Desktop/meta"));
 	}
 }
