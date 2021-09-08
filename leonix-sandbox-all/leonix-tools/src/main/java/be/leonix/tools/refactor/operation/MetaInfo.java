@@ -7,19 +7,25 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author leonix
  */
 public final class MetaInfo {
+	
+	private static final Logger logger = LoggerFactory.getLogger(MetaInfo.class);
 	
 	private static final Pattern META_INFO_DEF = Pattern.compile(
 			"public static final String ([\\w_]+) = \"([\\w_]+)\";");
@@ -28,9 +34,11 @@ public final class MetaInfo {
 	private final String packageID;
 	private final String keyPrefix;
 	
-	private final Map<String, String> metaConstants = new LinkedHashMap<>();
+	private final Map<String, String> formulas  = new LinkedHashMap<>();
+	private final Map<String, String> constants = new LinkedHashMap<>();
 	
 	public MetaInfo(File metaInfoFile) {
+		logger.info("Loading metaInfoFile: {}", metaInfoFile);
 		
 		// Check the class-name of the meta-info.
 		String fileName = metaInfoFile.getName();
@@ -51,13 +59,25 @@ public final class MetaInfo {
 					throw new RuntimeException("Invalid (no package) MetaInfo file: " + fileName);
 				}
 				
+				int blockScope = 0;
 				line = reader.readLine();
 				while (line != null) {
-					Matcher matcher = META_INFO_DEF.matcher(line);
-					if (matcher.find()) {
-						String constant = matcher.group(1);
-						String literal  = matcher.group(2);
-						metaConstants.put(literal, constant);
+					if (line.contains("{")) {
+						blockScope++;
+					} else if (line.contains("}")) {
+						blockScope--;
+					} else {
+						Matcher matcher = META_INFO_DEF.matcher(line);
+						if (matcher.find()) {
+							String constant = matcher.group(1);
+							String literal  = matcher.group(2);
+							
+							if (blockScope == 1) {
+								constants.put(literal, constant);
+							} else if (blockScope == 2) {
+								formulas.put(literal, constant);
+							}
+						}
 					}
 					line = reader.readLine();
 				}
@@ -67,18 +87,19 @@ public final class MetaInfo {
 		}
 		
 		// Get the prefix and filter on it.
-		List<String> keys = new ArrayList<>(metaConstants.keySet());
+		List<String> keys = new ArrayList<>(constants.keySet());
 		Collections.reverse(keys);
 		String lastKey = keys.iterator().next();
 		if (lastKey == null) {
-			throw new RuntimeException("Invalid (no prefi) MetaInfo file: " + fileName);
+			throw new RuntimeException("Invalid (no prefix) MetaInfo file: " + fileName);
 		} else {
 			keyPrefix = lastKey.substring(0, lastKey.indexOf('_'));
 			
-			Iterator<String> iterator = metaConstants.keySet().iterator();
+			Iterator<String> iterator = constants.keySet().iterator();
 			while (iterator.hasNext()) {
 				String value = iterator.next();
 				if (! value.startsWith(keyPrefix + "_")) {
+					logger.error("Invalid (bad prefix) Constant: " + value);
 					iterator.remove();
 				}
 			}
@@ -97,20 +118,44 @@ public final class MetaInfo {
 		return keyPrefix;
 	}
 	
-	public Map<String, String> getMetaConstants() {
-		return Collections.unmodifiableMap(metaConstants);
+	public Map<String, String> getConstants() {
+		return Collections.unmodifiableMap(constants);
+	}
+	
+	public Map<String, String> getFormulas() {
+		return Collections.unmodifiableMap(formulas);
 	}
 	
 	public static Map<String, MetaInfo> getMetaInfo(File metaInfoDir) {
 		Map<String, MetaInfo> metaInfos = new LinkedHashMap<>();
-		
+		getMetaInfo(metaInfoDir, metaInfos);
+		logger.info("Found: {}", metaInfos.keySet().size());
+		Set<MetaInfo> infoSet = new HashSet<MetaInfo>(metaInfos.values());
+		for (MetaInfo metaInfo : infoSet) {
+			for (String formula : metaInfo.getFormulas().keySet()) {
+				if (metaInfos.containsKey(formula)) {
+					logger.info("Disabled: {}", formula);
+					metaInfos.remove(formula);
+				}
+			}
+		}
+		logger.info("Usable: {}", metaInfos.keySet().size());
+		return Collections.unmodifiableMap(metaInfos);
+	}
+	
+	public static void getMetaInfo(File metaInfoDir, Map<String, MetaInfo> metaInfos) {
 		File[] metaInfoFiles = metaInfoDir.listFiles();
 		if (metaInfoFiles != null) {
 			for (File metaInfoFile : metaInfoFiles) {
-				if (metaInfoFile.getName().endsWith("Meta.java")) {
+				if (metaInfoFile.isDirectory()) {
+					getMetaInfo(metaInfoFile, metaInfos);
 					
+				} else if (metaInfoFile.getName().endsWith("Meta.java")) {
 					MetaInfo metaInfo = new MetaInfo(metaInfoFile);
-					for (String literal : metaInfo.getMetaConstants().keySet()) {
+					if (metaInfo.getKeyPrefix().equals("prnt")) {
+						continue;
+					}
+					for (String literal : metaInfo.getConstants().keySet()) {
 						if (literal.equals("tbfl_fk_datatype")) {
 							// DataSourceField 
 							continue; // Skip this one -> do it manual !!
@@ -122,7 +167,9 @@ public final class MetaInfo {
 				}
 			}
 		}
-		
-		return Collections.unmodifiableMap(metaInfos);
+	}
+	
+	public static void main(String[] args) {
+		getMetaInfo(new File("/Users/leonix/Desktop/meta"));
 	}
 }

@@ -47,7 +47,7 @@ public final class MetaInfoRefactor implements FileRefactor {
 			String oldLine = sourceLine.getLineContent();
 			if (StringUtils.isNotEmpty(oldLine)) {
 				StringBuilder builder = new StringBuilder();
-
+				
 				int offset = 0;
 				Matcher matcher = META_INFO_REF.matcher(oldLine);
 				while (matcher.find(offset)) {
@@ -59,24 +59,24 @@ public final class MetaInfoRefactor implements FileRefactor {
 					String keyReference = matcher.group(1);
 					MetaInfo metaInfo = metaInfos.get(keyReference);
 					if (metaInfo != null) {
-						String keyConstant = metaInfo.getMetaConstants().get(keyReference);
+						String keyConstant = metaInfo.getConstants().get(keyReference);
 						builder.append(metaInfo.getInfoClass());
 						builder.append(".");
 						builder.append(keyConstant);
-
+						
 						changeCount++;
 						addedMetaInfo.add(metaInfo);
 					} else {
 						builder.append(matcher.group());
 					}
-
+					
 					offset = matcher.end();
 				}
 				// Copy unmatched trailing section.
 				if (offset < oldLine.length()) {
 					builder.append(oldLine.substring(offset));
 				}
-
+				
 				String newLine = builder.toString();
 				if (!StringUtils.equals(oldLine, newLine)) {
 					sourceLine.setLineContent(newLine);
