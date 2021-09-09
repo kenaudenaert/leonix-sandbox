@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This class encapsulates meta-info (constant/formula) for a model datatype.
+ * 
  * @author leonix
  */
 public final class MetaInfo {
@@ -28,7 +30,7 @@ public final class MetaInfo {
 	private static final Logger logger = LoggerFactory.getLogger(MetaInfo.class);
 	
 	private static final Pattern META_INFO_DEF = Pattern.compile(
-			"public static final String ([\\w_]+) = \"([\\w_]+)\";");
+			"public static final String ([\\w]+) = \"([\\w]+)\";");
 	
 	private final String infoClass;
 	private final String packageID;
@@ -86,7 +88,7 @@ public final class MetaInfo {
 			throw new RuntimeException("Could not parse meta-info-file: " + metaInfoFile, ex);
 		}
 		
-		// Get the prefix and filter on it.
+		// Get the prefix and check constants.
 		List<String> keys = new ArrayList<>(constants.keySet());
 		Collections.reverse(keys);
 		String lastKey = keys.iterator().next();
@@ -94,6 +96,9 @@ public final class MetaInfo {
 			throw new RuntimeException("Invalid (no prefix) MetaInfo file: " + fileName);
 		} else {
 			keyPrefix = lastKey.substring(0, lastKey.indexOf('_'));
+			if (keyPrefix.length() != 4) {
+				throw new RuntimeException("Invalid (bad prefix) MetaInfo file: " + keyPrefix);
+			}
 			
 			Iterator<String> iterator = constants.keySet().iterator();
 			while (iterator.hasNext()) {
@@ -129,7 +134,11 @@ public final class MetaInfo {
 	public static Map<String, MetaInfo> getMetaInfo(File metaInfoDir) {
 		Map<String, MetaInfo> metaInfos = new LinkedHashMap<>();
 		getMetaInfo(metaInfoDir, metaInfos);
-		logger.info("Found: {}", metaInfos.keySet().size());
+		
+		int totalFound = metaInfos.keySet().size();
+		logger.info("MetaInfo Found: {}", totalFound);
+		
+		// Only consider the constants that do not have an ambiguous formula.
 		Set<MetaInfo> infoSet = new HashSet<MetaInfo>(metaInfos.values());
 		for (MetaInfo metaInfo : infoSet) {
 			for (String formula : metaInfo.getFormulas().keySet()) {
@@ -139,7 +148,10 @@ public final class MetaInfo {
 				}
 			}
 		}
-		logger.info("Usable: {}", metaInfos.keySet().size());
+		
+		int totalUsable = metaInfos.keySet().size();
+		logger.info("MetaInfo Actual: {}", totalUsable);
+		logger.info("MetaInfo Ignore: {}", (totalFound - totalUsable));
 		return Collections.unmodifiableMap(metaInfos);
 	}
 	
@@ -150,19 +162,28 @@ public final class MetaInfo {
 				if (metaInfoFile.isDirectory()) {
 					getMetaInfo(metaInfoFile, metaInfos);
 					
-				} else if (metaInfoFile.getName().endsWith("Meta.java")) {
-					MetaInfo metaInfo = new MetaInfo(metaInfoFile);
-					if (metaInfo.getKeyPrefix().equals("prnt")) {
+				} else if (metaInfoFile.isFile()) {
+					String fileName = metaInfoFile.getName();
+					if (fileName.equals(".DS_Store")) {
 						continue;
-					}
-					for (String literal : metaInfo.getConstants().keySet()) {
-						if (literal.equals("tbfl_fk_datatype")) {
-							// DataSourceField 
-							continue; // Skip this one -> do it manual !!
+					
+					} else if (fileName.endsWith("Meta.java")) {
+						MetaInfo metaInfo = new MetaInfo(metaInfoFile);
+						if (metaInfo.getKeyPrefix().equals("prnt")) {
+							continue; // Skipping since too ambiguous !!
 						}
-						if (metaInfos.putIfAbsent(literal, metaInfo) != null) {
-							throw new RuntimeException("Found override: {}" + literal);
+						// Only consider the constants; not the formulas !!
+						for (String literal : metaInfo.getConstants().keySet()) {
+							if (literal.equals("tbfl_fk_datatype")) {
+								continue; // Skipping since too ambiguous !!
+							}
+							if (metaInfos.putIfAbsent(literal, metaInfo) != null) {
+								// Fail hard => we can filter for ambiguity !!
+								throw new RuntimeException("Found override: {}" + literal);
+							}
 						}
+					} else { // Fail hard => we can verify input dir-tree !!
+						throw new RuntimeException("Found non-meta-info: {}" + fileName);
 					}
 				}
 			}
