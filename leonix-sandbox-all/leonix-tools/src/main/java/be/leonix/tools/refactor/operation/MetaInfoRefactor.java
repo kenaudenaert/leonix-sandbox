@@ -67,7 +67,7 @@ public final class MetaInfoRefactor implements FileRefactor {
 						} else {
 							String keyFormula = metaInfo.getFormulas().get(keyReference);
 							builder.append(metaInfo.getInfoClass());
-							builder.append(".Formula.");
+							builder.append(".Formulas.");
 							builder.append(keyFormula);
 						}
 						changeCount++;

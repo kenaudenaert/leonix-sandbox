@@ -161,12 +161,15 @@ public final class MetaInfo {
 		// Only consider the unique formulas that do not have an ambiguous constant.
 		Map<String, MetaInfo> infoByFormula = new LinkedHashMap<>();
 		for (String formula : infosByFormula.keySet()) {
+			int indexUnderscore = formula.indexOf('_');
 			if (infosByFormula.get(formula).size() > 1) {
 				logger.info("Ignoring (ambiguous): {}", formula);
 			} else if (infoByConstant.containsKey(formula)) {
 				logger.info("Ignoring (ambiguous): {}", formula);
-			} else {
+			} else if (indexUnderscore == 4) {
 				infoByFormula.put(formula, infosByFormula.get(formula).iterator().next());
+			} else {
+				logger.info("Ignoring (noprefix): {}", formula);
 			}
 		}
 		
@@ -212,7 +215,7 @@ public final class MetaInfo {
 		File[] metaInfoFiles = metaInfoDir.listFiles();
 		if (metaInfoFiles != null) {
 			for (File metaInfoFile : metaInfoFiles) {
-				if (metaInfoFile.isDirectory()) {
+				if (metaInfoFile.isDirectory() && !metaInfoFile.getName().equals("olss")) {
 					collectInfoByConstant(metaInfoFile, infoByConstant);
 					
 				} else if (metaInfoFile.isFile()) {

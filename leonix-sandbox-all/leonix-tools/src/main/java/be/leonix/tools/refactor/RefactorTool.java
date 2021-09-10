@@ -15,13 +15,13 @@ import be.leonix.tools.refactor.operation.MetaInfoRefactor;
 
 /**
  * The application (tool) for refactoring Java source files.
- * 
+ *
  * @author Ken Audenaert
  */
 public final class RefactorTool {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(RefactorTool.class);
-	
+
 	/**
 	 * The application for executing code-refactors.
 	 */
@@ -29,29 +29,34 @@ public final class RefactorTool {
 		try {
 			FileRefactor fileRefactor = new MetaInfoRefactor(new File(
 					"/Users/audenaer/Genohm/slims-repo/platform-api-model/gen-src/com/genohm/slims/common/model"));
-			
+
 			Set<String> repoPaths = Set.of(
-			//	"/Users/leonix/github/leonix-maventools",
-			//	"/Users/leonix/github/leonix-framework",
-			//	"/Users/leonix/github/leonix-deploytools",
-			//	"/Users/leonix/github/leonix-sandbox",
-				"/Users/audenaer/Genohm/slims-repo"
+					//	"/Users/leonix/github/leonix-maventools",
+					//	"/Users/leonix/github/leonix-framework",
+					//	"/Users/leonix/github/leonix-deploytools",
+					//	"/Users/leonix/github/leonix-sandbox",
+					"/Users/audenaer/Genohm/slims-repo"
 			);
-			
+
 			RefactorContext context = new RefactorContext(RefactorMode.UPDATE_FILE);
 			logger.info("Starting refactor.");
-			
+
 			for (String repoPath : repoPaths) {
 				File repoDir = new File(repoPath);
 				if (repoDir.isDirectory()) {
 					SourceRepo sourceRepo = new SourceRepo(repoDir);
-					
+
 					logger.info("Repository: {}", sourceRepo.getRepoDir());
 					for (SourceTree sourceTree : sourceRepo.getSourceTrees()) {
-						if (! sourceTree.getRootDir().getPath().contains("platform")) {
+						if (sourceTree.getRootDir().getPath().contains("platform") ||
+							sourceTree.getRootDir().getPath().contains("customization") ||
+							sourceTree.getRootDir().getPath().contains("slimsgate") ||
+							sourceTree.getRootDir().getPath().contains("plugin")) {
 							continue;
 						}
-
+						if (! sourceTree.getRootDir().getPath().contains("slimsdao")) {
+							continue;
+						}
 						List<SourceFile> javaFiles = sourceTree.getSourceFiles();
 						logger.info("Sources: {} (count={})", sourceTree.getRootDir(), javaFiles.size());
 						for (SourceFile javaFile : javaFiles) {
@@ -64,7 +69,7 @@ public final class RefactorTool {
 			}
 			logger.info("Finished refactor.");
 			context.logInfo();
-			
+
 		} catch (RuntimeException | Error ex) {
 			logger.error(ex.getMessage(), ex);
 		}
