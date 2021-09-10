@@ -16,6 +16,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,44 +133,87 @@ public final class MetaInfo {
 	}
 	
 	/**
-	 * Returns the formulast by their literal.
+	 * Returns the formulas by their literal.
 	 */
 	public Map<String, String> getFormulas() {
 		return Collections.unmodifiableMap(formulas);
 	}
 	
+	/**
+	 * Returns the meta-info by their unique formula (filter out constants).
+	 */
+	public static Map<String, MetaInfo> getInfoByFormula(File metaInfoDir) {
+		Map<String, MetaInfo> infoByConstant = new LinkedHashMap<>();
+		collectInfoByConstant(metaInfoDir, infoByConstant);
+		
+		MultiValuedMap<String, MetaInfo> infosByFormula = new ArrayListValuedHashMap<>();
+		
+		Set<MetaInfo> foundMetaInfos = new HashSet<MetaInfo>(infoByConstant.values());
+		for (MetaInfo metaInfo : foundMetaInfos) {
+			for (String formula : metaInfo.getFormulas().keySet()) {
+				infosByFormula.put(formula, metaInfo);
+			}
+		}
+		
+		int totalFound = infosByFormula.keySet().size();
+		logger.info("Formulas found: {}", totalFound);
+		
+		// Only consider the unique formulas that do not have an ambiguous constant.
+		Map<String, MetaInfo> infoByFormula = new LinkedHashMap<>();
+		for (String formula : infosByFormula.keySet()) {
+			if (infosByFormula.get(formula).size() > 1) {
+				logger.info("Ignoring (ambiguous): {}", formula);
+			} else if (infoByConstant.containsKey(formula)) {
+				logger.info("Ignoring (ambiguous): {}", formula);
+			} else {
+				infoByFormula.put(formula, infosByFormula.get(formula).iterator().next());
+			}
+		}
+		
+		int totalUsable = infoByFormula.keySet().size();
+		logger.info("Formulas usable: {}", totalUsable);
+		logger.info("Formulas skipped: {}", (totalFound - totalUsable));
+		return Collections.unmodifiableMap(infoByFormula);
+	}
+	
+	/**
+	 * Returns the meta-info by their unique constant (filter out formulas).
+	 */
 	public static Map<String, MetaInfo> getInfoByConstant(File metaInfoDir) {
 		Map<String, MetaInfo> infoByConstant = new LinkedHashMap<>();
-		getInfoByConstant(metaInfoDir, infoByConstant);
+		collectInfoByConstant(metaInfoDir, infoByConstant);
 		
 		int totalFound = infoByConstant.keySet().size();
-		logger.info("MetaInfo Found: {}", totalFound);
+		logger.info("Constants found: {}", totalFound);
 		
 		// Only consider the constants that do not have an ambiguous formula.
-		Set<MetaInfo> infoSet = new HashSet<MetaInfo>(infoByConstant.values());
-		for (MetaInfo metaInfo : infoSet) {
+		Set<MetaInfo> foundMetaInfos = new HashSet<MetaInfo>(infoByConstant.values());
+		for (MetaInfo metaInfo : foundMetaInfos) {
 			for (String formula : metaInfo.getFormulas().keySet()) {
 				
 				// NOTE: Check for ambiguity (constant and formula with same literal).
 				if (infoByConstant.containsKey(formula)) {
-					logger.info("Disabled: {}", formula);
+					logger.info("Ignoring: {}", formula);
 					infoByConstant.remove(formula);
 				}
 			}
 		}
 		
 		int totalUsable = infoByConstant.keySet().size();
-		logger.info("MetaInfo Actual: {}", totalUsable);
-		logger.info("MetaInfo Ignore: {}", (totalFound - totalUsable));
+		logger.info("Constants usable: {}", totalUsable);
+		logger.info("Constants skipped: {}", (totalFound - totalUsable));
 		return Collections.unmodifiableMap(infoByConstant);
 	}
 	
-	private static void getInfoByConstant(File metaInfoDir, Map<String, MetaInfo> infoByConstant) {
+	/**
+	 * Returns the meta-info by their unique literal (ignore the formulas).
+	 */
+	private static void collectInfoByConstant(File metaInfoDir, Map<String, MetaInfo> infoByConstant) {
 		File[] metaInfoFiles = metaInfoDir.listFiles();
 		if (metaInfoFiles != null) {
 			for (File metaInfoFile : metaInfoFiles) {
 				if (metaInfoFile.isDirectory()) {
-					getInfoByConstant(metaInfoFile, infoByConstant);
+					collectInfoByConstant(metaInfoFile, infoByConstant);
 					
 				} else if (metaInfoFile.isFile()) {
 					String fileName = metaInfoFile.getName();

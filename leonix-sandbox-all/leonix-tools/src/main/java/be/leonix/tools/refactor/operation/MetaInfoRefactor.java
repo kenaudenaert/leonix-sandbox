@@ -2,6 +2,7 @@ package be.leonix.tools.refactor.operation;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -24,15 +25,18 @@ public final class MetaInfoRefactor implements FileRefactor {
 	
 	private static final Pattern META_INFO_REF = Pattern.compile("\"([\\w]+)\"" );
 	
-	private final Map<String, MetaInfo> metaInfos;
+	private final Map<String, MetaInfo> infoByConstant;
 	
 	public MetaInfoRefactor(File metaInfoDir) {
-		metaInfos = MetaInfo.getInfoByConstant(metaInfoDir);
+		infoByConstant = new LinkedHashMap<>();
+		infoByConstant.putAll(MetaInfo.getInfoByConstant(metaInfoDir)); // unique constants
+		infoByConstant.putAll(MetaInfo.getInfoByFormula(metaInfoDir));  // unique formulas
 	}
 	
 	@Override
 	public void refactorFile(SourceFile sourceFile, RefactorContext context) {
-		if (sourceFile.getSourceFile().getParentFile().getAbsolutePath().endsWith("com/genohm/slims/common/model")) {
+		if (sourceFile.getSourceFile().getParentFile().getAbsolutePath().endsWith(
+				"com/genohm/slims/common/model")) {
 			return;
 		}
 		long changeCount = 0;
@@ -52,13 +56,20 @@ public final class MetaInfoRefactor implements FileRefactor {
 					}
 					// Execute refactor for pattern.
 					String keyReference = matcher.group(1);
-					MetaInfo metaInfo = metaInfos.get(keyReference);
+					
+					MetaInfo metaInfo = infoByConstant.get(keyReference);
 					if (metaInfo != null) {
 						String keyConstant = metaInfo.getConstants().get(keyReference);
-						builder.append(metaInfo.getInfoClass());
-						builder.append(".");
-						builder.append(keyConstant);
-						
+						if (keyConstant != null) {
+							builder.append(metaInfo.getInfoClass());
+							builder.append(".");
+							builder.append(keyConstant);
+						} else {
+							String keyFormula = metaInfo.getFormulas().get(keyReference);
+							builder.append(metaInfo.getInfoClass());
+							builder.append(".Formula.");
+							builder.append(keyFormula);
+						}
 						changeCount++;
 						addedMetaInfo.add(metaInfo);
 					} else {
