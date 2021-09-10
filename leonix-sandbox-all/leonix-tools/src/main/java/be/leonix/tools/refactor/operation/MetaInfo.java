@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class encapsulates meta-info (constant/formula) for a model datatype.
+ * This class encapsulates meta-info (constants/formulas) for a model class.
  * 
  * @author leonix
  */
@@ -123,44 +123,52 @@ public final class MetaInfo {
 		return keyPrefix;
 	}
 	
+	/**
+	 * Returns the constants by their literal.
+	 */
 	public Map<String, String> getConstants() {
 		return Collections.unmodifiableMap(constants);
 	}
 	
+	/**
+	 * Returns the formulast by their literal.
+	 */
 	public Map<String, String> getFormulas() {
 		return Collections.unmodifiableMap(formulas);
 	}
 	
-	public static Map<String, MetaInfo> getMetaInfo(File metaInfoDir) {
-		Map<String, MetaInfo> metaInfos = new LinkedHashMap<>();
-		getMetaInfo(metaInfoDir, metaInfos);
+	public static Map<String, MetaInfo> getInfoByConstant(File metaInfoDir) {
+		Map<String, MetaInfo> infoByConstant = new LinkedHashMap<>();
+		getInfoByConstant(metaInfoDir, infoByConstant);
 		
-		int totalFound = metaInfos.keySet().size();
+		int totalFound = infoByConstant.keySet().size();
 		logger.info("MetaInfo Found: {}", totalFound);
 		
 		// Only consider the constants that do not have an ambiguous formula.
-		Set<MetaInfo> infoSet = new HashSet<MetaInfo>(metaInfos.values());
+		Set<MetaInfo> infoSet = new HashSet<MetaInfo>(infoByConstant.values());
 		for (MetaInfo metaInfo : infoSet) {
 			for (String formula : metaInfo.getFormulas().keySet()) {
-				if (metaInfos.containsKey(formula)) {
+				
+				// NOTE: Check for ambiguity (constant and formula with same literal).
+				if (infoByConstant.containsKey(formula)) {
 					logger.info("Disabled: {}", formula);
-					metaInfos.remove(formula);
+					infoByConstant.remove(formula);
 				}
 			}
 		}
 		
-		int totalUsable = metaInfos.keySet().size();
+		int totalUsable = infoByConstant.keySet().size();
 		logger.info("MetaInfo Actual: {}", totalUsable);
 		logger.info("MetaInfo Ignore: {}", (totalFound - totalUsable));
-		return Collections.unmodifiableMap(metaInfos);
+		return Collections.unmodifiableMap(infoByConstant);
 	}
 	
-	public static void getMetaInfo(File metaInfoDir, Map<String, MetaInfo> metaInfos) {
+	private static void getInfoByConstant(File metaInfoDir, Map<String, MetaInfo> infoByConstant) {
 		File[] metaInfoFiles = metaInfoDir.listFiles();
 		if (metaInfoFiles != null) {
 			for (File metaInfoFile : metaInfoFiles) {
 				if (metaInfoFile.isDirectory()) {
-					getMetaInfo(metaInfoFile, metaInfos);
+					getInfoByConstant(metaInfoFile, infoByConstant);
 					
 				} else if (metaInfoFile.isFile()) {
 					String fileName = metaInfoFile.getName();
@@ -172,17 +180,20 @@ public final class MetaInfo {
 						if (metaInfo.getKeyPrefix().equals("prnt")) {
 							continue; // Skipping since too ambiguous !!
 						}
+						
 						// Only consider the constants; not the formulas !!
-						for (String literal : metaInfo.getConstants().keySet()) {
-							if (literal.equals("tbfl_fk_datatype")) {
+						for (String constant : metaInfo.getConstants().keySet()) {
+							// See the DataSourceMetaInfo class !!
+							if (constant.equals("tbfl_fk_datatype")) {
 								continue; // Skipping since too ambiguous !!
 							}
-							if (metaInfos.putIfAbsent(literal, metaInfo) != null) {
-								// Fail hard => we can filter for ambiguity !!
-								throw new RuntimeException("Found override: {}" + literal);
+							// NOTE: Check for ambiguity (2 constants with same literal).
+							if (infoByConstant.putIfAbsent(constant, metaInfo) != null) {
+								// Fail hard => ensure filtering for ambiguity !!
+								throw new RuntimeException("Found override: {}" + constant);
 							}
 						}
-					} else { // Fail hard => we can verify input dir-tree !!
+					} else { // Fail hard => ensure valid input dir-tree !!
 						throw new RuntimeException("Found non-meta-info: {}" + fileName);
 					}
 				}
@@ -191,6 +202,6 @@ public final class MetaInfo {
 	}
 	
 	public static void main(String[] args) {
-		getMetaInfo(new File("/Users/leonix/Desktop/meta"));
+		getInfoByConstant(new File("/Users/leonix/Desktop/meta"));
 	}
 }

@@ -8,8 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import be.leonix.tools.refactor.FileRefactor;
 import be.leonix.tools.refactor.RefactorContext;
@@ -24,15 +22,12 @@ import be.leonix.tools.refactor.model.SourceLine;
  */
 public final class MetaInfoRefactor implements FileRefactor {
 	
-	private static final Logger logger = LoggerFactory.getLogger(MetaInfoRefactor.class);
-	
-	private static final Pattern META_INFO_REF = Pattern.compile("\"([\\w_]+)\"" );
+	private static final Pattern META_INFO_REF = Pattern.compile("\"([\\w]+)\"" );
 	
 	private final Map<String, MetaInfo> metaInfos;
 	
 	public MetaInfoRefactor(File metaInfoDir) {
-		metaInfos = MetaInfo.getMetaInfo(metaInfoDir);
-		logger.info("Found {} meta-infos.", metaInfos.size());
+		metaInfos = MetaInfo.getInfoByConstant(metaInfoDir);
 	}
 	
 	@Override
