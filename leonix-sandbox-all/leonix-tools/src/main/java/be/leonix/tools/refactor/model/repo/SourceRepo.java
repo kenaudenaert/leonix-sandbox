@@ -1,4 +1,4 @@
-package be.leonix.tools.refactor.model;
+package be.leonix.tools.refactor.model.repo;
 
 import java.io.File;
 import java.io.IOException;

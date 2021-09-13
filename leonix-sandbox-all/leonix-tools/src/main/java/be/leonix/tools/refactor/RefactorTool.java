@@ -7,10 +7,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import be.leonix.tools.refactor.model.SourceAuthor;
-import be.leonix.tools.refactor.model.SourceFile;
-import be.leonix.tools.refactor.model.SourceRepo;
-import be.leonix.tools.refactor.model.SourceTree;
+import be.leonix.tools.refactor.model.repo.SourceAuthor;
+import be.leonix.tools.refactor.model.repo.SourceFile;
+import be.leonix.tools.refactor.model.repo.SourceRepo;
+import be.leonix.tools.refactor.model.repo.SourceTree;
 import be.leonix.tools.refactor.operation.MetaInfoRefactor;
 
 /**
@@ -29,7 +29,7 @@ public final class RefactorTool {
 		try {
 			FileRefactor fileRefactor = new MetaInfoRefactor(new File(
 					"/Users/audenaer/Genohm/slims-repo/platform-api-model/gen-src/com/genohm/slims/common/model"));
-
+			
 			Set<String> repoPaths = Set.of(
 					//	"/Users/leonix/github/leonix-maventools",
 					//	"/Users/leonix/github/leonix-framework",
@@ -37,15 +37,15 @@ public final class RefactorTool {
 					//	"/Users/leonix/github/leonix-sandbox",
 					"/Users/audenaer/Genohm/slims-repo"
 			);
-
+			
 			RefactorContext context = new RefactorContext(RefactorMode.UPDATE_FILE);
 			logger.info("Starting refactor.");
-
+			
 			for (String repoPath : repoPaths) {
 				File repoDir = new File(repoPath);
 				if (repoDir.isDirectory()) {
 					SourceRepo sourceRepo = new SourceRepo(repoDir);
-
+					
 					logger.info("Repository: {}", sourceRepo.getRepoDir());
 					for (SourceTree sourceTree : sourceRepo.getSourceTrees()) {
 						if (sourceTree.getRootDir().getPath().contains("platform") ||
@@ -69,7 +69,7 @@ public final class RefactorTool {
 			}
 			logger.info("Finished refactor.");
 			context.logInfo();
-
+			
 		} catch (RuntimeException | Error ex) {
 			logger.error(ex.getMessage(), ex);
 		}

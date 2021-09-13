@@ -1,6 +1,6 @@
 package be.leonix.tools.refactor;
 
-import be.leonix.tools.refactor.model.SourceLine;
+import be.leonix.tools.refactor.model.repo.SourceLine;
 
 /**
  * A refactor-operation that transforms a {@link SourceLine}.

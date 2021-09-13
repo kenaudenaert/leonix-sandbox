@@ -1,6 +1,6 @@
 package be.leonix.tools.refactor;
 
-import be.leonix.tools.refactor.model.SourceFile;
+import be.leonix.tools.refactor.model.repo.SourceFile;
 
 /**
  * A refactor operation that transforms a {@link SourceFile}.
