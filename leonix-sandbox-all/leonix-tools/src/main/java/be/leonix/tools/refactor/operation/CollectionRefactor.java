@@ -22,6 +22,11 @@ public final class CollectionRefactor implements FileRefactor {
 			"=\\s+Lists\\s*\\.\\s*newArrayList\\s*\\(\\s*\\);");
 	
 	@Override
+	public String getDescription() {
+		return "CollectionRefactor (use collection ctors)";
+	}
+	
+	@Override
 	public void refactorFile(SourceFile sourceFile, RefactorContext context) {
 		SourceLine importLists = sourceFile.getImportLine("com.google.common.collect.Lists");
 		if (importLists != null) {

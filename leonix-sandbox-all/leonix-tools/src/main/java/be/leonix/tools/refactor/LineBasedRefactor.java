@@ -2,6 +2,7 @@ package be.leonix.tools.refactor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +21,28 @@ public final class LineBasedRefactor implements FileRefactor {
 	
 	public LineBasedRefactor(LineRefactor... lineRefactors) {
 		this.lineRefactors.addAll(Arrays.asList(lineRefactors));
+	}
+	
+	@Override
+	public String getDescription() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Line-based refactor composed of ");
+		if (lineRefactors.isEmpty()) {
+			builder.append("no line-refactors");
+		} else {
+			Iterator<LineRefactor> iterator = lineRefactors.iterator();
+			while (iterator.hasNext()) {
+				LineRefactor lineRefactor = iterator.next();
+				
+				builder.append(lineRefactor.getDescription());
+				if (iterator.hasNext()) {
+					builder.append(',');
+				} else {
+					builder.append('.');
+				}
+			}
+		}
+		return builder.toString();
 	}
 	
 	@Override

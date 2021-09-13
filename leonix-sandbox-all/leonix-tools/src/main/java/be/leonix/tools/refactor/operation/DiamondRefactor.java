@@ -22,6 +22,11 @@ public final class DiamondRefactor implements LineRefactor {
 			"(>\\s*\\(\\s*\\)\\s*;)");			// >();
 	
 	@Override
+	public String getDescription() {
+		return "DiamondRefactor (use diamond syntax)";
+	}
+	
+	@Override
 	public void refactorLine(SourceLine sourceLine, RefactorContext context) {
 		String oldLine = sourceLine.getLineContent();
 		String newLine = refactorLine(oldLine, DIAMOND);

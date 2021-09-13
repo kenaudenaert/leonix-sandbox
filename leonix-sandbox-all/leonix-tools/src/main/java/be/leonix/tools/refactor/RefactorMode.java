@@ -9,5 +9,7 @@ public enum RefactorMode {
 	/** Do not change, only log the changes. */
 	LOG_CHANGE,
 	/** Perform the changes in the files. */
-	UPDATE_FILE;
+	UPDATE_FILE,
+	/** Commit the changes in the files. */
+	COMMIT_REPO;
 }

@@ -34,6 +34,11 @@ public final class MetaInfoRefactor implements FileRefactor {
 	}
 	
 	@Override
+	public String getDescription() {
+		return "MetaInfoRefactor (use constants and formulas)";
+	}
+	
+	@Override
 	public void refactorFile(SourceFile sourceFile, RefactorContext context) {
 		if (sourceFile.getSourceFile().getParentFile().getAbsolutePath().endsWith(
 				"com/genohm/slims/common/model")) {

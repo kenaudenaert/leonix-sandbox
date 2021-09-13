@@ -21,7 +21,7 @@ import be.leonix.tools.refactor.operation.MetaInfoRefactor;
 public final class RefactorTool {
 
 	private static final Logger logger = LoggerFactory.getLogger(RefactorTool.class);
-
+	
 	/**
 	 * The application for executing code-refactors.
 	 */
@@ -57,14 +57,18 @@ public final class RefactorTool {
 						if (! sourceTree.getRootDir().getPath().contains("slimsdao")) {
 							continue;
 						}
+						
 						List<SourceFile> javaFiles = sourceTree.getSourceFiles();
 						logger.info("Sources: {} (count={})", sourceTree.getRootDir(), javaFiles.size());
 						for (SourceFile javaFile : javaFiles) {
 							fileRefactor.refactorFile(javaFile, context);
 						}
 					}
-					SourceAuthor autor = new SourceAuthor("Ken Audenaert", "ken.audenaert@telenet.be");
-					// sourceRepo.commitChanges(autor, "added git support.");
+					if (context.getMode() == RefactorMode.COMMIT_REPO) {
+						SourceAuthor autor = new SourceAuthor("Ken Audenaert", (repoDir.getName().contains("slims") ? 
+								"ken.audenaert@agilent.com" : "ken.audenaert@telenet.be"));
+						sourceRepo.commitChanges(autor, fileRefactor.getDescription());
+					}
 				}
 			}
 			logger.info("Finished refactor.");
