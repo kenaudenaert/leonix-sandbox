@@ -18,7 +18,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 /**
- * This class encapsulates a source-repo.
+ * This class encapsulates a source-repo containing {@link SourceTree}s.
  * 
  * @author Ken Audenaert
  */
@@ -38,6 +38,8 @@ public final class SourceRepo {
 		if (! repoDir.isDirectory()) {
 			throw new IllegalArgumentException("Invalid repo-dir: " + repoDir);
 		}
+		
+		// Currently only a GIT repository is supported.
 		File gitRepo = new File(repoDir, ".git");
 		if (! gitRepo.isDirectory()) {
 			throw new IllegalArgumentException("Invalid git-repo: " + repoDir);
@@ -47,7 +49,9 @@ public final class SourceRepo {
 		} catch (IOException | RuntimeException ex) {
 			throw new RuntimeException("Could not open git-repo.", ex);
 		}
-		this.sourceTrees = findSourceDirectories(repoDir).stream()
+		
+		// Perform a recursive seach for source-trees.
+		this.sourceTrees = listSourceDirectories(repoDir).stream()
 				.map(SourceTree::new).collect(Collectors.toList());
 	}
 	
@@ -82,15 +86,15 @@ public final class SourceRepo {
 			commit.setMessage(message);
 			commit.call();
 			
-		} catch (GitAPIException ex) {
+		} catch (GitAPIException | RuntimeException ex) {
 			throw new RuntimeException("Could not commit changes.", ex);
 		}
 	}
 	
 	/**
-	 * Finds the source-directories in the specified directory.
+	 * Lists the source-directories in the specified directory.
 	 */
-	private static List<File> findSourceDirectories(File directory) {
+	private static List<File> listSourceDirectories(File directory) {
 		IOFileFilter fileFilter = FileFilterUtils.falseFileFilter();
 		IOFileFilter dirFilter  = gitFilter;
 		

@@ -12,7 +12,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 
 /**
- * This class encapsulates a source-tree.
+ * This class encapsulates a source-tree containing {@link SourceFile}s.
  * 
  * @author Ken Audenaert
  */
@@ -21,12 +21,16 @@ public final class SourceTree {
 	private final File rootDir;
 	private final List<SourceFile> sourceFiles;
 	
+	private static final String sourceSuffix = ".java";
+	
 	public SourceTree(File rootDir) {
 		this.rootDir = Objects.requireNonNull(rootDir);
 		if (! rootDir.isDirectory()) {
 			throw new IllegalArgumentException("Invalid root-dir: " + rootDir);
 		}
-		this.sourceFiles = findJavaSourceFiles(rootDir).stream()
+		
+		// Perform a recursive seach for source-files.
+		this.sourceFiles = listJavaSourceFiles(rootDir).stream()
 				.map(SourceFile::new).collect(Collectors.toList());
 	}
 	
@@ -45,10 +49,10 @@ public final class SourceTree {
 	}
 	
 	/**
-	 * Finds the Java source-files in the specified directory.
+	 * Lists the Java source-files in the specified directory.
 	 */
-	private static List<File> findJavaSourceFiles(File directory) {
-		IOFileFilter fileFilter = FileFilterUtils.suffixFileFilter(".java");
+	private static List<File> listJavaSourceFiles(File directory) {
+		IOFileFilter fileFilter = FileFilterUtils.suffixFileFilter(sourceSuffix);
 		IOFileFilter dirFilter  = FileFilterUtils.trueFileFilter();
 		
 		List<File> sourceFiles = new ArrayList<>();
