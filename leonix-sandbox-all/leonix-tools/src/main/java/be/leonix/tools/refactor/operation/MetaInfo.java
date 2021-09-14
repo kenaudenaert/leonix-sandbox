@@ -7,17 +7,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,119 +133,5 @@ public final class MetaInfo {
 	 */
 	public Map<String, String> getFormulas() {
 		return Collections.unmodifiableMap(formulas);
-	}
-	
-	/**
-	 * Returns the meta-info by their unique formula (filter out constants).
-	 */
-	public static Map<String, MetaInfo> getInfoByFormula(File metaInfoDir) {
-		Map<String, MetaInfo> infoByConstant = new LinkedHashMap<>();
-		collectInfoByConstant(metaInfoDir, infoByConstant);
-		
-		MultiValuedMap<String, MetaInfo> infosByFormula = new ArrayListValuedHashMap<>();
-		
-		Set<MetaInfo> foundMetaInfos = new HashSet<MetaInfo>(infoByConstant.values());
-		for (MetaInfo metaInfo : foundMetaInfos) {
-			for (String formula : metaInfo.getFormulas().keySet()) {
-				infosByFormula.put(formula, metaInfo);
-			}
-		}
-		
-		int totalFound = infosByFormula.keySet().size();
-		logger.info("Formulas found: {}", totalFound);
-		
-		// Only consider the unique formulas that do not have an ambiguous constant.
-		Map<String, MetaInfo> infoByFormula = new LinkedHashMap<>();
-		for (String formula : infosByFormula.keySet()) {
-			int indexUnderscore = formula.indexOf('_');
-			if (infosByFormula.get(formula).size() > 1) {
-				logger.info("Ignoring (ambiguous): {}", formula);
-			} else if (infoByConstant.containsKey(formula)) {
-				logger.info("Ignoring (ambiguous): {}", formula);
-			} else if (indexUnderscore == 4) {
-				infoByFormula.put(formula, infosByFormula.get(formula).iterator().next());
-			} else {
-				logger.info("Ignoring (noprefix): {}", formula);
-			}
-		}
-		
-		int totalUsable = infoByFormula.keySet().size();
-		logger.info("Formulas usable: {}", totalUsable);
-		logger.info("Formulas skipped: {}", (totalFound - totalUsable));
-		return Collections.unmodifiableMap(infoByFormula);
-	}
-	
-	/**
-	 * Returns the meta-info by their unique constant (filter out formulas).
-	 */
-	public static Map<String, MetaInfo> getInfoByConstant(File metaInfoDir) {
-		Map<String, MetaInfo> infoByConstant = new LinkedHashMap<>();
-		collectInfoByConstant(metaInfoDir, infoByConstant);
-		
-		int totalFound = infoByConstant.keySet().size();
-		logger.info("Constants found: {}", totalFound);
-		
-		// Only consider the constants that do not have an ambiguous formula.
-		Set<MetaInfo> foundMetaInfos = new HashSet<MetaInfo>(infoByConstant.values());
-		for (MetaInfo metaInfo : foundMetaInfos) {
-			for (String formula : metaInfo.getFormulas().keySet()) {
-				
-				// NOTE: Check for ambiguity (constant and formula with same literal).
-				if (infoByConstant.containsKey(formula)) {
-					logger.info("Ignoring: {}", formula);
-					infoByConstant.remove(formula);
-				}
-			}
-		}
-		
-		int totalUsable = infoByConstant.keySet().size();
-		logger.info("Constants usable: {}", totalUsable);
-		logger.info("Constants skipped: {}", (totalFound - totalUsable));
-		return Collections.unmodifiableMap(infoByConstant);
-	}
-	
-	/**
-	 * Returns the meta-info by their unique literal (ignore the formulas).
-	 */
-	private static void collectInfoByConstant(File metaInfoDir, Map<String, MetaInfo> infoByConstant) {
-		File[] metaInfoFiles = metaInfoDir.listFiles();
-		if (metaInfoFiles != null) {
-			for (File metaInfoFile : metaInfoFiles) {
-				if (metaInfoFile.isDirectory() && !metaInfoFile.getName().equals("olss")) {
-					collectInfoByConstant(metaInfoFile, infoByConstant);
-					
-				} else if (metaInfoFile.isFile()) {
-					String fileName = metaInfoFile.getName();
-					if (fileName.equals(".DS_Store")) {
-						continue;
-					
-					} else if (fileName.endsWith("Meta.java")) {
-						MetaInfo metaInfo = new MetaInfo(metaInfoFile);
-						if (metaInfo.getKeyPrefix().equals("prnt")) {
-							continue; // Skipping since too ambiguous !!
-						}
-						
-						// Only consider the constants; not the formulas !!
-						for (String constant : metaInfo.getConstants().keySet()) {
-							// See the DataSourceMetaInfo class !!
-							if (constant.equals("tbfl_fk_datatype")) {
-								continue; // Skipping since too ambiguous !!
-							}
-							// NOTE: Check for ambiguity (2 constants with same literal).
-							if (infoByConstant.putIfAbsent(constant, metaInfo) != null) {
-								// Fail hard => ensure filtering for ambiguity !!
-								throw new RuntimeException("Found override: {}" + constant);
-							}
-						}
-					} else { // Fail hard => ensure valid input dir-tree !!
-						throw new RuntimeException("Found non-meta-info: {}" + fileName);
-					}
-				}
-			}
-		}
-	}
-	
-	public static void main(String[] args) {
-		getInfoByConstant(new File("/Users/leonix/Desktop/meta"));
 	}
 }

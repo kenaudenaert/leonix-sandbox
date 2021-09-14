@@ -27,8 +27,8 @@ public final class RefactorTool {
 	 */
 	public static void main(String[] args) {
 		try {
-			FileRefactor fileRefactor = new MetaInfoRefactor(new File(
-					"/Users/audenaer/Genohm/slims-repo/platform-api-model/gen-src/com/genohm/slims/common/model"));
+			FileRefactor fileRefactor = new MetaInfoRefactor(
+					"/Users/audenaer/Genohm/slims-repo/platform-api-model/gen-src/com/genohm/slims/common/model");
 			
 			Set<String> repoPaths = Set.of(
 					//	"/Users/leonix/github/leonix-maventools",

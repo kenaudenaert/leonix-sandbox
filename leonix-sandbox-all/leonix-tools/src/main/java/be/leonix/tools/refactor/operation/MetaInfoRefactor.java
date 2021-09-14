@@ -25,12 +25,16 @@ public final class MetaInfoRefactor implements FileRefactor {
 	
 	private static final Pattern META_INFO_REF = Pattern.compile("\"([\\w]+)\"" );
 	
-	private final Map<String, MetaInfo> infoByConstant;
+	private final Map<String, MetaInfo> infoByLiteral;
 	
-	public MetaInfoRefactor(File metaInfoDir) {
-		infoByConstant = new LinkedHashMap<>();
-		infoByConstant.putAll(MetaInfo.getInfoByConstant(metaInfoDir)); // unique constants
-		infoByConstant.putAll(MetaInfo.getInfoByFormula(metaInfoDir));  // unique formulas
+	public MetaInfoRefactor(String metaInfoDir) {
+		this(new MetaInfoDirectory(new File(metaInfoDir)));
+	}
+	
+	public MetaInfoRefactor(MetaInfoDirectory metaInfoDir) {
+		infoByLiteral = new LinkedHashMap<>();
+		infoByLiteral.putAll(metaInfoDir.getInfoByConstant()); // unique constants
+		infoByLiteral.putAll(metaInfoDir.getInfoByFormula());  // unique formulas
 	}
 	
 	@Override
@@ -62,7 +66,7 @@ public final class MetaInfoRefactor implements FileRefactor {
 					// Execute refactor for pattern.
 					String keyReference = matcher.group(1);
 					
-					MetaInfo metaInfo = infoByConstant.get(keyReference);
+					MetaInfo metaInfo = infoByLiteral.get(keyReference);
 					if (metaInfo != null) {
 						String keyConstant = metaInfo.getConstants().get(keyReference);
 						if (keyConstant != null) {
