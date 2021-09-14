@@ -11,5 +11,5 @@ public enum RefactorMode {
 	/** Perform the changes in the files. */
 	UPDATE_FILE,
 	/** Commit the changes in the files. */
-	COMMIT_REPO;
+	COMMIT_REPO
 }

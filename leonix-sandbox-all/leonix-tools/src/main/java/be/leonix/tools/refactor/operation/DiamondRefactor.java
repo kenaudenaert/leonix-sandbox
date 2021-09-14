@@ -44,7 +44,7 @@ public final class DiamondRefactor implements LineRefactor {
 			while (matcher.find(offset)) {
 				// Copy unmatched leading section.
 				if (matcher.start() > offset) {
-					builder.append(sourceLine.substring(offset, matcher.start()));
+					builder.append(sourceLine, offset, matcher.start());
 				}
 				// Execute refactor for pattern.
 				// String reference = matcher.group();

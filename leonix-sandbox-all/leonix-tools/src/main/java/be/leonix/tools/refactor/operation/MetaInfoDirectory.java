@@ -35,7 +35,7 @@ public final class MetaInfoDirectory {
 	
 	// The details for the meta-info classes by their qualified class-name.
 	private final Map<String, MetaInfo> infoByClassName = new LinkedHashMap<>();
-	private final Set<String> infoPrefixes = new LinkedHashSet<String>();
+	private final Set<String> infoPrefixes = new LinkedHashSet<>();
 	
 	public MetaInfoDirectory(File metaInfoDir) {
 		this.metaInfoDir = Objects.requireNonNull(metaInfoDir);
@@ -140,7 +140,7 @@ public final class MetaInfoDirectory {
 			infoConstants.addAll(metaInfo.getConstants().keySet());
 		}
 		
-		// Find the formulas but do not check for unicity.
+		// Find the formulas but do not check for uniqueness.
 		MultiValuedMap<String, MetaInfo> infoListByFormula = new ArrayListValuedHashMap<>();
 		for (MetaInfo metaInfo : infoByClassName.values()) {
 			for (String formula : metaInfo.getFormulas().keySet()) {

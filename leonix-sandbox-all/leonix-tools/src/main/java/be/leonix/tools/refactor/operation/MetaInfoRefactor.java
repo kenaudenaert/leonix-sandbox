@@ -63,7 +63,7 @@ public final class MetaInfoRefactor implements FileRefactor {
 				while (matcher.find(offset)) {
 					// Copy unmatched leading section.
 					if (matcher.start() > offset) {
-						builder.append(oldLine.substring(offset, matcher.start()));
+						builder.append(oldLine, offset, matcher.start());
 					}
 					// Execute refactor for pattern.
 					String keyReference = matcher.group(1);
