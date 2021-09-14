@@ -94,12 +94,12 @@ public final class MetaInfoDirectory {
 		Map<String, MetaInfo> infoByConstant = new LinkedHashMap<>();
 		for (MetaInfo metaInfo : infoByClassName.values()) {
 			if (FILTER_PREFIXES.contains(metaInfo.getKeyPrefix())) {
-				continue;
+				continue; // Filter out ambiguous prefixes.
 			}
 			// Only consider the constants; not the formulas !!
 			for (String constant : metaInfo.getConstants().keySet()) {
 				if (FILTER_LITERALS.contains(constant)) {
-					continue;
+					continue; // Filter out ambiguous literals.
 				}
 				// NOTE: Check for ambiguity (2 constants with same literal).
 				if (infoByConstant.putIfAbsent(constant, metaInfo) != null) {

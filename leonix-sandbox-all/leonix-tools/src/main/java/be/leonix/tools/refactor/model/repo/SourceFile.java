@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -114,6 +115,25 @@ public final class SourceFile {
 	 */
 	public List<SourceLine> getSourceLines() {
 		return sourceLines;
+	}
+	
+	/**
+	 * Returns the package-name for this source-file.
+	 */
+	public String getPackageName() {
+		Iterator<SourceLine> lines = sourceLines.iterator();
+		if (! lines.hasNext()) {
+			throw new RuntimeException("Invalid (empty file) Java file: " + sourceFile);
+		} else {
+			String packageLine = lines.next().getLineContent();
+			
+			// Get the package-name from the package declaration.
+			if (packageLine.startsWith("package ") && packageLine.endsWith(";")) {
+				return packageLine.substring("package ".length(), packageLine.length() - 1).trim();
+			} else {
+				throw new RuntimeException("Invalid (no package) Java file: " + sourceFile);
+			}
+		}
 	}
 	
 	/**

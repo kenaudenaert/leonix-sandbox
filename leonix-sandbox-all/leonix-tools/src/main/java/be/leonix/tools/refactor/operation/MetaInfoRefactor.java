@@ -25,6 +25,9 @@ public final class MetaInfoRefactor implements FileRefactor {
 	
 	private static final Pattern META_INFO_REF = Pattern.compile("\"([\\w]+)\"" );
 	
+	// The filter for packages (meta-info and its source package). 
+	private static final Set<String> FILTER_PACKAGES = Set.of("com.genohm.slims.common.model");
+	
 	private final Map<String, MetaInfo> infoByLiteral;
 	
 	public MetaInfoRefactor(String metaInfoDir) {
@@ -44,8 +47,7 @@ public final class MetaInfoRefactor implements FileRefactor {
 	
 	@Override
 	public void refactorFile(SourceFile sourceFile, RefactorContext context) {
-		if (sourceFile.getSourceFile().getParentFile().getAbsolutePath().endsWith(
-				"com/genohm/slims/common/model")) {
+		if (FILTER_PACKAGES.contains(sourceFile.getPackageName())) {
 			return;
 		}
 		long changeCount = 0;
