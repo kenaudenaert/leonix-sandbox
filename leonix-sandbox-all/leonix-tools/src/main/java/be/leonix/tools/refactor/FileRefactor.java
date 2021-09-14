@@ -15,6 +15,16 @@ public interface FileRefactor {
 	default String getDescription() { return getClass().getSimpleName(); }
 	
 	/**
+	 * Called when the refactor operation has been started.
+	 */
+	default void refactorStarted() {}
+	
+	/**
+	 * Called when the refactor operation has been stopped.
+	 */
+	default void refactorStopped() {}
+	
+	/**
 	 * Refactors the specified source-file using the specified refactor-context.
 	 */
 	public void refactorFile(SourceFile sourceFile, RefactorContext context);

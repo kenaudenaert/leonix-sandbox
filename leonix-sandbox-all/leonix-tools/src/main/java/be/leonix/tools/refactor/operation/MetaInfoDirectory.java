@@ -85,6 +85,10 @@ public final class MetaInfoDirectory {
 		return metaInfoDir;
 	}
 	
+	public Set<String> getInfoPrefixes() {
+		return Collections.unmodifiableSet(infoPrefixes);
+	}
+	
 	/**
 	 * Returns the meta-info by unique constant (filters out formulas).
 	 */

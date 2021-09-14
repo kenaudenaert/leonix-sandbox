@@ -33,6 +33,16 @@ public final class MetaInfoRefactor implements FileRefactor {
 	private static final Set<String> FILTER_PACKAGES = Set.of("com.genohm.slims.common.model");
 	
 	private final Map<String, MetaInfo> infoByLiteral;
+	private final Set<String> infoPrefixes;
+	
+	// The number of literals found.
+	private long literalCount = 0;
+	// The number of literals with a prefix found.
+	private long prefixedCount = 0;
+	// The number of replaced constant references.
+	private long constantCount = 0;
+	// The number of replaced formula references.
+	private long formulaCount = 0;
 	
 	public MetaInfoRefactor(String metaInfoDir) {
 		this(new MetaInfoDirectory(new File(metaInfoDir)));
@@ -42,11 +52,28 @@ public final class MetaInfoRefactor implements FileRefactor {
 		infoByLiteral = new LinkedHashMap<>();
 		infoByLiteral.putAll(metaInfoDir.getInfoByConstant()); // unique constants
 	//	infoByLiteral.putAll(metaInfoDir.getInfoByFormula());  // unique formulas
+		infoPrefixes = metaInfoDir.getInfoPrefixes();
 	}
 	
 	@Override
 	public String getDescription() {
 		return "MetaInfoRefactor (use constants and formulas)";
+	}
+	
+	@Override
+	public void refactorStarted() {
+		literalCount  = 0;
+		prefixedCount = 0;
+		constantCount = 0;
+		formulaCount  = 0;
+	}
+	
+	@Override
+	public void refactorStopped() {
+		logger.info("Statistic: literalCount : {}", literalCount);
+		logger.info("Statistic: prefixedCount: {}", prefixedCount);
+		logger.info("Statistic: constantCount: {}", constantCount);
+		logger.info("Statistic: formulaCount : {}", formulaCount);
 	}
 	
 	@Override
@@ -81,15 +108,18 @@ public final class MetaInfoRefactor implements FileRefactor {
 					}
 					// Execute refactor for pattern.
 					String keyReference = matcher.group(1);
+					literalCount++;
 					
 					MetaInfo metaInfo = infoByLiteral.get(keyReference);
 					if (metaInfo != null) {
 						String keyConstant = metaInfo.getConstants().get(keyReference);
 						if (keyConstant != null) {
+							constantCount++;
 							builder.append(metaInfo.getInfoClass());
 							builder.append(".");
 							builder.append(keyConstant);
 						} else {
+							formulaCount++;
 							String keyFormula = metaInfo.getFormulas().get(keyReference);
 							builder.append(metaInfo.getInfoClass());
 							builder.append(".Formulas.");
@@ -97,6 +127,9 @@ public final class MetaInfoRefactor implements FileRefactor {
 						}
 						changeCount++;
 						addedMetaInfo.add(metaInfo);
+					} else if (keyReference.indexOf('_') == 4 && infoPrefixes.contains(keyReference.substring(0,4))) {
+						prefixedCount++;
+						builder.append(matcher.group());
 					} else {
 						builder.append(matcher.group());
 					}
