@@ -50,9 +50,11 @@ public final class SourceRepo {
 			throw new RuntimeException("Could not open git-repo.", ex);
 		}
 		
-		// Perform a recursive seach for source-trees.
+		// Perform a recursive seach for (non-empty) source-trees.
 		this.sourceTrees = listSourceDirectories(repoDir).stream()
-				.map(SourceTree::new).collect(Collectors.toList());
+				.map(SourceTree::new)
+				.filter(v -> !v.getSourceFiles().isEmpty())
+				.collect(Collectors.toList());
 	}
 	
 	/**

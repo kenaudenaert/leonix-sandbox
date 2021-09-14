@@ -29,9 +29,11 @@ public final class SourceTree {
 			throw new IllegalArgumentException("Invalid root-dir: " + rootDir);
 		}
 		
-		// Perform a recursive seach for source-files.
+		// Perform a recursive seach for (non-empty) source-files.
 		this.sourceFiles = listJavaSourceFiles(rootDir).stream()
-				.map(SourceFile::new).collect(Collectors.toList());
+				.map(SourceFile::new)
+				.filter(v -> !v.getSourceLines().isEmpty())
+				.collect(Collectors.toList());
 	}
 	
 	/**
