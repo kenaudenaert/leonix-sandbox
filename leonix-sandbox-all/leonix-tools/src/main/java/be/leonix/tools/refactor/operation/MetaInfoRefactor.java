@@ -9,6 +9,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import be.leonix.tools.refactor.FileRefactor;
 import be.leonix.tools.refactor.RefactorContext;
@@ -22,6 +24,8 @@ import be.leonix.tools.refactor.model.repo.SourceLine;
  * @author Ken Audenaert
  */
 public final class MetaInfoRefactor implements FileRefactor {
+	
+	private static final Logger logger = LoggerFactory.getLogger(MetaInfoRefactor.class);
 	
 	private static final Pattern META_INFO_REF = Pattern.compile("\"([\\w]+)\"" );
 	
@@ -47,7 +51,14 @@ public final class MetaInfoRefactor implements FileRefactor {
 	
 	@Override
 	public void refactorFile(SourceFile sourceFile, RefactorContext context) {
-		if (FILTER_PACKAGES.contains(sourceFile.getPackageName())) {
+		try {
+			String packageName = sourceFile.getPackageName();
+			if (FILTER_PACKAGES.contains(packageName)) {
+				return;
+			}
+		} catch (Exception ex) {
+			// Commented out file or empty file ??
+			logger.error(ex.getMessage());
 			return;
 		}
 		long changeCount = 0;
