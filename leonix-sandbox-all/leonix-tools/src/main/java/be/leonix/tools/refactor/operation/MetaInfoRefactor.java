@@ -41,7 +41,7 @@ public final class MetaInfoRefactor implements FileRefactor {
 	public MetaInfoRefactor(MetaInfoDirectory metaInfoDir) {
 		infoByLiteral = new LinkedHashMap<>();
 		infoByLiteral.putAll(metaInfoDir.getInfoByConstant()); // unique constants
-		infoByLiteral.putAll(metaInfoDir.getInfoByFormula());  // unique formulas
+	//	infoByLiteral.putAll(metaInfoDir.getInfoByFormula());  // unique formulas
 	}
 	
 	@Override
@@ -53,8 +53,11 @@ public final class MetaInfoRefactor implements FileRefactor {
 	public void refactorFile(SourceFile sourceFile, RefactorContext context) {
 		try {
 			String packageName = sourceFile.getPackageName();
-			if (FILTER_PACKAGES.contains(packageName)) {
-				return;
+			for (String filterPackage : FILTER_PACKAGES) {
+				if (packageName.equals(filterPackage) ||
+					packageName.startsWith(filterPackage + '.')) {
+					return;
+				}
 			}
 		} catch (Exception ex) {
 			// Commented out file or empty file ??

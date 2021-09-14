@@ -29,7 +29,7 @@ public final class RefactorTool {
 		try {
 			FileRefactor fileRefactor = new MetaInfoRefactor(
 					"/Users/audenaer/Genohm/slims-repo/platform-api-model/gen-src/com/genohm/slims/common/model");
-			
+
 			Set<String> repoPaths = Set.of(
 					//	"/Users/leonix/github/leonix-maventools",
 					//	"/Users/leonix/github/leonix-framework",
@@ -48,16 +48,12 @@ public final class RefactorTool {
 					
 					logger.info("Repository: {}", sourceRepo.getRepoDir());
 					for (SourceTree sourceTree : sourceRepo.getSourceTrees()) {
-						if (sourceTree.getRootDir().getPath().contains("platform") ||
+						if (sourceTree.getRootDir().getPath().contains("buildSrc") ||
 							sourceTree.getRootDir().getPath().contains("customization") ||
-							sourceTree.getRootDir().getPath().contains("slimsgate") ||
 							sourceTree.getRootDir().getPath().contains("plugin")) {
 							continue;
 						}
-						if (! sourceTree.getRootDir().getPath().contains("slimsdao")) {
-							continue;
-						}
-						
+
 						List<SourceFile> javaFiles = sourceTree.getSourceFiles();
 						logger.info("Sources: {} (count={})", sourceTree.getRootDir(), javaFiles.size());
 						for (SourceFile javaFile : javaFiles) {
