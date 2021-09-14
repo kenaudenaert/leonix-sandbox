@@ -124,13 +124,15 @@ public final class SourceFile {
 		Iterator<SourceLine> lines = sourceLines.iterator();
 		if (! lines.hasNext()) {
 			throw new RuntimeException("Invalid (empty file) Java file: " + sourceFile);
-		} else {
-			String packageLine = lines.next().getLineContent();
+		}
+		for (;;) {
+			String lineContent = lines.next().getLineContent().trim();
 			
 			// Get the package-name from the package declaration.
-			if (packageLine.startsWith("package ") && packageLine.endsWith(";")) {
-				return packageLine.substring("package ".length(), packageLine.length() - 1).trim();
-			} else {
+			if (lineContent.startsWith("package ") && lineContent.endsWith(";")) {
+				return lineContent.substring("package ".length(), lineContent.length() - 1).trim();
+				
+			} else if (! lines.hasNext()) {
 				throw new RuntimeException("Invalid (no package) Java file: " + sourceFile);
 			}
 		}
