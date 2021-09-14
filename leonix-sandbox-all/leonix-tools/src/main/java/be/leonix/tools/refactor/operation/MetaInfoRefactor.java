@@ -51,7 +51,7 @@ public final class MetaInfoRefactor implements FileRefactor {
 	public MetaInfoRefactor(MetaInfoDirectory metaInfoDir) {
 		infoByLiteral = new LinkedHashMap<>();
 		infoByLiteral.putAll(metaInfoDir.getInfoByConstant()); // unique constants
-	//	infoByLiteral.putAll(metaInfoDir.getInfoByFormula());  // unique formulas
+		infoByLiteral.putAll(metaInfoDir.getInfoByFormula());  // unique formulas
 		infoPrefixes = metaInfoDir.getInfoPrefixes();
 	}
 	

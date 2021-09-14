@@ -27,7 +27,7 @@ public final class SourceRepo {
 	private static final IOFileFilter gitFilter = FileFilterUtils.notFileFilter(
 			FileFilterUtils.and(FileFilterUtils.directoryFileFilter(), FileFilterUtils.nameFileFilter(".git")));
 	
-	private static final Set<String> sourceFolders = Set.of("src", "source");
+	private static final Set<String> sourceFolders = Set.of("src", "source", "test");
 	
 	private final File repoDir;
 	private final List<SourceTree> sourceTrees;

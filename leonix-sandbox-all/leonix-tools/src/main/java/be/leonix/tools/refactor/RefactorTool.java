@@ -38,7 +38,7 @@ public final class RefactorTool {
 					"/Users/audenaer/Genohm/slims-repo"
 			);
 			
-			RefactorContext context = new RefactorContext(RefactorMode.UPDATE_FILE);
+			RefactorContext context = new RefactorContext(RefactorMode.LOG_CHANGE);
 			logger.info("Starting refactor.");
 			fileRefactor.refactorStarted();
 			try {
