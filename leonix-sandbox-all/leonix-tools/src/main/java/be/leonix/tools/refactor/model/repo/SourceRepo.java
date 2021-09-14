@@ -53,7 +53,7 @@ public final class SourceRepo {
 		// Perform a recursive seach for (non-empty) source-trees.
 		this.sourceTrees = listSourceDirectories(repoDir).stream()
 				.map(SourceTree::new)
-				.filter(v -> !v.getSourceFiles().isEmpty())
+				.filter(tree -> ! tree.getSourceFiles().isEmpty())
 				.collect(Collectors.toList());
 	}
 	

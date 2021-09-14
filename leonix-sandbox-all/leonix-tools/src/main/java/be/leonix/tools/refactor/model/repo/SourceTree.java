@@ -32,7 +32,7 @@ public final class SourceTree {
 		// Perform a recursive seach for (non-empty) source-files.
 		this.sourceFiles = listJavaSourceFiles(rootDir).stream()
 				.map(SourceFile::new)
-				.filter(v -> !v.getSourceLines().isEmpty())
+				.filter(file -> ! file.getSourceLines().isEmpty())
 				.collect(Collectors.toList());
 	}
 	
