@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class encapsulates meta-info (constants/formulas) for a model class.
+ * This class encapsulates info (constants/formulas) for a model meta-class.
  * 
  * @author leonix
  */
@@ -27,36 +29,52 @@ public final class MetaInfo {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MetaInfo.class);
 	
-	private static final Pattern META_INFO_DEF = Pattern.compile(
+	// The set of ignored alternative names for constants.
+	private static final Set<String> IGNORED_OVERRIDES = Set.of("UNIQUE_IDENTIFIER");
+	
+	// The set of ignored invalid (non-prefix) constants.
+	private static final Set<String> IGNORED_NO_PREFIX = Set.of("roleField");
+	
+	// The pattern for a meta-class identifier (formula or constant).
+	private static final Pattern IDENTIFIER_DEF = Pattern.compile(
 			"public static final String ([\\w]+) = \"([\\w]+)\";");
 	
-	private final String infoClass;
+	private final File sourceFile;
+	private final String metaClass;
 	private final String packageID;
 	private final String keyPrefix;
 	
+	// The formulas (identifiers) by string value (literal).
 	private final Map<String, String> formulas  = new LinkedHashMap<>();
+	
+	// The constants (identifiers) by string value (literal).
 	private final Map<String, String> constants = new LinkedHashMap<>();
 	
-	public MetaInfo(File metaInfoFile) {
-		logger.info("Loading metaInfoFile: {}", metaInfoFile);
+	/**
+	 * Creates meta-info from the specified meta-class source-file.
+	 * 
+	 * @param sourceFile The required (non-null) source-file.
+	 */
+	public MetaInfo(File sourceFile) {
+		this.sourceFile = Objects.requireNonNull(sourceFile);
 		
-		// Check the class-name of the meta-info.
-		String fileName = metaInfoFile.getName();
+		// Check the class-name of the meta-class.
+		String fileName = sourceFile.getName();
 		if (! fileName.endsWith("Meta.java")) {
-			throw new RuntimeException("Invalid (type-name) MetaInfo file: " + fileName);
+			throw new RuntimeException("Invalid (filename) meta-class file: " + fileName);
 		}
-		infoClass = StringUtils.removeEnd(fileName, ".java");
+		metaClass = StringUtils.removeEnd(fileName, ".java");
 		
-		// Get the package and constants.
-		try (FileReader fileReader = new FileReader(metaInfoFile, StandardCharsets.UTF_8)) {
+		logger.info("Loading metaInfo from: {}", sourceFile);
+		try (FileReader fileReader = new FileReader(sourceFile, StandardCharsets.UTF_8)) {
 			try (BufferedReader reader = new BufferedReader(fileReader)) {
-				String line = reader.readLine();
+				String line = reader.readLine().trim();
 				
-				// Get the package-name of the meta-info.
+				// Get the package-id for the meta-class.
 				if (line != null && line.startsWith("package ") && line.endsWith(";")) {
-					packageID = line.substring("package ".length(), line.length() - 1);
+					packageID = line.substring("package ".length(), line.length() - 1).trim();
 				} else {
-					throw new RuntimeException("Invalid (no package) MetaInfo file: " + fileName);
+					throw new RuntimeException("Invalid (no package) meta-class file: " + fileName);
 				}
 				
 				int blockScope = 0;
@@ -67,50 +85,66 @@ public final class MetaInfo {
 					} else if (line.contains("}")) {
 						blockScope--;
 					} else {
-						Matcher matcher = META_INFO_DEF.matcher(line);
+						Matcher matcher = IDENTIFIER_DEF.matcher(line);
 						if (matcher.find()) {
-							String constant = matcher.group(1);
-							String literal  = matcher.group(2);
+							String identifier = matcher.group(1);
+							String literal    = matcher.group(2);
 							
 							if (blockScope == 1) {
-								constants.put(literal, constant);
+								String oldIdentifier = constants.put(literal, identifier);
+								if (oldIdentifier != null) {
+									if (IGNORED_OVERRIDES.contains(identifier)) {
+										constants.put(literal, oldIdentifier);
+									} else {
+										throw new RuntimeException("Found constant override in " + metaClass + ": " + identifier);
+									}
+								}
 							} else if (blockScope == 2) {
-								formulas.put(literal, constant);
+								String oldIdentifier = formulas.put(literal, identifier);
+								if (oldIdentifier != null) {
+									throw new RuntimeException("Found formula override in " + metaClass + ": " + identifier);
+								}
 							}
 						}
 					}
 					line = reader.readLine();
 				}
 			}
-		} catch (RuntimeException | IOException ex) {
-			throw new RuntimeException("Could not parse meta-info-file: " + metaInfoFile, ex);
+		} catch (IOException | RuntimeException ex) {
+			throw new RuntimeException("Could not parse meta-class file: " + sourceFile, ex);
 		}
 		
-		// Get the prefix and check constants.
+		// Get the prefix and check literals for constants.
 		List<String> keys = new ArrayList<>(constants.keySet());
 		Collections.reverse(keys);
 		String lastKey = keys.iterator().next();
 		if (lastKey == null) {
-			throw new RuntimeException("Invalid (no prefix) MetaInfo file: " + fileName);
+			throw new RuntimeException("Invalid (no prefix) meta-class file: " + fileName);
 		} else {
 			keyPrefix = lastKey.substring(0, lastKey.indexOf('_'));
 			if (keyPrefix.length() != 4) {
-				throw new RuntimeException("Invalid (bad prefix) MetaInfo file: " + keyPrefix);
+				throw new RuntimeException("Invalid (bad prefix) meta-class file: " + keyPrefix);
 			}
 			
 			Iterator<String> iterator = constants.keySet().iterator();
 			while (iterator.hasNext()) {
 				String value = iterator.next();
 				if (! value.startsWith(keyPrefix + "_")) {
-					logger.error("Invalid (bad prefix) Constant: " + value);
+					if (! IGNORED_NO_PREFIX.contains(value)) {
+						throw new RuntimeException("Invalid (bad prefix) meta-class constant: " + value);
+					}
 					iterator.remove();
 				}
 			}
 		}
 	}
 	
-	public String getInfoClass() {
-		return infoClass;
+	public File getSourceFile() {
+		return sourceFile;
+	}
+	
+	public String getMetaClass() {
+		return metaClass;
 	}
 	
 	public String getPackageID() {
@@ -122,16 +156,16 @@ public final class MetaInfo {
 	}
 	
 	/**
-	 * Returns the constants by their literal.
-	 */
-	public Map<String, String> getConstants() {
-		return Collections.unmodifiableMap(constants);
-	}
-	
-	/**
-	 * Returns the formulas by their literal.
+	 * Returns the (read-only) formulas (identifiers) by their literal.
 	 */
 	public Map<String, String> getFormulas() {
 		return Collections.unmodifiableMap(formulas);
+	}
+	
+	/**
+	 * Returns the (read-only) constants (identifiers) by their literal.
+	 */
+	public Map<String, String> getConstants() {
+		return Collections.unmodifiableMap(constants);
 	}
 }

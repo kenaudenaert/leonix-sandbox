@@ -115,13 +115,13 @@ public final class MetaInfoRefactor implements FileRefactor {
 						String keyConstant = metaInfo.getConstants().get(keyReference);
 						if (keyConstant != null) {
 							constantCount++;
-							builder.append(metaInfo.getInfoClass());
+							builder.append(metaInfo.getMetaClass());
 							builder.append(".");
 							builder.append(keyConstant);
 						} else {
 							formulaCount++;
 							String keyFormula = metaInfo.getFormulas().get(keyReference);
-							builder.append(metaInfo.getInfoClass());
+							builder.append(metaInfo.getMetaClass());
 							builder.append(".Formulas.");
 							builder.append(keyFormula);
 						}
@@ -150,7 +150,7 @@ public final class MetaInfoRefactor implements FileRefactor {
 		}
 		if (context.getMode() == RefactorMode.UPDATE_FILE && changeCount > 0) {
 			for (MetaInfo metaInfo : addedMetaInfo) {
-				sourceFile.addImportLine(metaInfo.getPackageID() + "." + metaInfo.getInfoClass());
+				sourceFile.addImportLine(metaInfo.getPackageID() + "." + metaInfo.getMetaClass());
 			}
 			sourceFile.saveContents();
 		}

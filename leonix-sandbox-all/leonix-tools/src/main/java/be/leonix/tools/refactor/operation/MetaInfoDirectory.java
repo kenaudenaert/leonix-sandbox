@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class encapsulates a directory containing meta-info classes.
+ * This class encapsulates a directory containing meta-classes.
  * 
  * @author leonix
  */
@@ -23,27 +23,38 @@ public final class MetaInfoDirectory {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MetaInfoDirectory.class);
 	
+	// The set of directory names that are excluded from search.
 	private static final Set<String> DIRECTORY_EXCLUDES = Set.of("olss");
+	
+	// The set of file names that are excluded from search.
 	private static final Set<String> FILE_EXCLUDES = Set.of(".DS_Store");
 	
-	// The filter for prefixes (see printer sub-package). 
+	// The ignored (ambiguous) prefixes (see printer sub-package). 
 	private static final Set<String> FILTER_PREFIXES = Set.of("prnt");
-	// The filter for literals (see DataSourceMetaInfo).
+	
+	// The ignored (ambiguous) literals (see DataSourceMetaInfo).
 	private static final Set<String> FILTER_LITERALS = Set.of("tbfl_fk_datatype");
 	
 	private final File metaInfoDir;
 	
-	// The details for the meta-info classes by their qualified class-name.
+	// The info for the meta-classes by their fully qualified class-name.
 	private final Map<String, MetaInfo> infoByClassName = new LinkedHashMap<>();
+	
+	// The set of all known (found in directory) prefixes.
 	private final Set<String> infoPrefixes = new LinkedHashSet<>();
 	
+	/**
+	 * Creates meta-info-directory from the specified directory.
+	 * 
+	 * @param metaInfoDir The required (non-null) directory.
+	 */
 	public MetaInfoDirectory(File metaInfoDir) {
 		this.metaInfoDir = Objects.requireNonNull(metaInfoDir);
 		if (! metaInfoDir.isDirectory()) {
 			throw new IllegalArgumentException("Invalid meta-info-dir: " + metaInfoDir);
 		}
 		
-		logger.info("Searching MetaInfoDirectory: {}", metaInfoDir);
+		logger.info("Searching MetaInfo in: {}", metaInfoDir);
 		collectMetaInfo(metaInfoDir);
 		
 		logger.info("Found MetaInfo classes: {}", infoByClassName.size());
@@ -69,7 +80,7 @@ public final class MetaInfoDirectory {
 					if (fileName.endsWith("Meta.java")) {
 						MetaInfo metaInfo = new MetaInfo(metaInfoFile);
 						
-						String className = metaInfo.getPackageID()+ "." + metaInfo.getInfoClass();
+						String className = metaInfo.getPackageID()+ "." + metaInfo.getMetaClass();
 						if (infoByClassName.putIfAbsent(className, metaInfo) != null) {
 							throw new RuntimeException("Found duplicate info: {}" + className);
 						}
