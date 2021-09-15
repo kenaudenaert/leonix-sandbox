@@ -44,8 +44,11 @@ public final class MetaInfo {
 	private final String packageID;
 	private final String keyPrefix;
 	
+	private final List<MetaIdentifier> formulaIDs  = new ArrayList<>();
+	private final List<MetaIdentifier> constantIDs = new ArrayList<>();
+	
 	// The formulas (identifiers) by string value (literal).
-	private final Map<String, String> formulas  = new LinkedHashMap<>();
+	private final Map<String, String> formulas = new LinkedHashMap<>();
 	
 	// The constants (identifiers) by string value (literal).
 	private final Map<String, String> constants = new LinkedHashMap<>();
@@ -90,7 +93,11 @@ public final class MetaInfo {
 							String identifier = matcher.group(1);
 							String literal    = matcher.group(2);
 							
+							MetaIdentifier metaID = new MetaIdentifier(identifier, literal);
 							if (blockScope == 1) {
+								constantIDs.add(metaID);
+								
+								// Ensure unique identifier for a constant.
 								String oldIdentifier = constants.put(literal, identifier);
 								if (oldIdentifier != null) {
 									if (IGNORED_OVERRIDES.contains(identifier)) {
@@ -100,6 +107,9 @@ public final class MetaInfo {
 									}
 								}
 							} else if (blockScope == 2) {
+								formulaIDs.add(metaID);
+								
+								// Ensure unique identifier for a formula.
 								String oldIdentifier = formulas.put(literal, identifier);
 								if (oldIdentifier != null) {
 									throw new RuntimeException("Found formula override in " + metaClass + ": " + identifier);
@@ -153,6 +163,14 @@ public final class MetaInfo {
 	
 	public String getKeyPrefix() {
 		return keyPrefix;
+	}
+	
+	public List<MetaIdentifier> getFormulaIDs() {
+		return Collections.unmodifiableList(formulaIDs);
+	}
+	
+	public List<MetaIdentifier> getConstantIDs() {
+		return Collections.unmodifiableList(constantIDs);
 	}
 	
 	/**
