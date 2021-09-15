@@ -62,9 +62,9 @@ public final class RefactorTool {
 							}
 						}
 						if (context.getMode() == RefactorMode.COMMIT_REPO) {
-							SourceAuthor autor = new SourceAuthor("Ken Audenaert", (repoDir.getName().contains("slims") ? 
+							SourceAuthor author = new SourceAuthor("Ken Audenaert", (repoDir.getName().contains("slims") ? 
 									"ken.audenaert@agilent.com" : "ken.audenaert@telenet.be"));
-							sourceRepo.commitChanges(autor, fileRefactor.getDescription());
+							sourceRepo.commitChanges(author, fileRefactor.getDescription());
 						}
 					}
 				}
