@@ -9,7 +9,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -178,5 +180,75 @@ public final class SourceFile {
 			sourceLines.add(sourceLines.indexOf(importLines.iterator().next()), importLine);
 		}
 		return importLine;
+	}
+	
+	/**
+	 * Sorts the import-lines for this source-file.
+	 */
+	public void sortImportLines() {
+		List<SourceLine> importLines = getImportLines();
+		if (importLines.size() > 1) {
+			String lineEnding = importLines.iterator().next().getLineEnding();
+			
+			// Get lines before imports.
+			int minIndex = sourceLines.indexOf(importLines.get(0));
+			List<SourceLine> beforeLines = new ArrayList<SourceLine>(
+					sourceLines.subList(0, minIndex));
+			
+			// Get lines after imports.
+			int maxIndex = sourceLines.indexOf(importLines.get(importLines.size()-1));
+			List<SourceLine> afterLines = new ArrayList<SourceLine>(
+					sourceLines.subList(maxIndex+1, sourceLines.size()));
+			
+			// Sort the import lines.
+			Map<String, SourceLine> staticImportsByClassName = new TreeMap<>();
+			Map<String, SourceLine> simpleImportsByClassName = new TreeMap<>();
+			for (SourceLine importLine : importLines) {
+				String importText = importLine.getLineContent().trim();
+				importText = StringUtils.removeStart(importText, "import ");
+				importText = StringUtils.removeEnd(importText, ";");
+				importText = importText.trim();
+				
+				if (importText.startsWith("static ")) {
+					importText = StringUtils.removeStart(importText, "import ");
+					importText = importText.trim();
+					staticImportsByClassName.put(importText, importLine);
+				} else {
+					simpleImportsByClassName.put(importText, importLine);
+				}
+			}
+			
+			// Generate static import section.
+			List<SourceLine> sortedImports = new ArrayList<SourceLine>();
+			for (Map.Entry<String, SourceLine> entry : staticImportsByClassName.entrySet()) {
+				sortedImports.add(entry.getValue());
+			}
+			if (! simpleImportsByClassName.isEmpty()) {
+				sortedImports.add(new SourceLine(0, "", lineEnding));
+			}
+			
+			// Generate import section.
+			String lastGroup = null;
+			for (Map.Entry<String, SourceLine> entry : simpleImportsByClassName.entrySet()) {
+				String entryGroup = entry.getKey().substring(0, entry.getKey().indexOf('.'));
+				if (lastGroup != null && !lastGroup.equals(entryGroup)) {
+					sortedImports.add(new SourceLine(0, "", lineEnding));
+				}
+				sortedImports.add(entry.getValue());
+				lastGroup = entryGroup;
+			}
+			
+			// Replace file contents.
+			sourceLines.clear();
+			sourceLines.addAll(beforeLines);
+			sourceLines.addAll(sortedImports);
+			sourceLines.addAll(afterLines);
+		}
+	}
+	
+	public static void main(String[] args) {
+		SourceFile sourceFile = new SourceFile(new File("/Users/leonix/Desktop/AvatarMeta.java"));
+		sourceFile.sortImportLines();
+		sourceFile.saveContents();
 	}
 }
