@@ -100,6 +100,10 @@ public final class MetaInfoDirectory {
 		return Collections.unmodifiableSet(infoPrefixes);
 	}
 	
+	public Map<String, MetaInfo> getMetaInfos() {
+		return Collections.unmodifiableMap(infoByClassName);
+	}
+	
 	/**
 	 * Returns the meta-info by unique constant (filters out formulas).
 	 */
@@ -192,5 +196,12 @@ public final class MetaInfoDirectory {
 		MetaInfoDirectory dir = new MetaInfoDirectory(new File("/Users/leonix/Desktop/model"));
 		dir.getInfoByConstant();
 		dir.getInfoByFormula();
+		
+		for (MetaInfo metaInfo : dir.getMetaInfos().values()) {
+			MetaIdentifier metaID = metaInfo.getUniqueID();
+			if (metaID != null && !metaID.getIdentifier().equals("UNIQUE_IDENTIFIER")) {
+				logger.info("Alternative Unique ID: {} ({})",  metaInfo.getMetaClass(), metaID.getIdentifier());
+			}
+		}
 	}
 }

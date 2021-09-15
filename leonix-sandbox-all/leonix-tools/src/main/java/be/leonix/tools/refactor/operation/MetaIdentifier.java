@@ -42,4 +42,9 @@ public final class MetaIdentifier {
 		return (Objects.equals(identifier, other.identifier) &&
 				Objects.equals(literal, other.literal));
 	}
+	
+	@Override
+	public String toString() {
+		return "MetaIdentifier [identifier=" + identifier + ", literal=" + literal + "]";
+	}
 }

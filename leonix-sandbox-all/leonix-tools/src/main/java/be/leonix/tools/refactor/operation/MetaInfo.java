@@ -29,8 +29,10 @@ public final class MetaInfo {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MetaInfo.class);
 	
+	private static final String DEFAULT_UNIQUE_ID = "UNIQUE_IDENTIFIER";
+	
 	// The set of ignored alternative names for constants.
-	private static final Set<String> IGNORED_OVERRIDES = Set.of("UNIQUE_IDENTIFIER");
+	private static final Set<String> IGNORED_OVERRIDES = Set.of(DEFAULT_UNIQUE_ID);
 	
 	// The set of ignored invalid (non-prefix) constants.
 	private static final Set<String> IGNORED_NO_PREFIX = Set.of("roleField");
@@ -171,6 +173,26 @@ public final class MetaInfo {
 	
 	public List<MetaIdentifier> getConstantIDs() {
 		return Collections.unmodifiableList(constantIDs);
+	}
+	
+	public MetaIdentifier getConstantID(String name) {
+		for (MetaIdentifier constantID : constantIDs) {
+			if (constantID.getIdentifier().equals(name)) {
+				return constantID;
+			}
+		}
+		return null;
+	}
+	
+	public MetaIdentifier getUniqueID() {
+		MetaIdentifier standardUID = getConstantID(DEFAULT_UNIQUE_ID);
+		if (standardUID != null) {
+			String alternative = constants.get(standardUID.getLiteral());
+			if (alternative != null) {
+				return getConstantID(alternative);
+			}
+		}
+		return standardUID;
 	}
 	
 	/**
