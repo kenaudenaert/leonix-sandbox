@@ -202,7 +202,10 @@ public final class SourceFile {
 			
 			// Sort the import lines.
 			Map<String, SourceLine> staticImportsByClassName = new TreeMap<>();
+			Map<String, SourceLine> jdkImportsByClassName = new TreeMap<>();
+			Map<String, SourceLine> extImportsByClassName = new TreeMap<>();
 			Map<String, SourceLine> simpleImportsByClassName = new TreeMap<>();
+			
 			for (SourceLine importLine : importLines) {
 				String importText = importLine.getLineContent().trim();
 				importText = StringUtils.removeStart(importText, "import ");
@@ -213,21 +216,38 @@ public final class SourceFile {
 					importText = StringUtils.removeStart(importText, "import ");
 					importText = importText.trim();
 					staticImportsByClassName.put(importText, importLine);
+				} else if (importText.startsWith("java.")) {
+					jdkImportsByClassName.put(importText, importLine);
+				} else if (importText.startsWith("javax.")) {
+					extImportsByClassName.put(importText, importLine);
 				} else {
 					simpleImportsByClassName.put(importText, importLine);
 				}
 			}
 			
-			// Generate static import section.
+			// Generate import sections (static, jdk, ext, simple).
 			List<SourceLine> sortedImports = new ArrayList<SourceLine>();
-			for (Map.Entry<String, SourceLine> entry : staticImportsByClassName.entrySet()) {
-				sortedImports.add(entry.getValue());
-			}
-			if (! simpleImportsByClassName.isEmpty()) {
+			if (! staticImportsByClassName.isEmpty()) {
+				for (Map.Entry<String, SourceLine> entry : staticImportsByClassName.entrySet()) {
+					sortedImports.add(entry.getValue());
+				}
 				sortedImports.add(new SourceLine(0, "", lineEnding));
 			}
 			
-			// Generate import section.
+			if (! jdkImportsByClassName.isEmpty()) {
+				for (Map.Entry<String, SourceLine> entry : jdkImportsByClassName.entrySet()) {
+					sortedImports.add(entry.getValue());
+				}
+				sortedImports.add(new SourceLine(0, "", lineEnding));
+			}
+			
+			if (! extImportsByClassName.isEmpty()) {
+				for (Map.Entry<String, SourceLine> entry : extImportsByClassName.entrySet()) {
+					sortedImports.add(entry.getValue());
+				}
+				sortedImports.add(new SourceLine(0, "", lineEnding));
+			}
+			
 			String lastGroup = null;
 			for (Map.Entry<String, SourceLine> entry : simpleImportsByClassName.entrySet()) {
 				String entryGroup = entry.getKey().substring(0, entry.getKey().indexOf('.'));
