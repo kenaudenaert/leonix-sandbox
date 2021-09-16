@@ -11,7 +11,7 @@ import be.leonix.tools.refactor.model.repo.SourceAuthor;
 import be.leonix.tools.refactor.model.repo.SourceFile;
 import be.leonix.tools.refactor.model.repo.SourceRepo;
 import be.leonix.tools.refactor.model.repo.SourceTree;
-import be.leonix.tools.refactor.operation.MetaInfoRefactor;
+import be.leonix.tools.refactor.operation.MetaTypeRefactor;
 
 /**
  * The application (tool) for refactoring Java source files.
@@ -27,7 +27,7 @@ public final class RefactorTool {
 	 */
 	public static void main(String[] args) {
 		try {
-			FileRefactor fileRefactor = new MetaInfoRefactor(
+			FileRefactor fileRefactor = new MetaTypeRefactor(
 					"/Users/audenaer/Genohm/slims-repo/platform-api-model/gen-src/com/genohm/slims/common/model");
 			
 			Set<String> repoPaths = Set.of(

@@ -3,16 +3,16 @@ package be.leonix.tools.refactor.operation;
 import java.util.Objects;
 
 /**
- * This class defines a meta identifier (constant/formula).
+ * This class defines a meta-type identifier (constant or formula).
  * 
  * @author leonix
  */
-public final class MetaIdentifier {
+public final class MetaTypeID {
 	
 	private final String identifier;
 	private final String literal;
 	
-	public MetaIdentifier(String identifier, String literal) {
+	public MetaTypeID(String identifier, String literal) {
 		this.identifier = Objects.requireNonNull(identifier);
 		this.literal    = Objects.requireNonNull(literal);
 	}
@@ -35,16 +35,16 @@ public final class MetaIdentifier {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof MetaIdentifier)) {
+		if (!(obj instanceof MetaTypeID)) {
 			return false;
 		}
-		MetaIdentifier other = (MetaIdentifier) obj;
+		MetaTypeID other = (MetaTypeID) obj;
 		return (Objects.equals(identifier, other.identifier) &&
 				Objects.equals(literal, other.literal));
 	}
 	
 	@Override
 	public String toString() {
-		return "MetaIdentifier [identifier=" + identifier + ", literal=" + literal + "]";
+		return "MetaTypeID [identifier=" + identifier + ", literal=" + literal + "]";
 	}
 }

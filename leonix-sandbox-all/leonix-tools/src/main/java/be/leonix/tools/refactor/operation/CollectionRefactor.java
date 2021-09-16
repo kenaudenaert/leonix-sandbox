@@ -28,8 +28,7 @@ public final class CollectionRefactor implements FileRefactor {
 	
 	@Override
 	public void refactorFile(SourceFile sourceFile, RefactorContext context) {
-		SourceLine importLists = sourceFile.getImportLine("com.google.common.collect.Lists");
-		if (importLists != null) {
+		if (acceptFile(sourceFile)) {
 			long changeCount = 0;
 			
 			for (SourceLine sourceLine : sourceFile.getSourceLines()) {
@@ -41,13 +40,24 @@ public final class CollectionRefactor implements FileRefactor {
 					changeCount++;
 				}
 			}
-			if (context.getMode() == RefactorMode.UPDATE_FILE && changeCount > 0) {
+			if (changeCount > 0 && context.getMode() != RefactorMode.LOG_CHANGE) {
 				sourceFile.addImportLine("java.util.ArrayList");
 				sourceFile.saveContents();
 			}
 		}
 	}
 	
+	/**
+	 * Returns whether the specified source-file should be refactored.
+	 */
+	private boolean acceptFile(SourceFile sourceFile) {
+		SourceLine importLists = sourceFile.getImportLine("com.google.common.collect.Lists");
+		return (importLists != null);
+	}
+	
+	/**
+	 * Refactors the specified source-line and returns the result.
+	 */
 	private String refactorLine(String sourceLine, Pattern pattern) {
 		StringBuilder builder = new StringBuilder();
 		if (StringUtils.isNotEmpty(sourceLine)) {
