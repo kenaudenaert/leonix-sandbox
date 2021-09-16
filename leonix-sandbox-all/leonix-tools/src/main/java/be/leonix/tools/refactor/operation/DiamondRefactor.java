@@ -16,47 +16,47 @@ import be.leonix.tools.refactor.model.repo.SourceLine;
  */
 public final class DiamondRefactor implements LineRefactor {
 	
-	private static final Pattern DIAMOND = Pattern.compile(
-			"(=\\s+new\\s+[\\w\\.]+\\s*<)" +	// new package.Generic<
+	private static final Pattern NON_DIAMOND_CTOR = Pattern.compile(
+			"(=\\s*new\\s+[\\w\\.]+\\s*<)" +	// = new package.Generic<
 			"[\\w\\.\\s,]+" +					// package.Foo, Bar
 			"(>\\s*\\(\\s*\\)\\s*;)");			// >();
 	
 	@Override
 	public String getDescription() {
-		return "DiamondRefactor (use diamond syntax)";
+		return "DiamondRefactor (use diamond syntax ctor)";
 	}
 	
 	@Override
 	public void refactorLine(SourceLine sourceLine, RefactorContext context) {
 		String oldLine = sourceLine.getLineContent();
-		String newLine = refactorLine(oldLine, DIAMOND);
-		if (! StringUtils.equals(oldLine, newLine)) {
-			sourceLine.setLineContent(newLine);
+		if (StringUtils.isNotEmpty(oldLine)) {
+			String newLine = refactorLine(oldLine);
+			if (! StringUtils.equals(oldLine, newLine)) {
+				sourceLine.setLineContent(newLine);
+			}
 		}
 	}
 	
-	private String refactorLine(String sourceLine, Pattern pattern) {
+	/**
+	 * Refactors the specified source-line and returns the result.
+	 */
+	private String refactorLine(String sourceLine) {
 		StringBuilder builder = new StringBuilder();
-		if (StringUtils.isNotEmpty(sourceLine)) {
-			
-			int offset = 0;
-			Matcher matcher = pattern.matcher(sourceLine);
-			while (matcher.find(offset)) {
-				// Copy unmatched leading section.
-				if (matcher.start() > offset) {
-					builder.append(sourceLine, offset, matcher.start());
-				}
-				// Execute refactor for pattern.
-				// String reference = matcher.group();
-				for (int group = 1; group <= matcher.groupCount(); group++) {
-					builder.append(matcher.group(group));
-				}
-				offset = matcher.end();
+		int offset = 0;
+		Matcher matcher = NON_DIAMOND_CTOR.matcher(sourceLine);
+		while (matcher.find(offset)) {
+			// Copy unmatched leading section.
+			if (matcher.start() > offset) {
+				builder.append(sourceLine, offset, matcher.start());
 			}
-			// Copy unmatched trailing section.
-			if (offset < sourceLine.length()) {
-				builder.append(sourceLine.substring(offset));
-			}
+			// Execute refactor for pattern: keep only the sub-groups.
+			builder.append(matcher.group(1));
+			builder.append(matcher.group(2));
+			offset = matcher.end();
+		}
+		// Copy unmatched trailing section.
+		if (offset < sourceLine.length()) {
+			builder.append(sourceLine.substring(offset));
 		}
 		return builder.toString();
 	}

@@ -68,7 +68,7 @@ public final class LineBasedRefactor implements FileRefactor {
 					}
 				}
 			}
-			if (context.getMode() == RefactorMode.UPDATE_FILE && changeCount > 0) {
+			if (context.getMode() != RefactorMode.LOG_CHANGE && changeCount > 0) {
 				sourceFile.saveContents();
 			}
 		}

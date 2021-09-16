@@ -81,12 +81,12 @@ public final class MetaTypeRefactor implements FileRefactor {
 		if (acceptFile(sourceFile)) {
 			long changeCount = 0;
 			
-			Set<MetaTypeInfo> addedMetaTypes = new HashSet<>();
+			Set<MetaTypeInfo> newMetaTypes = new HashSet<>();
 			for (SourceLine sourceLine : sourceFile.getSourceLines()) {
 				String oldLine = sourceLine.getLineContent();
 				if (StringUtils.isNotEmpty(oldLine)) {
 					
-					String newLine = refactorLine(oldLine, addedMetaTypes);
+					String newLine = refactorLine(oldLine, newMetaTypes);
 					if (! StringUtils.equals(oldLine, newLine)) {
 						sourceLine.setLineContent(newLine);
 						changeCount++;
@@ -94,7 +94,7 @@ public final class MetaTypeRefactor implements FileRefactor {
 				}
 			}
 			if (changeCount > 0 && context.getMode() != RefactorMode.LOG_CHANGE) {
-				for (MetaTypeInfo metaTypeInfo : addedMetaTypes) {
+				for (MetaTypeInfo metaTypeInfo : newMetaTypes) {
 					sourceFile.addImportLine(metaTypeInfo.getPackageID() + "." + metaTypeInfo.getClassName());
 				}
 				sourceFile.saveContents();
@@ -125,9 +125,8 @@ public final class MetaTypeRefactor implements FileRefactor {
 	/**
 	 * Refactors the specified source-line and returns the result.
 	 */
-	private String refactorLine(String sourceLine, Set<MetaTypeInfo> addedMetaTypes) {
+	private String refactorLine(String sourceLine, Set<MetaTypeInfo> newMetaTypes) {
 		StringBuilder builder = new StringBuilder();
-		
 		int offset = 0;
 		Matcher matcher = META_TYPE_LITERAL.matcher(sourceLine);
 		while (matcher.find(offset)) {
@@ -135,7 +134,7 @@ public final class MetaTypeRefactor implements FileRefactor {
 			if (matcher.start() > offset) {
 				builder.append(sourceLine, offset, matcher.start());
 			}
-			// Execute refactor for pattern.
+			// Execute refactor for pattern: replace literal by identifier.
 			String keyReference = matcher.group(1);
 			literalCount++;
 			
@@ -154,14 +153,13 @@ public final class MetaTypeRefactor implements FileRefactor {
 					builder.append(".Formulas.");
 					builder.append(keyFormula);
 				}
-				addedMetaTypes.add(metaTypeInfo);
+				newMetaTypes.add(metaTypeInfo);
 			} else if (keyReference.indexOf('_') == 4 && infoPrefixes.contains(keyReference.substring(0,4))) {
 				prefixedCount++;
 				builder.append(matcher.group());
 			} else {
 				builder.append(matcher.group());
 			}
-			
 			offset = matcher.end();
 		}
 		// Copy unmatched trailing section.

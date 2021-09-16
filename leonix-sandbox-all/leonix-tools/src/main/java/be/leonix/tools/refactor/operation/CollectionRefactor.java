@@ -23,7 +23,7 @@ public final class CollectionRefactor implements FileRefactor {
 	
 	@Override
 	public String getDescription() {
-		return "CollectionRefactor (use collection ctors)";
+		return "CollectionRefactor (use standard collection ctors)";
 	}
 	
 	@Override
@@ -33,11 +33,13 @@ public final class CollectionRefactor implements FileRefactor {
 			
 			for (SourceLine sourceLine : sourceFile.getSourceLines()) {
 				String oldLine = sourceLine.getLineContent();
-				
-				String newLine = refactorLine(oldLine, GUAVA_LIST);
-				if (! StringUtils.equals(oldLine, newLine)) {
-					sourceLine.setLineContent(newLine);
-					changeCount++;
+				if (StringUtils.isNotEmpty(oldLine)) {
+					
+					String newLine = refactorLine(oldLine, GUAVA_LIST, "new ArrayList<>()");
+					if (! StringUtils.equals(oldLine, newLine)) {
+						sourceLine.setLineContent(newLine);
+						changeCount++;
+					}
 				}
 			}
 			if (changeCount > 0 && context.getMode() != RefactorMode.LOG_CHANGE) {
@@ -58,28 +60,22 @@ public final class CollectionRefactor implements FileRefactor {
 	/**
 	 * Refactors the specified source-line and returns the result.
 	 */
-	private String refactorLine(String sourceLine, Pattern pattern) {
+	private String refactorLine(String sourceLine, Pattern pattern, String replacement) {
 		StringBuilder builder = new StringBuilder();
-		if (StringUtils.isNotEmpty(sourceLine)) {
-			
-			int offset = 0;
-			Matcher matcher = pattern.matcher(sourceLine);
-			while (matcher.find(offset)) {
-				// Copy unmatched leading section.
-				if (matcher.start() > offset) {
-					builder.append(sourceLine, offset, matcher.start());
-				}
-				// Execute refactor for pattern.
-				// String reference = matcher.group();
-				for (int group = 1; group <= matcher.groupCount(); group++) {
-					builder.append(matcher.group(group));
-				}
-				offset = matcher.end();
+		int offset = 0;
+		Matcher matcher = pattern.matcher(sourceLine);
+		while (matcher.find(offset)) {
+			// Copy unmatched leading section.
+			if (matcher.start() > offset) {
+				builder.append(sourceLine, offset, matcher.start());
 			}
-			// Copy unmatched trailing section.
-			if (offset < sourceLine.length()) {
-				builder.append(sourceLine.substring(offset));
-			}
+			// Execute refactor for pattern: replace match with replacement.
+			builder.append(replacement);
+			offset = matcher.end();
+		}
+		// Copy unmatched trailing section.
+		if (offset < sourceLine.length()) {
+			builder.append(sourceLine.substring(offset));
 		}
 		return builder.toString();
 	}
