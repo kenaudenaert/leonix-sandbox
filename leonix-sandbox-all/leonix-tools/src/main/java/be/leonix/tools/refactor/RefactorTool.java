@@ -38,7 +38,7 @@ public final class RefactorTool {
 					"/Users/audenaer/Genohm/slims-repo"
 			);
 			
-			RefactorContext context = new RefactorContext(RefactorMode.LOG_CHANGE);
+			RefactorContext context = new RefactorContext(RefactorMode.UPDATE_FILE);
 			logger.info("Starting refactor.");
 			fileRefactor.refactorStarted();
 			try {
@@ -51,7 +51,9 @@ public final class RefactorTool {
 						for (SourceTree sourceTree : sourceRepo.getSourceTrees()) {
 							if (sourceTree.getRootDir().getPath().contains("buildSrc") ||
 								sourceTree.getRootDir().getPath().contains("customization") ||
-								sourceTree.getRootDir().getPath().contains("plugin")) {
+								sourceTree.getRootDir().getPath().contains("plugin") ||
+								sourceTree.getRootDir().getPath().contains("gwt-binaries") ||
+								sourceTree.getRootDir().getPath().contains("build")) {
 								continue;
 							}
 							
