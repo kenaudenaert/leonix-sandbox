@@ -204,6 +204,7 @@ public final class SourceFile {
 			Map<String, SourceLine> staticImportsByClassName = new TreeMap<>();
 			Map<String, SourceLine> jdkImportsByClassName = new TreeMap<>();
 			Map<String, SourceLine> extImportsByClassName = new TreeMap<>();
+			Map<String, SourceLine> orgImportsByClassName = new TreeMap<>();
 			Map<String, SourceLine> simpleImportsByClassName = new TreeMap<>();
 			
 			for (SourceLine importLine : importLines) {
@@ -220,6 +221,8 @@ public final class SourceFile {
 					jdkImportsByClassName.put(importText, importLine);
 				} else if (importText.startsWith("javax.")) {
 					extImportsByClassName.put(importText, importLine);
+				} else if (importText.startsWith("org.")) {
+					orgImportsByClassName.put(importText, importLine);
 				} else {
 					simpleImportsByClassName.put(importText, importLine);
 				}
@@ -247,7 +250,14 @@ public final class SourceFile {
 				}
 				sortedImports.add(new SourceLine(0, "", lineEnding));
 			}
-			
+
+			if (! orgImportsByClassName.isEmpty()) {
+				for (Map.Entry<String, SourceLine> entry : orgImportsByClassName.entrySet()) {
+					sortedImports.add(entry.getValue());
+				}
+				sortedImports.add(new SourceLine(0, "", lineEnding));
+			}
+
 			String lastGroup = null;
 			for (Map.Entry<String, SourceLine> entry : simpleImportsByClassName.entrySet()) {
 				String entryGroup = entry.getKey().substring(0, entry.getKey().indexOf('.'));
