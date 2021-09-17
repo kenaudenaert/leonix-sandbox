@@ -1,6 +1,8 @@
 package be.leonix.tools.refactor.operation;
 
 import java.io.File;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,33 +17,56 @@ import be.leonix.tools.refactor.model.repo.SourceFile;
 import be.leonix.tools.refactor.model.repo.SourceLine;
 
 /**
- * A {@link FileRefactor} that refactors code to expand the MetaInfo constants. 
+ * A {@link FileRefactor} that refactors code to select a MetaInfo constant. 
  * 
  * @author Ken Audenaert
  */
-public final class MetaTypeExpander implements FileRefactor {
+public final class MetaTypeSelector implements FileRefactor {
 	
-	private static final Logger logger = LoggerFactory.getLogger(MetaTypeExpander.class);
+	private static final Logger logger = LoggerFactory.getLogger(MetaTypeSelector.class);
+	
+	// The identifier for the 'unique-id' data-model attribute.
+	private static final String UNIQUE_ID = "UNIQUE_IDENTIFIER";
 	
 	private static final Pattern META_TYPE_ID_REF = Pattern.compile(
 			"[^\\w]([\\w]+)\\.([\\w]+)[^\\w]");
 	
-	public MetaTypeExpander(String metaTypeDir) {
+	// The unique-ID (identifier) by meta-type (class-name).
+	private final Map<String, String> uniqueIDs = new LinkedHashMap<>();
+	
+	// The number of changed constant references.
+	private long changedCount = 0;
+	
+	public MetaTypeSelector(String metaTypeDir) {
 		this(new MetaTypeDirectory(new File(metaTypeDir)));
 	}
 	
-	public MetaTypeExpander(MetaTypeDirectory metaTypeDir) {
+	public MetaTypeSelector(MetaTypeDirectory metaTypeDir) {
 		for (MetaTypeInfo metaTypeInfo : metaTypeDir.getInfoByName().values()) {
 			MetaTypeID metaID = metaTypeInfo.getUniqueID();
-			if (metaID != null && !metaID.getIdentifier().equals("UNIQUE_IDENTIFIER")) {
-				logger.info("Alternative Unique ID: {} ({})",  metaTypeInfo.getClassName(), metaID.getIdentifier());
+			if (metaID != null && !metaID.getIdentifier().equals(UNIQUE_ID)) {
+				String metaType = metaTypeInfo.getClassName();
+				String uniqueID = metaID.getIdentifier();
+				
+				logger.info("Unique ID: {} : {}.", metaType, uniqueID);
+				uniqueIDs.put(metaType, uniqueID);
 			}
 		}
 	}
 	
 	@Override
 	public String getDescription() {
-		return "MetaTypeExpander (expands meta-type identifiers)";
+		return "MetaTypeSelector (expands meta-type identifiers)";
+	}
+	
+	@Override
+	public void refactorStarted() {
+		changedCount = 0;
+	}
+	
+	@Override
+	public void refactorStopped() {
+		logger.info("Statistic: expandCount : {}", changedCount);
 	}
 	
 	@Override
@@ -76,8 +101,21 @@ public final class MetaTypeExpander implements FileRefactor {
 			if (matcher.start() > offset) {
 				builder.append(sourceLine, offset, matcher.start());
 			}
-			// Execute refactor for pattern: replace match with ???.
-			builder.append(matcher.group());
+			// Execute refactor for pattern: replace the unique-id.
+			String metaType = matcher.group(1);
+			String constant = matcher.group(2);
+			
+			if (constant.equals(UNIQUE_ID)) {
+				String uniqueID = uniqueIDs.get(metaType);
+				if (uniqueID != null) {
+					builder.append(matcher.group().replace(UNIQUE_ID, uniqueID));
+					changedCount++;
+				} else {
+					builder.append(matcher.group());
+				}
+			} else {
+				builder.append(matcher.group());
+			}
 			offset = matcher.end();
 		}
 		// Copy unmatched trailing section.
