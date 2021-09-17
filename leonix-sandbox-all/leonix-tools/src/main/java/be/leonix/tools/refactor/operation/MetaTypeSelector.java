@@ -77,7 +77,7 @@ public final class MetaTypeSelector implements FileRefactor {
 			String oldLine = sourceLine.getLineContent();
 			if (StringUtils.isNotEmpty(oldLine)) {
 				
-				String newLine = refactorLine(oldLine);
+				String newLine = refactorLine(oldLine, context);
 				if (! StringUtils.equals(oldLine, newLine)) {
 					sourceLine.setLineContent(newLine);
 					changeCount++;
@@ -92,7 +92,7 @@ public final class MetaTypeSelector implements FileRefactor {
 	/**
 	 * Refactors the specified source-line and returns the result.
 	 */
-	private String refactorLine(String sourceLine) {
+	private String refactorLine(String sourceLine, RefactorContext context) {
 		StringBuilder builder = new StringBuilder();
 		int offset = 0;
 		Matcher matcher = META_TYPE_ID_REF.matcher(sourceLine);
@@ -113,6 +113,14 @@ public final class MetaTypeSelector implements FileRefactor {
 				} else {
 					builder.append(matcher.group());
 				}
+			} else if (metaType.endsWith("Meta")) {
+				if (sourceLine.contains("/*") || 
+					sourceLine.contains("*/") ||
+					sourceLine.contains("//") ||
+					sourceLine.trim().startsWith("*")) {
+					context.addInfo(">>" + sourceLine);
+				}
+				builder.append(matcher.group());
 			} else {
 				builder.append(matcher.group());
 			}
