@@ -21,9 +21,9 @@ import be.leonix.tools.refactor.model.repo.SourceLine;
  * 
  * @author Ken Audenaert
  */
-public final class MetaTypeSelector implements FileRefactor {
+public final class MetaTypeReplacer implements FileRefactor {
 	
-	private static final Logger logger = LoggerFactory.getLogger(MetaTypeSelector.class);
+	private static final Logger logger = LoggerFactory.getLogger(MetaTypeReplacer.class);
 	
 	// The identifier for the 'unique-id' data-model attribute.
 	private static final String UNIQUE_ID = "UNIQUE_IDENTIFIER";
@@ -35,13 +35,13 @@ public final class MetaTypeSelector implements FileRefactor {
 	private final Map<String, String> uniqueIDs = new LinkedHashMap<>();
 	
 	// The number of changed constant references.
-	private long changedCount = 0;
+	private long replacedCount = 0;
 	
-	public MetaTypeSelector(String metaTypeDir) {
+	public MetaTypeReplacer(String metaTypeDir) {
 		this(new MetaTypeDirectory(new File(metaTypeDir)));
 	}
 	
-	public MetaTypeSelector(MetaTypeDirectory metaTypeDir) {
+	public MetaTypeReplacer(MetaTypeDirectory metaTypeDir) {
 		for (MetaTypeInfo metaTypeInfo : metaTypeDir.getInfoByName().values()) {
 			MetaTypeID metaID = metaTypeInfo.getUniqueID();
 			if (metaID != null && !metaID.getIdentifier().equals(UNIQUE_ID)) {
@@ -56,17 +56,17 @@ public final class MetaTypeSelector implements FileRefactor {
 	
 	@Override
 	public String getDescription() {
-		return "MetaTypeSelector (expands meta-type identifiers)";
+		return "MetaTypeReplacer (replaces meta-type identifiers)";
 	}
 	
 	@Override
 	public void refactorStarted() {
-		changedCount = 0;
+		replacedCount = 0;
 	}
 	
 	@Override
 	public void refactorStopped() {
-		logger.info("Statistic: expandCount : {}", changedCount);
+		logger.info("Statistic: replacedCount : {}", replacedCount);
 	}
 	
 	@Override
@@ -103,24 +103,26 @@ public final class MetaTypeSelector implements FileRefactor {
 			}
 			// Execute refactor for pattern: replace the unique-id.
 			String metaType = matcher.group(1);
-			String constant = matcher.group(2);
-			
-			if (constant.equals(UNIQUE_ID)) {
-				String uniqueID = uniqueIDs.get(metaType);
-				if (uniqueID != null) {
-					builder.append(matcher.group().replace(UNIQUE_ID, uniqueID));
-					changedCount++;
+			if (metaType.endsWith("Meta")) {
+				String constant = matcher.group(2);
+				if (constant.equals(UNIQUE_ID)) {
+					String uniqueID = uniqueIDs.get(metaType);
+					if (uniqueID != null) {
+						builder.append(matcher.group().replace(UNIQUE_ID, uniqueID));
+						replacedCount++;
+					} else {
+						builder.append(matcher.group());
+					}
 				} else {
+					// No identifiers in comments ??
+					if (sourceLine.contains("/*") || 
+						sourceLine.contains("*/") ||
+						sourceLine.contains("//") ||
+						sourceLine.trim().startsWith("*")) {
+						context.addInfo(">>" + sourceLine);
+					}
 					builder.append(matcher.group());
 				}
-			} else if (metaType.endsWith("Meta")) {
-				if (sourceLine.contains("/*") || 
-					sourceLine.contains("*/") ||
-					sourceLine.contains("//") ||
-					sourceLine.trim().startsWith("*")) {
-					context.addInfo(">>" + sourceLine);
-				}
-				builder.append(matcher.group());
 			} else {
 				builder.append(matcher.group());
 			}
