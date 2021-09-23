@@ -1,10 +1,7 @@
 package be.leonix.tools.refactor.operation;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -13,12 +10,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.BodyDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.TypeDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.Expression;
 
 /**
  * This class encapsulates the info about a data-model meta-type.
@@ -37,10 +41,6 @@ public final class MetaTypeInfo {
 	
 	// The set of ignored invalid (non-prefix) constants.
 	private static final Set<String> IGNORED_NO_PREFIX = Set.of("roleField");
-	
-	// The pattern for a meta-type identifier (formula or constant).
-	private static final Pattern IDENTIFIER_DEF = Pattern.compile(
-			"public static final String ([\\w]+) = \"([\\w]+)\";");
 	
 	private final File sourceFile;
 	private final String className;
@@ -72,55 +72,68 @@ public final class MetaTypeInfo {
 		className = StringUtils.removeEnd(fileName, ".java");
 		
 		logger.info("Loading MetaType from: {}", sourceFile);
-		try (FileReader fileReader = new FileReader(sourceFile, StandardCharsets.UTF_8)) {
-			try (BufferedReader reader = new BufferedReader(fileReader)) {
-				String line = reader.readLine().trim();
-				
-				// Get the package-id for the meta-type.
-				if (line != null && line.startsWith("package ") && line.endsWith(";")) {
-					packageID = line.substring("package ".length(), line.length() - 1).trim();
-				} else {
-					throw new RuntimeException("Invalid (no package) meta-type file: " + fileName);
-				}
-				
-				int blockScope = 0;
-				line = reader.readLine();
-				while (line != null) {
-					if (line.contains("{")) {
-						blockScope++;
-					} else if (line.contains("}")) {
-						blockScope--;
-					} else {
-						Matcher matcher = IDENTIFIER_DEF.matcher(line);
-						if (matcher.find()) {
-							String identifier = matcher.group(1);
-							String literal    = matcher.group(2);
+		try {
+			CompilationUnit javaSource = StaticJavaParser.parse(sourceFile);
+			packageID = javaSource.getPackageDeclaration().orElseThrow(
+					() -> new RuntimeException("No package for meta-type.")).getNameAsString();
+			
+			// Get the class with the constants.
+			TypeDeclaration<?> metaType = javaSource.getPrimaryType().orElseThrow(
+					() -> new RuntimeException("No meta-type class found."));
+			for (FieldDeclaration field : metaType.getFields()) {
+				if (field.isPublic() && field.isStatic() && field.isFinal()) {
+					for (VariableDeclarator variable : field.getVariables()) {
+						String identifier = variable.getNameAsString();
+						
+						Expression value = variable.getInitializer().orElseThrow(
+								() -> new RuntimeException("Missing value for final field."));
+						if (value.isLiteralStringValueExpr()) {
+							String literal = value.asLiteralStringValueExpr().getValue();
 							
 							MetaTypeID metaID = new MetaTypeID(identifier, literal);
-							if (blockScope == 1) {
-								constantIDs.add(metaID);
-								
-								// Ensure unique identifier for a constant.
-								String oldIdentifier = constants.put(literal, identifier);
-								if (oldIdentifier != null) {
-									if (IGNORED_OVERRIDES.contains(identifier)) {
-										constants.put(literal, oldIdentifier);
-									} else {
-										throw new RuntimeException("Found constant override in " + className + ": " + identifier);
-									}
-								}
-							} else if (blockScope == 2) {
-								formulaIDs.add(metaID);
-								
-								// Ensure unique identifier for a formula.
-								String oldIdentifier = formulas.put(literal, identifier);
-								if (oldIdentifier != null) {
-									throw new RuntimeException("Found formula override in " + className + ": " + identifier);
+							constantIDs.add(metaID);
+							
+							// Ensure unique identifier for a constant.
+							String oldIdentifier = constants.put(literal, identifier);
+							if (oldIdentifier != null) {
+								if (IGNORED_OVERRIDES.contains(identifier)) {
+									constants.put(literal, oldIdentifier);
+								} else {
+									throw new RuntimeException("Found constant override in " + className + ": " + identifier);
 								}
 							}
 						}
 					}
-					line = reader.readLine();
+				}
+			}
+			
+			// Get the class with the formulas.
+			for (BodyDeclaration<?> member : metaType.getMembers()) {
+				if (member.isClassOrInterfaceDeclaration()) {
+					ClassOrInterfaceDeclaration memberType = member.asClassOrInterfaceDeclaration();
+					if (memberType.isPublic() && memberType.getNameAsString().equals("Formulas")) {
+						
+						for (FieldDeclaration field : memberType.getFields()) {
+							for (VariableDeclarator variable : field.getVariables()) {
+								String identifier = variable.getNameAsString();
+								
+								Expression value = variable.getInitializer().orElseThrow(
+										() -> new RuntimeException("Missing value for final field."));
+								if (value.isLiteralStringValueExpr()) {
+									String literal = value.asLiteralStringValueExpr().getValue();
+									
+									MetaTypeID metaID = new MetaTypeID(identifier, literal);
+									formulaIDs.add(metaID);
+									
+									// Ensure unique identifier for a formula.
+									String oldIdentifier = formulas.put(literal, identifier);
+									if (oldIdentifier != null) {
+										throw new RuntimeException("Found formula override in " + className + ": " + identifier);
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		} catch (IOException | RuntimeException ex) {
@@ -208,5 +221,15 @@ public final class MetaTypeInfo {
 	 */
 	public Map<String, String> getConstants() {
 		return Collections.unmodifiableMap(constants);
+	}
+	
+	public static void main(String[] args) {
+		MetaTypeInfo metaInfo = new MetaTypeInfo(new File("/Users/leonix/Desktop/AvatarMeta.java"));
+		for (MetaTypeID constantID : metaInfo.getConstantIDs()) {
+			logger.info("Found constant: {} [{}]", constantID.getIdentifier(), constantID.getLiteral());
+		}
+		for (MetaTypeID formulaID : metaInfo.getFormulaIDs()) {
+			logger.info("Found formula: {} [{}]", formulaID.getIdentifier(), formulaID.getLiteral());
+		}
 	}
 }

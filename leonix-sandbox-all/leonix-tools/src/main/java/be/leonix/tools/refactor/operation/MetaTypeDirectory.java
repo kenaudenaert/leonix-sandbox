@@ -200,7 +200,7 @@ public final class MetaTypeDirectory {
 		for (MetaTypeInfo metaTypeInfo : dir.getInfoByName().values()) {
 			MetaTypeID metaID = metaTypeInfo.getUniqueID();
 			if (metaID != null && !metaID.getIdentifier().equals("UNIQUE_IDENTIFIER")) {
-				logger.info("Found other Unique ID for {}: {}",  metaTypeInfo.getClassName(), metaID.getIdentifier());
+				logger.info("Found Unique ID for {}: {}",  metaTypeInfo.getClassName(), metaID.getIdentifier());
 			}
 		}
 	}
