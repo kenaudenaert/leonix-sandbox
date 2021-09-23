@@ -1,10 +1,18 @@
 package be.leonix.tools.refactor.model.lang;
 
-import java.util.Iterator;
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
+
 import be.leonix.tools.refactor.model.repo.SourceFile;
-import be.leonix.tools.refactor.model.repo.SourceLine;
 
 /**
  * This class encapsulates an editable Java source-file.
@@ -13,24 +21,23 @@ import be.leonix.tools.refactor.model.repo.SourceLine;
  */
 public final class JavaFile {
 	
+	private static final Logger logger = LoggerFactory.getLogger(JavaFile.class);
+	
 	private final SourceFile sourceFile;
-	private final String packageID;
+	private final CompilationUnit javaSource;
 	
 	public JavaFile(SourceFile sourceFile) {
 		this.sourceFile = Objects.requireNonNull(sourceFile);
-		
-		Iterator<SourceLine> lines = sourceFile.getSourceLines().iterator();
-		if (! lines.hasNext()) {
-			throw new RuntimeException("Invalid (empty file) Java file: " + sourceFile.getSourceFile());
-		} else {
-			String packageLine = lines.next().getLineContent();
-			
-			// Get the package-name of the meta-info.
-			if (packageLine.startsWith("package ") && packageLine.endsWith(";")) {
-				packageID = packageLine.substring("package ".length(), packageLine.length() - 1);
-			} else {
-				throw new RuntimeException("Invalid (no package) Java file: " + sourceFile.getSourceFile());
+		try {
+			javaSource = StaticJavaParser.parse(sourceFile.getSourceFile());
+			for (ImportDeclaration importLine : javaSource.getImports()) {
+				logger.info("import-line: " + importLine.getName());
 			}
+			FileUtils.write(sourceFile.getSourceFile(), 
+					javaSource.toString(), sourceFile.getSourceEncoding());
+			
+		} catch (IOException e) {
+			throw new RuntimeException("No such file: " + e);
 		}
 	}
 	
@@ -38,7 +45,8 @@ public final class JavaFile {
 		return sourceFile;
 	}
 	
-	public String getPackageID() {
-		return packageID;
+	public static void main(String[] args) {
+		SourceFile sourceFile = new SourceFile(new File("/Users/leonix/Desktop/AvatarMeta.java"));
+		JavaFile javaFile = new JavaFile(sourceFile);
 	}
 }

@@ -120,6 +120,13 @@ public final class SourceFile {
 	}
 	
 	/**
+	 * Returns the source-encoding.
+	 */
+	public Charset getSourceEncoding() {
+		return sourceEncoding;
+	}
+	
+	/**
 	 * Returns the package-name for this source-file.
 	 */
 	public String getPackageName() {
