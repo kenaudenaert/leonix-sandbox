@@ -23,24 +23,24 @@ public final class MetaTypeDirectory {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MetaTypeDirectory.class);
 	
-	// The set of directory names that are excluded from search.
-	private static final Set<String> DIRECTORY_EXCLUDES = Set.of("olss");
+	// The directory names that are ignored during a search.
+	private static final Set<String> IGNORED_DIRECTORIES = Set.of("olss");
 	
-	// The set of file names that are excluded from search.
-	private static final Set<String> FILE_EXCLUDES = Set.of(".DS_Store");
+	// The file names that are ignored during a search.
+	private static final Set<String> IGNORED_FILES = Set.of(".DS_Store");
 	
-	// The ignored (ambiguous) prefixes (see printer sub-package). 
-	private static final Set<String> FILTER_PREFIXES = Set.of("prnt");
+	// The ambiguous prefixes (see printer sub-package). 
+	private static final Set<String> AMBIGUOUS_PREFIXES = Set.of("prnt");
 	
-	// The ignored (ambiguous) literals (see DataSourceMetaInfo).
-	private static final Set<String> FILTER_LITERALS = Set.of("tbfl_fk_datatype");
+	// The ambiguous literals (see DataSourceMetaInfo).
+	private static final Set<String> AMBIGUOUS_LITERALS = Set.of("tbfl_fk_datatype");
 	
 	private final File metaTypeDir;
 	
 	// The info for the meta-types by their 'fully qualified' name.
 	private final Map<String, MetaTypeInfo> infoByName = new LinkedHashMap<>();
 	
-	// The set of all known (found in directory) prefixes.
+	// The set of all the known (found in the directory) prefixes.
 	private final Set<String> infoPrefixes = new LinkedHashSet<>();
 	
 	/**
@@ -73,10 +73,10 @@ public final class MetaTypeDirectory {
 			for (File metaTypeFile : metaTypeFiles) {
 				String fileName = metaTypeFile.getName();
 				
-				if (metaTypeFile.isDirectory() && !DIRECTORY_EXCLUDES.contains(fileName)) {
+				if (metaTypeFile.isDirectory() && !IGNORED_DIRECTORIES.contains(fileName)) {
 					collectMetaTypeInfo(metaTypeFile);
 					
-				} else if (metaTypeFile.isFile() && !FILE_EXCLUDES.contains(fileName)) {
+				} else if (metaTypeFile.isFile() && !IGNORED_FILES.contains(fileName)) {
 					if (fileName.endsWith("Meta.java")) {
 						MetaTypeInfo metaTypeInfo = new MetaTypeInfo(metaTypeFile);
 						
@@ -112,12 +112,12 @@ public final class MetaTypeDirectory {
 		// Find the constants with a unique constant definition.
 		Map<String, MetaTypeInfo> infoByConstant = new LinkedHashMap<>();
 		for (MetaTypeInfo metaTypeInfo : infoByName.values()) {
-			if (FILTER_PREFIXES.contains(metaTypeInfo.getKeyPrefix())) {
+			if (AMBIGUOUS_PREFIXES.contains(metaTypeInfo.getKeyPrefix())) {
 				continue; // Filter out ambiguous prefixes.
 			}
 			// Only consider the constants; not the formulas !!
 			for (String constant : metaTypeInfo.getConstants().keySet()) {
-				if (FILTER_LITERALS.contains(constant)) {
+				if (AMBIGUOUS_LITERALS.contains(constant)) {
 					continue; // Filter out ambiguous literals.
 				}
 				// NOTE: Check for ambiguity (2 constants with same literal).
@@ -200,7 +200,7 @@ public final class MetaTypeDirectory {
 		for (MetaTypeInfo metaTypeInfo : dir.getInfoByName().values()) {
 			MetaTypeID metaID = metaTypeInfo.getUniqueID();
 			if (metaID != null && !metaID.getIdentifier().equals("UNIQUE_IDENTIFIER")) {
-				logger.info("Alternative Unique ID: {} ({})",  metaTypeInfo.getClassName(), metaID.getIdentifier());
+				logger.info("Found other Unique ID for {}: {}",  metaTypeInfo.getClassName(), metaID.getIdentifier());
 			}
 		}
 	}
