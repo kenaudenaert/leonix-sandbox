@@ -54,7 +54,7 @@ public final class RefactorTool {
 		this.fileRefactor = Objects.requireNonNull(fileRefactor);
 		this.refactorMode = Objects.requireNonNull(refactorMode);
 		
-		this.userHome = Objects.requireNonNull(System.getProperty("user.path"));
+		this.userHome = Objects.requireNonNull(System.getProperty("user.dir"));
 		this.userName = Objects.requireNonNull(System.getProperty("user.name"));
 	}
 	
@@ -62,8 +62,8 @@ public final class RefactorTool {
 	 * Executes the refactor operation on the specified repository.
 	 */
 	public void refactorRepo(SourceRepo sourceRepo, Set<String> includes, Set<String> excludes) {
-		logger.info("Refactoring repo {}", sourceRepo.getRepoDir());
-		logger.info("Refactoring user {} @ {}", userName, userHome);
+		logger.info("Refactoring repo: {}", sourceRepo.getRepoDir());
+		logger.info("Refactoring user: {} @ {}", userName, userHome);
 		
 		RefactorContext context = new RefactorContext(refactorMode);
 		try {
@@ -173,7 +173,7 @@ public final class RefactorTool {
 	 */
 	public static void main(String[] args) {
 		try {
-			Set<String> operations = new LinkedHashSet<>();
+			Set<String> operations = new LinkedHashSet<String>();
 			for (String arg : args) {
 				operations.addAll(Set.of(arg.split(",")).stream()
 						.filter(v -> !v.isBlank())
