@@ -236,7 +236,7 @@ public final class SourceFile {
 			}
 			
 			// Generate import sections (static, jdk, ext, simple).
-			List<SourceLine> sortedImports = new ArrayList<SourceLine>();
+			List<SourceLine> sortedImports = new ArrayList<>();
 			if (! staticImportsByClassName.isEmpty()) {
 				for (Map.Entry<String, SourceLine> entry : staticImportsByClassName.entrySet()) {
 					sortedImports.add(entry.getValue());

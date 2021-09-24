@@ -47,7 +47,7 @@ public final class LineBasedRefactor implements FileRefactor {
 	
 	@Override
 	public void refactorFile(SourceFile sourceFile, RefactorContext context) {
-		if (lineRefactors.isEmpty()) {
+		if (! lineRefactors.isEmpty()) {
 			long changeCount = 0;
 			
 			for (SourceLine sourceLine : sourceFile.getSourceLines()) {
@@ -58,6 +58,7 @@ public final class LineBasedRefactor implements FileRefactor {
 				
 				String newLine = sourceLine.getLineContent();
 				if (! StringUtils.equals(newLine, oldLine)) {
+					changeCount++;
 					
 					String lineInfo = sourceFile.getSourceFile() + " @ line " + sourceLine.getLineNumber();
 					context.addInfo(">> " + lineInfo);

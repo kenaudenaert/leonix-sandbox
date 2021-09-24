@@ -62,8 +62,10 @@ public final class RefactorTool {
 	 * Executes the refactor operation on the specified repository.
 	 */
 	public void refactorRepo(SourceRepo sourceRepo, Set<String> includes, Set<String> excludes) {
-		logger.info("Refactoring repo: {}", sourceRepo.getRepoDir());
-		logger.info("Refactoring user: {} @ {}", userName, userHome);
+		logger.info("Refactor type: {}", fileRefactor.getDescription());
+		logger.info("Refactor mode: {}", refactorMode.name());
+		logger.info("Refactor repo: {}", sourceRepo.getRepoDir());
+		logger.info("Refactor user: {} @ {}", userName, userHome);
 		
 		RefactorContext context = new RefactorContext(refactorMode);
 		try {
@@ -136,9 +138,9 @@ public final class RefactorTool {
 		RefactorTool refactorTool = new RefactorTool(fileRefactor, RefactorMode.UPDATE_FILE);
 		
 		Set<String> repoPaths = Set.of(SLIMS_REPO_PATH,
-				LEONIX_REPO_ROOT + "/leonix-maventools",
-				LEONIX_REPO_ROOT + "/leonix-framework",
-				LEONIX_REPO_ROOT + "/leonix-deploytools",
+//				LEONIX_REPO_ROOT + "/leonix-maventools",
+//				LEONIX_REPO_ROOT + "/leonix-framework",
+//				LEONIX_REPO_ROOT + "/leonix-deploytools",
 				LEONIX_REPO_ROOT + "/leonix-sandbox");
 		
 		for (String repoPath : repoPaths) {
@@ -173,7 +175,7 @@ public final class RefactorTool {
 	 */
 	public static void main(String[] args) {
 		try {
-			Set<String> operations = new LinkedHashSet<String>();
+			Set<String> operations = new LinkedHashSet<>();
 			for (String arg : args) {
 				operations.addAll(Set.of(arg.split(",")).stream()
 						.filter(v -> !v.isBlank())
