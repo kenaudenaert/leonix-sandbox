@@ -27,7 +27,8 @@ public final class SourceRepo {
 	private static final IOFileFilter gitFilter = FileFilterUtils.notFileFilter(
 			FileFilterUtils.and(FileFilterUtils.directoryFileFilter(), FileFilterUtils.nameFileFilter(".git")));
 	
-	private static final Set<String> sourceFolders = Set.of("src", "source", "test");
+	private static final Set<String> codeSourceFolders = Set.of("src");
+	private static final Set<String> testSourceFolders = Set.of("test");
 	
 	private final File repoDir;
 	private final List<SourceTree> sourceTrees;
@@ -102,8 +103,16 @@ public final class SourceRepo {
 		
 		List<File> sourceFiles = new ArrayList<>();
 		for (File file : FileUtils.listFilesAndDirs(directory, fileFilter, dirFilter)) {
-			if (sourceFolders.contains(file.getName())) {
+			if (file.isDirectory() && codeSourceFolders.contains(file.getName())) {
 				sourceFiles.add(file);
+				
+				// Check for a test-folder at the level of the code-folder.
+				for (String testFolder : testSourceFolders) {
+					File sourceTestDir = new File(file.getParentFile(), testFolder);
+					if (sourceTestDir.isDirectory()) {
+						sourceFiles.add(sourceTestDir);
+					}
+				}
 			}
 		}
 		return Collections.unmodifiableList(sourceFiles);

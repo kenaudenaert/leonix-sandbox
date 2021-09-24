@@ -138,9 +138,9 @@ public final class RefactorTool {
 		RefactorTool refactorTool = new RefactorTool(fileRefactor, RefactorMode.UPDATE_FILE);
 		
 		Set<String> repoPaths = Set.of(SLIMS_REPO_PATH,
-//				LEONIX_REPO_ROOT + "/leonix-maventools",
-//				LEONIX_REPO_ROOT + "/leonix-framework",
-//				LEONIX_REPO_ROOT + "/leonix-deploytools",
+				LEONIX_REPO_ROOT + "/leonix-maventools",
+				LEONIX_REPO_ROOT + "/leonix-framework",
+				LEONIX_REPO_ROOT + "/leonix-deploytools",
 				LEONIX_REPO_ROOT + "/leonix-sandbox");
 		
 		for (String repoPath : repoPaths) {
