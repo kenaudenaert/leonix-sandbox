@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +73,7 @@ public final class RefactorTool {
 			for (SourceTree sourceTree : sourceRepo.getSourceTrees()) {
 				String sourceTreePath = sourceTree.getRootDir().getPath();
 				
-				// Check whether included.
+				// Check whether tree-path is included.
 				if (! includes.isEmpty()) {
 					boolean included = false;
 					for (String include : includes) {
@@ -86,7 +87,7 @@ public final class RefactorTool {
 					}
 				}
 				
-				// Check whether excluded.
+				// Check whether tree-path is excluded.
 				if (! excludes.isEmpty()) {
 					boolean excluded = false;
 					for (String exclude : excludes) {
@@ -95,7 +96,7 @@ public final class RefactorTool {
 						}
 					}
 					if (excluded) {
-						logger.info("Skipped (excluded-filter): {}", sourceTreePath);
+						logger.info("Skipped (excludes-filter): {}", sourceTreePath);
 						continue;
 					}
 				}
@@ -108,7 +109,7 @@ public final class RefactorTool {
 			}
 		} finally {
 			try {
-				logger.info("Finished refactor.");
+				logger.info("Stopping refactor.");
 				fileRefactor.refactorStopped();
 				
 			} finally {
@@ -144,6 +145,7 @@ public final class RefactorTool {
 			File repoDir = new File(repoPath);
 			if (repoDir.isDirectory()) {
 				SourceRepo sourceRepo = new SourceRepo(repoDir);
+				
 				if (! repoPath.equals(SLIMS_REPO_PATH)) {
 					refactorTool.refactorRepo(sourceRepo, Collections.emptySet(), Collections.emptySet());
 				} else {
@@ -173,10 +175,14 @@ public final class RefactorTool {
 		try {
 			Set<String> operations = new LinkedHashSet<>();
 			for (String arg : args) {
-				operations.addAll(Set.of(arg.split(",")));
+				operations.addAll(Set.of(arg.split(",")).stream()
+						.filter(v -> !v.isBlank())
+						.collect(Collectors.toSet()));
 			}
 			if (operations.isEmpty()) {
 				logger.info("Executing default refactor");
+				refactorDiamond();
+				
 			} else {
 				logger.info("Executing refactors: {}", operations.toArray());
 				for (String operation : operations) {
