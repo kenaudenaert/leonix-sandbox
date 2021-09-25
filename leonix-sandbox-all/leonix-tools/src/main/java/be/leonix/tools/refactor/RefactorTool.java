@@ -189,26 +189,31 @@ public final class RefactorTool {
 	 */
 	public static void main(String[] args) {
 		try {
+			// Get the operations (sequence) from arguments.
 			Set<String> operations = new LinkedHashSet<>();
 			for (String arg : args) {
 				operations.addAll(Set.of(arg.split(",")).stream()
 						.filter(v -> !v.isBlank())
 						.collect(Collectors.toSet()));
 			}
+			
+			// Choose a default operation when none given.
 			if (operations.isEmpty()) {
-				logger.info("Executing default refactor");
-				refactorDiamond();
-				
-			} else {
-				logger.info("Executing refactors: {}", operations.toArray());
-				for (String operation : operations) {
-					if (operation.equals("diamond")) {
-						refactorDiamond();
-					} else if (operation.equals("metatype")) {
-						refactorMetaType();
-					} else if (operation.equals("replacer")) {
-						replaceMetaType();
-					}
+				logger.info("Using default refactor");
+				operations.add("diamond");
+			}
+			
+			// Perform the operations in the given order.
+			logger.info("Executing refactors: {}", operations.toArray());
+			for (String operation : operations) {
+				if (operation.equals("diamond")) {
+					refactorDiamond();
+				} else if (operation.equals("metatype")) {
+					refactorMetaType();
+				} else if (operation.equals("replacer")) {
+					replaceMetaType();
+				} else {
+					logger.error("No such refactor: {}", operation);
 				}
 			}
 		} catch (RuntimeException | Error ex) {
