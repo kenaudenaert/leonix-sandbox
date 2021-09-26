@@ -18,6 +18,7 @@ import be.leonix.tools.refactor.model.repo.SourceTree;
 import be.leonix.tools.refactor.operation.DiamondRefactor;
 import be.leonix.tools.refactor.operation.MetaTypeRefactor;
 import be.leonix.tools.refactor.operation.MetaTypeReplacer;
+import be.leonix.tools.refactor.operation.MetaTypeResolver;
 
 /**
  * The application (tool) for refactoring Java source files.
@@ -185,6 +186,19 @@ public final class RefactorTool {
 	}
 	
 	/**
+	 * The code-refactor for {@link MetaTypeResolver}.
+	 */
+	protected static void resolveMetaType() {
+		String metaTypePath = SLIMS_REPO_PATH + '/' + SLIMS_META_PATH;
+		
+		FileRefactor fileRefactor = new MetaTypeResolver(metaTypePath);
+		RefactorTool refactorTool = new RefactorTool(fileRefactor, RefactorMode.UPDATE_FILE);
+		
+		SourceRepo sourceRepo = new SourceRepo(new File(SLIMS_REPO_PATH));
+		refactorTool.refactorRepo(sourceRepo, SLIMS_INCLUDES, SLIMS_EXCLUDES);
+	}
+	
+	/**
 	 * The application for executing code-refactors.
 	 */
 	public static void main(String[] args) {
@@ -212,6 +226,8 @@ public final class RefactorTool {
 					refactorMetaType();
 				} else if (operation.equals("replacer")) {
 					replaceMetaType();
+				} else if (operation.equals("resolver")) {
+					resolveMetaType();
 				} else {
 					logger.error("No such refactor: {}", operation);
 				}
