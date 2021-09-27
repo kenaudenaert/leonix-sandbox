@@ -206,7 +206,7 @@ public final class RefactorTool {
 			// Get the operations (sequence) from arguments.
 			Set<String> operations = new LinkedHashSet<>();
 			for (String arg : args) {
-				operations.addAll(Set.of(arg.split(",")).stream()
+				operations.addAll(List.of(arg.split(",")).stream()
 						.filter(v -> !v.isBlank())
 						.collect(Collectors.toList()));
 			}
