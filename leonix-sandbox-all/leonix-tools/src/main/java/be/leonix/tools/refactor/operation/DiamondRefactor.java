@@ -1,7 +1,7 @@
 package be.leonix.tools.refactor.operation;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,7 +28,7 @@ public final class DiamondRefactor implements LineRefactor {
 			"[\\w\\.\\s,]+" +					// package.Foo, Bar
 			"(>\\s*\\(\\s*\\)\\s*;)");			// >();
 	
-	private final Map<String, SourceChange> changes = new HashMap<>();
+	private final Map<String, SourceChange> changes = new TreeMap<>();
 	
 	@Override
 	public String getDescription() {
@@ -77,6 +77,7 @@ public final class DiamondRefactor implements LineRefactor {
 			String oldText = matcher.group();
 			String newText = matcher.group(1) + matcher.group(2);
 			
+			// Update change statistics for source-change.
 			SourceChange change = changes.get(oldText);
 			if (change == null) {
 				change = new SourceChange(oldText, newText);

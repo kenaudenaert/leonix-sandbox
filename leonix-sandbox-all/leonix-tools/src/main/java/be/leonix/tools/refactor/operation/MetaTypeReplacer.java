@@ -3,6 +3,7 @@ package be.leonix.tools.refactor.operation;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import be.leonix.tools.refactor.FileRefactor;
 import be.leonix.tools.refactor.RefactorContext;
 import be.leonix.tools.refactor.RefactorMode;
+import be.leonix.tools.refactor.model.repo.SourceChange;
 import be.leonix.tools.refactor.model.repo.SourceFile;
 import be.leonix.tools.refactor.model.repo.SourceLine;
 
@@ -35,7 +37,7 @@ public final class MetaTypeReplacer implements FileRefactor {
 	private final Map<String, String> uniqueIDs = new LinkedHashMap<>();
 	
 	// The number of changed constant references.
-	private long replacedCount = 0;
+	private final Map<String, SourceChange> changes = new TreeMap<>();
 	
 	public MetaTypeReplacer(String metaTypeDir) {
 		this(new MetaTypeDirectory(new File(metaTypeDir)));
@@ -61,12 +63,17 @@ public final class MetaTypeReplacer implements FileRefactor {
 	
 	@Override
 	public void refactorStarted() {
-		replacedCount = 0;
+		changes.clear();
 	}
 	
 	@Override
 	public void refactorStopped() {
-		logger.info("Statistic: replacedCount : {}", replacedCount);
+		for (SourceChange change : changes.values()) {
+			String oldText = change.getOldText();
+			String newText = change.getNewText();
+			int changeCount = change.getChangeCount();
+			logger.info("Changed: {}x : '{}' -> '{}'", changeCount, oldText, newText);
+		}
 	}
 	
 	@Override
@@ -108,8 +115,18 @@ public final class MetaTypeReplacer implements FileRefactor {
 				if (constant.equals(UNIQUE_ID)) {
 					String uniqueID = uniqueIDs.get(metaType);
 					if (uniqueID != null) {
-						builder.append(matcher.group().replace(UNIQUE_ID, uniqueID));
-						replacedCount++;
+						String oldText = matcher.group();
+						String newText = oldText.replace(UNIQUE_ID, uniqueID);
+						
+						// Update change statistics for source-change.
+						SourceChange change = changes.get(oldText);
+						if (change == null) {
+							change = new SourceChange(oldText, newText);
+							changes.put(oldText, change);
+						}
+						change.addChange();
+						
+						builder.append(newText);
 					} else {
 						builder.append(matcher.group());
 					}
