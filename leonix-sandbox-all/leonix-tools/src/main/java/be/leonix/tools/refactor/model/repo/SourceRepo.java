@@ -40,7 +40,7 @@ public final class SourceRepo {
 			throw new IllegalArgumentException("Invalid repo-dir: " + repoDir);
 		}
 		
-		// Currently only a GIT repository is supported.
+		// For now only a GIT repository is supported.
 		File gitRepo = new File(repoDir, ".git");
 		if (! gitRepo.isDirectory()) {
 			throw new IllegalArgumentException("Invalid git-repo: " + repoDir);
@@ -51,7 +51,7 @@ public final class SourceRepo {
 			throw new RuntimeException("Could not open git-repo.", ex);
 		}
 		
-		// Perform a recursive seach for (non-empty) source-trees.
+		// Perform a recursive search for (non-empty) source-trees.
 		this.sourceTrees = listSourceDirectories(repoDir).stream()
 				.map(SourceTree::new)
 				.filter(tree -> ! tree.getSourceFiles().isEmpty())

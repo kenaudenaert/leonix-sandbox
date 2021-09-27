@@ -27,5 +27,5 @@ public interface LineRefactor {
 	/**
 	 * Refactors the specified source-line using the specified refactor-context.
 	 */
-	public void refactorLine(SourceLine sourceLine, RefactorContext context);
+	void refactorLine(SourceLine sourceLine, RefactorContext context);
 }

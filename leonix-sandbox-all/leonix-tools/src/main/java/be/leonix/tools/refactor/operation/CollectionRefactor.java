@@ -23,7 +23,7 @@ public final class CollectionRefactor implements FileRefactor {
 	
 	@Override
 	public String getDescription() {
-		return "CollectionRefactor (use standard collection ctors)";
+		return "CollectionRefactor (use standard collection constructors)";
 	}
 	
 	@Override

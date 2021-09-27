@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +84,7 @@ public final class RefactorTool {
 					for (String include : includes) {
 						if (sourceTreePath.contains(include)) {
 							included = true;
+							break;
 						}
 					}
 					if (! included) {
@@ -97,6 +99,7 @@ public final class RefactorTool {
 					for (String exclude : excludes) {
 						if (sourceTreePath.contains(exclude)) {
 							excluded = true;
+							break;
 						}
 					}
 					if (excluded) {
@@ -118,13 +121,13 @@ public final class RefactorTool {
 				
 			} finally {
 				if (context.getMode() == RefactorMode.COMMIT_REPO) {
+					SourceAuthor author;
 					if (userName.equals(SLIMS_USER_NAME)) {
-						SourceAuthor author = new SourceAuthor(GIT_AUTHOR_NAME, SLIMS_GIT_EMAIL);
-						sourceRepo.commitChanges(author, fileRefactor.getDescription());
+						author = new SourceAuthor(GIT_AUTHOR_NAME, SLIMS_GIT_EMAIL);
 					} else {
-						SourceAuthor author = new SourceAuthor(GIT_AUTHOR_NAME, LEONIX_GIT_EMAIL);
-						sourceRepo.commitChanges(author, fileRefactor.getDescription());
+						author = new SourceAuthor(GIT_AUTHOR_NAME, LEONIX_GIT_EMAIL);
 					}
+					sourceRepo.commitChanges(author, fileRefactor.getDescription());
 				} else if (context.getMode() == RefactorMode.LOG_CHANGE) {
 					context.logInfo();
 				}
@@ -135,7 +138,7 @@ public final class RefactorTool {
 	/**
 	 * The code-refactor for {@link DiamondRefactor}.
 	 */
-	protected static void refactorDiamond() {
+	private static void refactorDiamond() {
 		FileRefactor fileRefactor = new LineBasedRefactor(new DiamondRefactor());
 		RefactorTool refactorTool = new RefactorTool(fileRefactor, RefactorMode.UPDATE_FILE);
 		
@@ -162,7 +165,7 @@ public final class RefactorTool {
 	/**
 	 * The code-refactor for {@link MetaTypeRefactor}.
 	 */
-	protected static void refactorMetaType() {
+	private static void refactorMetaType() {
 		String metaTypePath = SLIMS_REPO_PATH + '/' + SLIMS_META_PATH;
 		
 		FileRefactor fileRefactor = new MetaTypeRefactor(metaTypePath);
@@ -175,7 +178,7 @@ public final class RefactorTool {
 	/**
 	 * The code-refactor for {@link MetaTypeReplacer}.
 	 */
-	protected static void replaceMetaType() {
+	private static void replaceMetaType() {
 		String metaTypePath = SLIMS_REPO_PATH + '/' + SLIMS_META_PATH;
 		
 		FileRefactor fileRefactor = new MetaTypeReplacer(metaTypePath);
@@ -188,7 +191,7 @@ public final class RefactorTool {
 	/**
 	 * The code-refactor for {@link MetaTypeResolver}.
 	 */
-	protected static void resolveMetaType() {
+	private static void resolveMetaType() {
 		String metaTypePath = SLIMS_REPO_PATH + '/' + SLIMS_META_PATH;
 		
 		FileRefactor fileRefactor = new MetaTypeResolver(metaTypePath);
@@ -206,7 +209,7 @@ public final class RefactorTool {
 			// Get the operations (sequence) from arguments.
 			Set<String> operations = new LinkedHashSet<>();
 			for (String arg : args) {
-				operations.addAll(List.of(arg.split(",")).stream()
+				operations.addAll(Stream.of(arg.split(","))
 						.filter(v -> !v.isBlank())
 						.collect(Collectors.toList()));
 			}
@@ -220,16 +223,22 @@ public final class RefactorTool {
 			// Perform the operations in the given order.
 			logger.info("Executing refactors: {}", operations.toArray());
 			for (String operation : operations) {
-				if (operation.equals("diamond")) {
+				switch (operation) {
+				case "diamond":
 					refactorDiamond();
-				} else if (operation.equals("metatype")) {
+					break;
+				case "meta-type":
 					refactorMetaType();
-				} else if (operation.equals("replacer")) {
+					break;
+				case "replacer":
 					replaceMetaType();
-				} else if (operation.equals("resolver")) {
+					break;
+				case "resolver":
 					resolveMetaType();
-				} else {
+					break;
+				default:
 					logger.error("No such refactor: {}", operation);
+					break;
 				}
 			}
 		} catch (RuntimeException | Error ex) {

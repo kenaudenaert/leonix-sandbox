@@ -176,7 +176,7 @@ public final class SourceFile {
 	/**
 	 * Adds and returns the import-line for the given class.
 	 */
-	public SourceLine addImportLine(String className) {
+	public void addImportLine(String className) {
 		SourceLine importLine = getImportLine(className);
 		if (importLine == null) {
 			String importText = "import " + className + ";";
@@ -186,7 +186,6 @@ public final class SourceFile {
 			List<SourceLine> importLines = getImportLines();
 			sourceLines.add(sourceLines.indexOf(importLines.iterator().next()), importLine);
 		}
-		return importLine;
 	}
 	
 	/**
@@ -199,13 +198,13 @@ public final class SourceFile {
 			
 			// Get lines before imports.
 			int minIndex = sourceLines.indexOf(importLines.get(0));
-			List<SourceLine> beforeLines = new ArrayList<SourceLine>(
+			List<SourceLine> beforeLines = new ArrayList<>(
 					sourceLines.subList(0, minIndex));
 			
 			// Get lines after imports.
 			int maxIndex = sourceLines.indexOf(importLines.get(importLines.size()-1));
-			List<SourceLine> afterLines = new ArrayList<SourceLine>(
-					sourceLines.subList(maxIndex+1, sourceLines.size()));
+			List<SourceLine> afterLines = new ArrayList<>(
+					sourceLines.subList(maxIndex + 1, sourceLines.size()));
 			
 			// Sort the import lines.
 			Map<String, SourceLine> staticImportsByClassName = new TreeMap<>();
