@@ -24,6 +24,16 @@ public final class LineBasedRefactor implements FileRefactor {
 	}
 	
 	@Override
+	public void refactorStarted() {
+		lineRefactors.forEach(LineRefactor::refactorStarted);
+	}
+	
+	@Override
+	public void refactorStopped() {
+		lineRefactors.forEach(LineRefactor::refactorStopped);
+	}
+	
+	@Override
 	public String getDescription() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Line-based refactor composed of ");

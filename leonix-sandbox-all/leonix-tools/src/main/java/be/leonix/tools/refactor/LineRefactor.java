@@ -15,6 +15,16 @@ public interface LineRefactor {
 	default String getDescription() { return getClass().getSimpleName(); }
 	
 	/**
+	 * Called when the refactor operation has been started.
+	 */
+	default void refactorStarted() {}
+	
+	/**
+	 * Called when the refactor operation has been stopped.
+	 */
+	default void refactorStopped() {}
+	
+	/**
 	 * Refactors the specified source-line using the specified refactor-context.
 	 */
 	public void refactorLine(SourceLine sourceLine, RefactorContext context);
