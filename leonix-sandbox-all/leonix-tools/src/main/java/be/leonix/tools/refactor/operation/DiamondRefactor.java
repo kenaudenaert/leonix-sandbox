@@ -1,12 +1,17 @@
 package be.leonix.tools.refactor.operation;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import be.leonix.tools.refactor.LineRefactor;
 import be.leonix.tools.refactor.RefactorContext;
+import be.leonix.tools.refactor.model.repo.SourceChange;
 import be.leonix.tools.refactor.model.repo.SourceLine;
 
 /**
@@ -16,14 +21,33 @@ import be.leonix.tools.refactor.model.repo.SourceLine;
  */
 public final class DiamondRefactor implements LineRefactor {
 	
+	private static final Logger logger = LoggerFactory.getLogger(DiamondRefactor.class);
+	
 	private static final Pattern NON_DIAMOND_CTOR = Pattern.compile(
 			"(=\\s*new\\s+[\\w\\.]+\\s*<)" +	// = new package.Generic<
 			"[\\w\\.\\s,]+" +					// package.Foo, Bar
 			"(>\\s*\\(\\s*\\)\\s*;)");			// >();
 	
+	private final Map<String, SourceChange> changes = new HashMap<>();
+	
 	@Override
 	public String getDescription() {
 		return "DiamondRefactor (use diamond syntax ctor)";
+	}
+	
+	@Override
+	public void refactorStarted() {
+		changes.clear();
+	}
+	
+	@Override
+	public void refactorStopped() {
+		for (SourceChange change : changes.values()) {
+			String oldText = change.getOldText();
+			String newText = change.getNewText();
+			int changeCount = change.getChangeCount();
+			logger.info("Changed: {}x : '{}' -> '{}'", changeCount, oldText, newText);
+		}
 	}
 	
 	@Override
@@ -50,8 +74,17 @@ public final class DiamondRefactor implements LineRefactor {
 				builder.append(sourceLine, offset, matcher.start());
 			}
 			// Execute refactor for pattern: keep only the sub-groups.
-			builder.append(matcher.group(1));
-			builder.append(matcher.group(2));
+			String oldText = matcher.group();
+			String newText = matcher.group(1) + matcher.group(2);
+			
+			SourceChange change = changes.get(oldText);
+			if (change == null) {
+				change = new SourceChange(oldText, newText);
+				changes.put(oldText, change);
+			}
+			change.addChange();
+			
+			builder.append(newText);
 			offset = matcher.end();
 		}
 		// Copy unmatched trailing section.

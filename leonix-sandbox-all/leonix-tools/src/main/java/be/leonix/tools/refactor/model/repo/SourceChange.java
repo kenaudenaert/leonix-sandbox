@@ -15,11 +15,13 @@ public final class SourceChange {
 	private final String oldText;
 	private final String newText;
 	private final List<SourceLocation> locations;
+	private int changeCount;
 	
-	private SourceChange(String oldText, String newText) {
+	public SourceChange(String oldText, String newText) {
 		this.oldText = Objects.requireNonNull(oldText);
 		this.newText = Objects.requireNonNull(newText);
 		this.locations = new ArrayList<>();
+		this.changeCount = 0;
 	}
 	
 	public String getOldText() {
@@ -36,5 +38,13 @@ public final class SourceChange {
 	
 	public void addLocation(SourceLocation location) {
 		locations.add(Objects.requireNonNull(location));
+	}
+	
+	public int getChangeCount() {
+		return changeCount;
+	}
+	
+	public void addChange() {
+		changeCount++;
 	}
 }
