@@ -208,7 +208,7 @@ public final class RefactorTool {
 			for (String arg : args) {
 				operations.addAll(Set.of(arg.split(",")).stream()
 						.filter(v -> !v.isBlank())
-						.collect(Collectors.toSet()));
+						.collect(Collectors.toList()));
 			}
 			
 			// Choose a default operation when none given.
