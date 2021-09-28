@@ -149,13 +149,15 @@ public final class MetaTypeReplacer implements FileRefactor {
 				} else if (isCommentLine(sourceLine)) {
 					MetaTypeID metaTypeID = metaTypeDir.getMetaTypeID(metaType, constant);
 					if (metaTypeID != null) {
-						builder.append("FIXME:");
-						builder.append('"');
-						builder.append(metaTypeID.getLiteral());
-						builder.append('"');
+						String metaTypeLiteral = '"' + metaTypeID.getLiteral() + '"';
+						String oldText = matcher.group();
+						String newText = oldText.replace(metaType + '.' + constant, metaTypeLiteral);
+						builder.append(newText);
 					} else {
 						builder.append(matcher.group());
 					}
+				} else {
+					builder.append(matcher.group());
 				}
 			} else {
 				builder.append(matcher.group());
