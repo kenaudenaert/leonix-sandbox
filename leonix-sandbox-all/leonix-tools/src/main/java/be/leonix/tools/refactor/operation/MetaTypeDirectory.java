@@ -79,10 +79,12 @@ public final class MetaTypeDirectory {
 				} else if (metaTypeFile.isFile() && !IGNORED_FILES.contains(fileName)) {
 					if (fileName.endsWith("Meta.java")) {
 						MetaTypeInfo metaTypeInfo = new MetaTypeInfo(metaTypeFile);
-						
+
 						String infoName = metaTypeInfo.getPackageID()+ "." + metaTypeInfo.getClassName();
 						if (infoByName.putIfAbsent(infoName, metaTypeInfo) != null) {
 							throw new RuntimeException("Found duplicate meta-type: {}" + infoName);
+						} else {
+							logger.info("Found MetaType: {}", infoName);
 						}
 					} else { // Fail hard => must verify the meta-type-dir (and setup filters) !!
 						throw new RuntimeException("Found non-meta-type file: {}" + fileName);
