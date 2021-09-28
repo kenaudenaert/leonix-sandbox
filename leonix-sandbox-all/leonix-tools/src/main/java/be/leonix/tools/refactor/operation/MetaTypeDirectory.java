@@ -191,6 +191,15 @@ public final class MetaTypeDirectory {
 		return Collections.unmodifiableMap(infoByFormula);
 	}
 	
+	public MetaTypeID getMetaTypeID(String className, String identifier) {
+		for (MetaTypeInfo metaType : infoByName.values()) {
+			if (metaType.getClassName().equals(className)) {
+				return metaType.getConstantID(identifier);
+			}
+		}
+		return null;
+	}
+	
 	public static void main(String[] args) {
 		// Run this to verify (file+directory) filters.
 		MetaTypeDirectory dir = new MetaTypeDirectory(new File("/Users/leonix/Desktop/model"));

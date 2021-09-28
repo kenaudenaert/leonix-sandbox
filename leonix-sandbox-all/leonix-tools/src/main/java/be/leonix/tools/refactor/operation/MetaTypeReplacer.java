@@ -3,6 +3,7 @@ package be.leonix.tools.refactor.operation;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +34,8 @@ public final class MetaTypeReplacer implements FileRefactor {
 	private static final Pattern META_TYPE_ID_REF = Pattern.compile(
 			"[^\\w]([\\w]+)\\.([\\w]+)[^\\w]");
 	
+	private final MetaTypeDirectory metaTypeDir;
+	
 	// The unique-ID (identifier) by meta-type (class-name).
 	private final Map<String, String> uniqueIDs = new LinkedHashMap<>();
 	
@@ -44,6 +47,8 @@ public final class MetaTypeReplacer implements FileRefactor {
 	}
 	
 	public MetaTypeReplacer(MetaTypeDirectory metaTypeDir) {
+		this.metaTypeDir = Objects.requireNonNull(metaTypeDir);
+		
 		for (MetaTypeInfo metaTypeInfo : metaTypeDir.getInfoByName().values()) {
 			MetaTypeID metaID = metaTypeInfo.getUniqueID();
 			if (metaID != null && !metaID.getIdentifier().equals(UNIQUE_ID)) {
@@ -97,6 +102,17 @@ public final class MetaTypeReplacer implements FileRefactor {
 	}
 	
 	/**
+	 * Returns whether the specfified source-line is a comment-line.
+	 */
+	private static boolean isCommentLine(String sourceLine) {
+		String text = sourceLine.trim();
+		return (text.startsWith("/*") || 
+				text.endsWith("*/")   ||
+				text.startsWith("//") ||
+				text.startsWith("*"));
+	}
+	
+	/**
 	 * Refactors the specified source-line and returns the result.
 	 */
 	private String refactorLine(String sourceLine, RefactorContext context) {
@@ -130,15 +146,16 @@ public final class MetaTypeReplacer implements FileRefactor {
 					} else {
 						builder.append(matcher.group());
 					}
-				} else {
-					// No identifiers in comments ??
-					if (sourceLine.contains("/*") || 
-						sourceLine.contains("*/") ||
-						sourceLine.contains("//") ||
-						sourceLine.trim().startsWith("*")) {
-						context.addInfo(">>" + sourceLine);
+				} else if (isCommentLine(sourceLine)) {
+					MetaTypeID metaTypeID = metaTypeDir.getMetaTypeID(metaType, constant);
+					if (metaTypeID != null) {
+						builder.append("FIXME:");
+						builder.append('"');
+						builder.append(metaTypeID.getLiteral());
+						builder.append('"');
+					} else {
+						builder.append(matcher.group());
 					}
-					builder.append(matcher.group());
 				}
 			} else {
 				builder.append(matcher.group());
