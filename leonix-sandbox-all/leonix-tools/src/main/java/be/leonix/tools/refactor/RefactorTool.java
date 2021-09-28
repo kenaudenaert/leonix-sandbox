@@ -40,7 +40,8 @@ public final class RefactorTool {
 	private static final String SLIMS_USER_NAME = "audenaer";
 	private static final String SLIMS_GIT_EMAIL = "ken.audenaert@agilent.com";
 	
-	private static final Set<String> SLIMS_INCLUDES = Set.of("platform");
+	private static final Set<String> SLIMS_INCLUDES = Set.of(
+			"platform", "slimsdao", "slimsservice", "slimsserver", "slimsclient", "slimsgate", "upgrade");
 	private static final Set<String> SLIMS_EXCLUDES = Set.of(
 			"buildSrc", "build", "gwt-binaries", "customization", "plugin");
 	
