@@ -40,7 +40,8 @@ public final class RefactorTool {
 	private static final String SLIMS_USER_NAME = "audenaer";
 	private static final String SLIMS_GIT_EMAIL = "ken.audenaert@agilent.com";
 	
-	private static final Set<String> SLIMS_INCLUDES = Set.of("platform");
+	private static final Set<String> SLIMS_INCLUDES = Set.of(
+			"platform", "slimsdao", "slimsservice", "slimsserver", "slimsclient", "slimsgate", "upgrade");
 	private static final Set<String> SLIMS_EXCLUDES = Set.of(
 			"buildSrc", "build", "gwt-binaries", "customization", "plugin");
 	
@@ -65,11 +66,12 @@ public final class RefactorTool {
 	 * Executes the refactor operation on the specified repository.
 	 */
 	public void refactorRepo(SourceRepo sourceRepo, Set<String> includes, Set<String> excludes) {
+		logger.info("Refactor user: {}", userName);
+		logger.info("Refactor home: {}", userHome);
 		logger.info("Refactor type: {}", fileRefactor.getDescription());
 		logger.info("Refactor mode: {}", refactorMode.name());
 		logger.info("Refactor repo: {}", sourceRepo.getRepoDir());
-		logger.info("Refactor user: {} @ {}", userName, userHome);
-		
+
 		RefactorContext context = new RefactorContext(refactorMode);
 		try {
 			logger.info("Starting refactor.");
@@ -88,7 +90,7 @@ public final class RefactorTool {
 						}
 					}
 					if (! included) {
-						logger.info("Skipped (includes-filter): {}", sourceTreePath);
+						logger.debug("Skipped (includes-filter): {}", sourceTreePath);
 						continue;
 					}
 				}
@@ -103,7 +105,7 @@ public final class RefactorTool {
 						}
 					}
 					if (excluded) {
-						logger.info("Skipped (excludes-filter): {}", sourceTreePath);
+						logger.debug("Skipped (excludes-filter): {}", sourceTreePath);
 						continue;
 					}
 				}
@@ -217,7 +219,7 @@ public final class RefactorTool {
 			// Choose a default operation when none given.
 			if (operations.isEmpty()) {
 				logger.info("Using default refactor");
-				operations.add("diamond");
+				operations.add("meta-type");
 			}
 			
 			// Perform the operations in the given order.

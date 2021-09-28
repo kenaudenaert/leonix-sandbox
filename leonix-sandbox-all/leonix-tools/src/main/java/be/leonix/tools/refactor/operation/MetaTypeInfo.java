@@ -71,7 +71,7 @@ public final class MetaTypeInfo {
 		}
 		className = StringUtils.removeEnd(fileName, ".java");
 		
-		logger.info("Loading MetaType from: {}", sourceFile);
+		logger.debug("Loading MetaType from: {}", sourceFile);
 		try {
 			CompilationUnit javaSource = StaticJavaParser.parse(sourceFile);
 			packageID = javaSource.getPackageDeclaration().orElseThrow(
