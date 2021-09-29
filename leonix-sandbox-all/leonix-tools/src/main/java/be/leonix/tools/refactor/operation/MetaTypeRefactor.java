@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +33,7 @@ public final class MetaTypeRefactor implements FileRefactor {
 	// The filter for packages (meta-type and data-model package). 
 	private static final Set<String> FILTER_PACKAGES = Set.of("com.genohm.slims.common.model");
 	
+	private final MetaTypeDirectory metaTypeDir;
 	private final Map<String, MetaTypeInfo> infoByLiteral;
 	private final Set<String> infoPrefixes;
 	
@@ -49,10 +51,12 @@ public final class MetaTypeRefactor implements FileRefactor {
 	}
 	
 	public MetaTypeRefactor(MetaTypeDirectory metaTypeDir) {
+		this.metaTypeDir = Objects.requireNonNull(metaTypeDir);
+		
 		infoByLiteral = new LinkedHashMap<>();
-		infoByLiteral.putAll(metaTypeDir.getInfoByConstant()); // unique constants
-		infoByLiteral.putAll(metaTypeDir.getInfoByFormula());  // unique formulas
-		infoPrefixes = metaTypeDir.getInfoPrefixes();
+		infoByLiteral.putAll(this.metaTypeDir.getInfoByConstant()); // unique constants
+		infoByLiteral.putAll(this.metaTypeDir.getInfoByFormula());  // unique formulas
+		infoPrefixes = this.metaTypeDir.getInfoPrefixes();
 	}
 	
 	@Override
