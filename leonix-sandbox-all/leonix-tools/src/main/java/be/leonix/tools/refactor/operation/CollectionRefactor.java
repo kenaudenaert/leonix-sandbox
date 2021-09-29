@@ -1,11 +1,14 @@
 package be.leonix.tools.refactor.operation;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -27,16 +30,26 @@ public final class CollectionRefactor implements FileRefactor {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CollectionRefactor.class);
 	
-	private static final Pattern GUAVA_LIST_CTOR = Pattern.compile(
-			"=\\s+Lists\\s*\\.\\s*newArrayList\\s*\\(\\s*\\);");
+	private static final Pattern COLLECTION_FACTORY_METHOD = Pattern.compile(
+			"=\\s*([\\w]+)\\s*\\.\\s*new([\\w]+)\\s*\\(\\s*\\)\\s*;");
 	
 	private final Set<String> typeRefFilter = new TreeSet<>();
 	private final Map<String, SourceChange> changes = new TreeMap<>();
+	
+	private final Map<String, String> factoryTypeByRef = new HashMap<>();
+	private final Map<String, String> createdTypeByRef = new HashMap<>();
 	
 	// The number of matches found.
 	private long matchedCount = 0;
 	// The number of changes done.
 	private long changedCount = 0;
+	
+	public CollectionRefactor() {
+		Stream.of(CollectionMapping.values()).forEach(m -> {
+			factoryTypeByRef.put(m.getFactoryTypeRef(), m.getFactoryType());
+			createdTypeByRef.put(m.getCreatedTypeRef(), m.getCreatedType());
+		});
+	}
 	
 	/**
 	 * Returns the type-reference filter (no filtering when empty).
@@ -75,11 +88,12 @@ public final class CollectionRefactor implements FileRefactor {
 		if (acceptFile(sourceFile)) {
 			long changeCount = 0;
 			
+			Set<String> importTypes = new HashSet<>();
 			for (SourceLine sourceLine : sourceFile.getSourceLines()) {
 				String oldLine = sourceLine.getLineContent();
 				if (StringUtils.isNotEmpty(oldLine)) {
 					
-					String newLine = refactorLine(oldLine, GUAVA_LIST_CTOR, "new ArrayList<>()");
+					String newLine = refactorLine(oldLine, importTypes);
 					if (! StringUtils.equals(oldLine, newLine)) {
 						sourceLine.setLineContent(newLine);
 						changeCount++;
@@ -87,7 +101,9 @@ public final class CollectionRefactor implements FileRefactor {
 				}
 			}
 			if (changeCount > 0 && context.getMode() != RefactorMode.LOG_CHANGE) {
-				sourceFile.addImportLine("java.util.ArrayList");
+				for (String importType : importTypes) {
+					sourceFile.addImportLine(importType);
+				}
 				sourceFile.saveContents();
 			}
 		}
@@ -97,24 +113,59 @@ public final class CollectionRefactor implements FileRefactor {
 	 * Returns whether the specified source-file should be refactored.
 	 */
 	private boolean acceptFile(SourceFile sourceFile) {
-		SourceLine importLists = sourceFile.getImportLine("com.google.common.collect.Lists");
-		return (importLists != null);
+		for (String factoryType : factoryTypeByRef.values()) {
+			SourceLine factoryImport = sourceFile.getImportLine(factoryType);
+			if (factoryImport != null) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
 	 * Refactors the specified source-line and returns the result.
 	 */
-	private String refactorLine(String sourceLine, Pattern pattern, String replacement) {
+	private String refactorLine(String sourceLine, Set<String> importTypes) {
 		StringBuilder builder = new StringBuilder();
 		int offset = 0;
-		Matcher matcher = pattern.matcher(sourceLine);
+		Matcher matcher = COLLECTION_FACTORY_METHOD.matcher(sourceLine);
 		while (matcher.find(offset)) {
 			// Copy unmatched leading section.
 			if (matcher.start() > offset) {
 				builder.append(sourceLine, offset, matcher.start());
 			}
-			// Execute refactor for pattern: replace match with replacement.
-			builder.append(replacement);
+			// Execute refactor for pattern: use the constructor.
+			String factoryRef = matcher.group(1);
+			String createdRef = matcher.group(2);
+			matchedCount++;
+			
+			if (typeRefFilter.isEmpty() || typeRefFilter.contains(createdRef)) {
+				String factoryType = factoryTypeByRef.get(factoryRef);
+				String createdType = createdTypeByRef.get(createdRef);
+				
+				if (factoryType != null && createdType != null) {
+					String oldText = matcher.group();
+					String newText = "= new " + createdRef + "<>();";
+					
+					// Update change statistics for source-change.
+					SourceChange change = changes.get(oldText);
+					if (change == null) {
+						change = new SourceChange(oldText, newText);
+						changes.put(oldText, change);
+					}
+					change.addChange();
+					
+					changedCount++;
+					builder.append(newText);
+					
+					// Add the import for the created type.
+					importTypes.add(createdType);
+				} else {
+					builder.append(matcher.group());
+				}
+			} else {
+				builder.append(matcher.group());
+			}
 			offset = matcher.end();
 		}
 		// Copy unmatched trailing section.
