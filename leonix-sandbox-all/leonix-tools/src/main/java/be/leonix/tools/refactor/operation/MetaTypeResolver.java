@@ -32,17 +32,30 @@ public class MetaTypeResolver implements FileRefactor {
 	public MetaTypeResolver(MetaTypeDirectory metaTypeDir) {
 		this.metaTypeDir = Objects.requireNonNull(metaTypeDir);
 		for (MetaTypeInfo metaTypeInfo : this.metaTypeDir.getInfoByName().values()) {
-			MetaTypeID metaID = metaTypeInfo.getUniqueID();
+			// MetaTypeID metaID = metaTypeInfo.getUniqueID();
 			
 		}
+	}
+	
+	public Set<String> getPrefixFilter() {
+		return prefixFilter;
+	}
+	
+	@Override
+	public String getDescription() {
+		return "MetaTypeResolver (filter=" + prefixFilter + ")";
+	}
+	
+	@Override
+	public void refactorStarted() {
+	}
+	
+	@Override
+	public void refactorStopped() {
 	}
 	
 	@Override
 	public void refactorFile(SourceFile sourceFile, RefactorContext context) {
 		
-	}
-	
-	public Set<String> getPrefixFilter() {
-		return prefixFilter;
 	}
 }
