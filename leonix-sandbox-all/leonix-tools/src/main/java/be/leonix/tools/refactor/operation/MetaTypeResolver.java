@@ -2,15 +2,18 @@ package be.leonix.tools.refactor.operation;
 
 import java.io.File;
 
-import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import be.leonix.tools.refactor.FileRefactor;
 import be.leonix.tools.refactor.RefactorContext;
+import be.leonix.tools.refactor.model.SourceChange;
 import be.leonix.tools.refactor.model.SourceFile;
 
 /**
@@ -18,12 +21,13 @@ import be.leonix.tools.refactor.model.SourceFile;
  * 
  * @author Ken Audenaert
  */
-public class MetaTypeResolver implements FileRefactor {
+public final class MetaTypeResolver implements FileRefactor {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MetaTypeResolver.class);
 	
 	private final MetaTypeDirectory metaTypeDir;
-	private final Set<String> prefixFilter = new LinkedHashSet<String>();
+	private final Set<String> prefixFilter = new TreeSet<>();
+	private final Map<String, SourceChange> changes = new TreeMap<>();
 	
 	public MetaTypeResolver(String metaTypeDir) {
 		this(new MetaTypeDirectory(new File(metaTypeDir)));
