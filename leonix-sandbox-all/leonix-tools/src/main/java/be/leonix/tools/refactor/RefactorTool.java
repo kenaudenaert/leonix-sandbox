@@ -12,10 +12,10 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import be.leonix.tools.refactor.model.repo.SourceAuthor;
-import be.leonix.tools.refactor.model.repo.SourceFile;
-import be.leonix.tools.refactor.model.repo.SourceRepo;
-import be.leonix.tools.refactor.model.repo.SourceTree;
+import be.leonix.tools.refactor.model.SourceAuthor;
+import be.leonix.tools.refactor.model.SourceFile;
+import be.leonix.tools.refactor.model.SourceRepo;
+import be.leonix.tools.refactor.model.SourceTree;
 import be.leonix.tools.refactor.operation.DiamondRefactor;
 import be.leonix.tools.refactor.operation.MetaTypeDirectory;
 import be.leonix.tools.refactor.operation.MetaTypeRefactor;

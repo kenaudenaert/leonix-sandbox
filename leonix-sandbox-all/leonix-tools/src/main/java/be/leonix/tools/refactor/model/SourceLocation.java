@@ -1,4 +1,4 @@
-package be.leonix.tools.refactor.model.repo;
+package be.leonix.tools.refactor.model;
 
 /**
  * This class defines an immutable location in a {@link SourceFile}.

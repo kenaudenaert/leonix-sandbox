@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import be.leonix.tools.refactor.model.repo.SourceFile;
-import be.leonix.tools.refactor.model.repo.SourceLine;
+import be.leonix.tools.refactor.model.SourceFile;
+import be.leonix.tools.refactor.model.SourceLine;
 
 /**
  * A {@link FileRefactor} using a set of {@link LineRefactor} implementations.

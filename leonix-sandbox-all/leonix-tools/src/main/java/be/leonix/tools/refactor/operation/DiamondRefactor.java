@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import be.leonix.tools.refactor.LineRefactor;
 import be.leonix.tools.refactor.RefactorContext;
-import be.leonix.tools.refactor.model.repo.SourceChange;
-import be.leonix.tools.refactor.model.repo.SourceLine;
+import be.leonix.tools.refactor.model.SourceChange;
+import be.leonix.tools.refactor.model.SourceLine;
 
 /**
  * A {@link LineRefactor} that refactors code to use the diamond syntax. 

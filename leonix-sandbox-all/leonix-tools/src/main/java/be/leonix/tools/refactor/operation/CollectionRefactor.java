@@ -8,8 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import be.leonix.tools.refactor.FileRefactor;
 import be.leonix.tools.refactor.RefactorContext;
 import be.leonix.tools.refactor.RefactorMode;
-import be.leonix.tools.refactor.model.repo.SourceFile;
-import be.leonix.tools.refactor.model.repo.SourceLine;
+import be.leonix.tools.refactor.model.SourceFile;
+import be.leonix.tools.refactor.model.SourceLine;
 
 /**
  * A {@link FileRefactor} that refactors code to use Java Collections API. 

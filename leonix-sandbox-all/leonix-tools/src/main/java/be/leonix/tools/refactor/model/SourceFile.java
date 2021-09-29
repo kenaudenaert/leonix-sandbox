@@ -1,4 +1,4 @@
-package be.leonix.tools.refactor.model.repo;
+package be.leonix.tools.refactor.model;
 
 import java.io.BufferedWriter;
 import java.io.File;
