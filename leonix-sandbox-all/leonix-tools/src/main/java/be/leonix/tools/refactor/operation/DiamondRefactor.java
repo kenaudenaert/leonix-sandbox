@@ -1,5 +1,6 @@
 package be.leonix.tools.refactor.operation;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -26,7 +27,7 @@ public final class DiamondRefactor implements LineRefactor {
 	private static final Logger logger = LoggerFactory.getLogger(DiamondRefactor.class);
 	
 	private static final Pattern NON_DIAMOND_CTOR = Pattern.compile(
-			"=\\s*new\\s+([\\w\\.]+)\\s*<)" +	// = new package.Generic<
+			"=\\s*new\\s+([\\w\\.]+)\\s*<" +	// = new package.Generic<
 			"[\\w\\.\\s,]+" +					// package.Foo, Bar
 			">\\s*\\(\\s*\\)\\s*;");			// >();
 	
@@ -47,7 +48,7 @@ public final class DiamondRefactor implements LineRefactor {
 	
 	@Override
 	public String getDescription() {
-		return "DiamondRefactor (filter=" + typeRefFilter.toArray() + ")";
+		return "DiamondRefactor (filter=" + Arrays.toString(typeRefFilter.toArray()) + ")";
 	}
 	
 	@Override
