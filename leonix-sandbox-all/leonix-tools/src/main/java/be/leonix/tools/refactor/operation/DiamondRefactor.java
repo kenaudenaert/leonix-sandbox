@@ -74,7 +74,7 @@ public final class DiamondRefactor implements LineRefactor {
 	@Override
 	public void refactorLine(SourceLine sourceLine, RefactorContext context) {
 		String oldLine = sourceLine.getLineContent();
-		if (StringUtils.isNotEmpty(oldLine)) {
+		if (StringUtils.isNotEmpty(oldLine) && !oldLine.contains("var ")) {
 			String newLine = refactorLine(oldLine);
 			if (! StringUtils.equals(oldLine, newLine)) {
 				sourceLine.setLineContent(newLine);
