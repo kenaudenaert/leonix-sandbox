@@ -32,7 +32,7 @@ public final class MetaTypeReplacer implements FileRefactor {
 	private static final String UNIQUE_ID = "UNIQUE_IDENTIFIER";
 	
 	private static final Pattern META_TYPE_ID_REF = Pattern.compile(
-			"[^\\w]([\\w]+)\\.([\\w]+)[^\\w]");
+			"([\\w]+)\\.([\\w]+)");
 	
 	private final MetaTypeDirectory metaTypeDir;
 	
@@ -106,7 +106,7 @@ public final class MetaTypeReplacer implements FileRefactor {
 	 */
 	private static boolean isCommentLine(String sourceLine) {
 		String text = sourceLine.trim();
-		return (text.startsWith("/*") || 
+		return (text.startsWith("/*") ||
 				text.endsWith("*/")   ||
 				text.startsWith("//") ||
 				text.startsWith("*"));
@@ -126,8 +126,8 @@ public final class MetaTypeReplacer implements FileRefactor {
 			}
 			// Execute refactor for pattern: replace the unique-id.
 			String metaType = matcher.group(1);
+			String constant = matcher.group(2);
 			if (metaType.endsWith("Meta")) {
-				String constant = matcher.group(2);
 				if (constant.equals(UNIQUE_ID)) {
 					String uniqueID = uniqueIDs.get(metaType);
 					if (uniqueID != null) {
