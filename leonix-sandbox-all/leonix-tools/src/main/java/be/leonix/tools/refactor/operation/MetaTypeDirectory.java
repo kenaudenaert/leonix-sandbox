@@ -80,11 +80,11 @@ public final class MetaTypeDirectory {
 					if (fileName.endsWith("Meta.java")) {
 						MetaTypeInfo metaTypeInfo = new MetaTypeInfo(metaTypeFile);
 						
-						String infoName = metaTypeInfo.getQualifiedName();
-						if (infoByName.putIfAbsent(infoName, metaTypeInfo) != null) {
-							throw new RuntimeException("Found duplicate meta-type: {}" + infoName);
+						String metaTypeName = metaTypeInfo.getName();
+						if (infoByName.putIfAbsent(metaTypeName, metaTypeInfo) != null) {
+							throw new RuntimeException("Found duplicate meta-type: {}" + metaTypeName);
 						} else {
-							logger.info("Found MetaType: {}", infoName);
+							logger.info("Found MetaType: {}", metaTypeName);
 						}
 					} else { // Fail hard => must verify the meta-type-dir (and setup filters) !!
 						throw new RuntimeException("Found non-meta-type file: {}" + fileName);
@@ -98,6 +98,9 @@ public final class MetaTypeDirectory {
 		return metaTypeDir;
 	}
 	
+	/**
+	 * Returns the meta-type info for the specified name.
+	 */
 	public Map<String, MetaTypeInfo> getInfoByName() {
 		return Collections.unmodifiableMap(infoByName);
 	}

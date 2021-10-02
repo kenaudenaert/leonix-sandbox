@@ -202,12 +202,13 @@ public final class RefactorTool {
 		MetaTypeDirectory metaTypeDir = new MetaTypeDirectory(new File(metaTypePath));
 		
 		SourceRepo sourceRepo = new SourceRepo(new File(SLIMS_REPO_PATH));
-		for (String prefix : metaTypeDir.getInfoPrefixes()) {
+		Set<String> prefixes = metaTypeDir.getInfoPrefixes();
+		for (String prefix : prefixes) {
 			MetaTypeResolver refactor = new MetaTypeResolver(metaTypeDir);
 			refactor.getPrefixFilter().clear();
 			refactor.getPrefixFilter().add(prefix);
 			
-			RefactorTool refactorTool = new RefactorTool(refactor, RefactorMode.COMMIT_REPO);
+			RefactorTool refactorTool = new RefactorTool(refactor, RefactorMode.LOG_CHANGE);
 			refactorTool.refactorRepo(sourceRepo, SLIMS_INCLUDES, SLIMS_EXCLUDES);
 		}
 	}

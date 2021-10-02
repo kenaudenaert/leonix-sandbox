@@ -173,6 +173,13 @@ public final class MetaTypeInfo {
 	}
 	
 	/**
+	 * Returns the (qualified) class-name.
+	 */
+	public String getName() {
+		return packageName + '.' + className;
+	}
+	
+	/**
 	 * Returns the (simple) class-name.
 	 */
 	public String getClassName() {
@@ -184,13 +191,6 @@ public final class MetaTypeInfo {
 	 */
 	public String getPackageName() {
 		return packageName;
-	}
-	
-	/**
-	 * Returns the qualified class-name.
-	 */
-	public String getQualifiedName() {
-		return packageName + '.' + className;
 	}
 	
 	public String getKeyPrefix() {
