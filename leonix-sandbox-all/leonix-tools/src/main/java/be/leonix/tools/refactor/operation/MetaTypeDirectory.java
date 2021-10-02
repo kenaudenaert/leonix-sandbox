@@ -79,8 +79,8 @@ public final class MetaTypeDirectory {
 				} else if (metaTypeFile.isFile() && !IGNORED_FILES.contains(fileName)) {
 					if (fileName.endsWith("Meta.java")) {
 						MetaTypeInfo metaTypeInfo = new MetaTypeInfo(metaTypeFile);
-
-						String infoName = metaTypeInfo.getPackageID()+ "." + metaTypeInfo.getClassName();
+						
+						String infoName = metaTypeInfo.getQualifiedName();
 						if (infoByName.putIfAbsent(infoName, metaTypeInfo) != null) {
 							throw new RuntimeException("Found duplicate meta-type: {}" + infoName);
 						} else {

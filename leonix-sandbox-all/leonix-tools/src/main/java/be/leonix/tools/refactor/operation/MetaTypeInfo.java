@@ -44,7 +44,7 @@ public final class MetaTypeInfo {
 	
 	private final File sourceFile;
 	private final String className;
-	private final String packageID;
+	private final String packageName;
 	private final String keyPrefix;
 	
 	private final List<MetaTypeID> formulaIDs  = new ArrayList<>();
@@ -74,7 +74,7 @@ public final class MetaTypeInfo {
 		logger.debug("Loading MetaType from: {}", sourceFile);
 		try {
 			CompilationUnit javaSource = StaticJavaParser.parse(sourceFile);
-			packageID = javaSource.getPackageDeclaration().orElseThrow(
+			packageName = javaSource.getPackageDeclaration().orElseThrow(
 					() -> new RuntimeException("No package for meta-type.")).getNameAsString();
 			
 			// Get the class with the constants.
@@ -169,12 +169,25 @@ public final class MetaTypeInfo {
 		return sourceFile;
 	}
 	
+	/**
+	 * Returns the (simple) class-name.
+	 */
 	public String getClassName() {
 		return className;
 	}
 	
-	public String getPackageID() {
-		return packageID;
+	/**
+	 * Returns the (dotted) package-name.
+	 */
+	public String getPackageName() {
+		return packageName;
+	}
+	
+	/**
+	 * Returns the qualified class-name.
+	 */
+	public String getQualifiedName() {
+		return packageName + '.' + className;
 	}
 	
 	public String getKeyPrefix() {

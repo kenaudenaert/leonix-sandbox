@@ -99,7 +99,7 @@ public final class MetaTypeRefactor implements FileRefactor {
 			}
 			if (changeCount > 0 && context.getMode() != RefactorMode.LOG_CHANGE) {
 				for (MetaTypeInfo metaTypeInfo : newMetaTypes) {
-					sourceFile.addImportLine(metaTypeInfo.getPackageID() + "." + metaTypeInfo.getClassName());
+					sourceFile.addImportLine(metaTypeInfo.getPackageName() + "." + metaTypeInfo.getClassName());
 				}
 				sourceFile.saveContents();
 			}
