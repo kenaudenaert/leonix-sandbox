@@ -3,7 +3,7 @@ package be.leonix.tools.refactor;
 import be.leonix.tools.refactor.model.SourceFile;
 
 /**
- * A refactor operation that transforms a {@link SourceFile}.
+ * A refactor-operation that transforms a {@link SourceFile}.
  * 
  * @author Ken Audenaert
  */
