@@ -55,7 +55,7 @@ public final class MetaTypeReplacer implements FileRefactor {
 				String metaType = metaTypeInfo.getClassName();
 				String uniqueID = metaID.getIdentifier();
 				
-				logger.info("Unique ID: {} : {}.", metaType, uniqueID);
+				logger.info("Unique ID: {} : {}", metaType, uniqueID);
 				uniqueIDs.put(metaType, uniqueID);
 			}
 		}
@@ -169,5 +169,16 @@ public final class MetaTypeReplacer implements FileRefactor {
 			builder.append(sourceLine.substring(offset));
 		}
 		return builder.toString();
+	}
+	
+	/**
+	 * Run this to do alternate unique-id resolution.
+	 */
+	public static void main(String[] args) {
+		File metaTypeDir = new File("/Users/leonix/Desktop/model");
+		MetaTypeDirectory dir = new MetaTypeDirectory(metaTypeDir);
+		
+		MetaTypeReplacer replacer = new MetaTypeReplacer(dir);
+		replacer.getDescription();
 	}
 }

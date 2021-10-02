@@ -205,17 +205,14 @@ public final class MetaTypeDirectory {
 		return null;
 	}
 	
+	/**
+	 * Run this to verify (file+directory) filters.
+	 */
 	public static void main(String[] args) {
-		// Run this to verify (file+directory) filters.
-		MetaTypeDirectory dir = new MetaTypeDirectory(new File("/Users/leonix/Desktop/model"));
+		File metaTypeDir = new File("/Users/leonix/Desktop/model");
+		MetaTypeDirectory dir = new MetaTypeDirectory(metaTypeDir);
+		
 		dir.getInfoByConstant();
 		dir.getInfoByFormula();
-		
-		for (MetaTypeInfo metaTypeInfo : dir.getInfoByName().values()) {
-			MetaTypeID metaID = metaTypeInfo.getUniqueID();
-			if (metaID != null && !metaID.getIdentifier().equals("UNIQUE_IDENTIFIER")) {
-				logger.info("Found Unique ID for {}: {}",  metaTypeInfo.getClassName(), metaID.getIdentifier());
-			}
-		}
 	}
 }
