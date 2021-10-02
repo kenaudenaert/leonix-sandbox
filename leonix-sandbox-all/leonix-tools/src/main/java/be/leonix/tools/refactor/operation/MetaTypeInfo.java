@@ -47,7 +47,10 @@ public final class MetaTypeInfo {
 	private final String packageName;
 	private final String keyPrefix;
 	
+	// The formula identifiers as declared in the meta-type class.
 	private final List<MetaTypeID> formulaIDs  = new ArrayList<>();
+	
+	// The constant identifiers as declared in the meta-type class.
 	private final List<MetaTypeID> constantIDs = new ArrayList<>();
 	
 	// The formulas (identifiers) by string value (literal).
