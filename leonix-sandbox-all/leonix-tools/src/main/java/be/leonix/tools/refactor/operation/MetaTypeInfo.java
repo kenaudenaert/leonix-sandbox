@@ -76,12 +76,12 @@ public final class MetaTypeInfo {
 		
 		logger.debug("Loading MetaType from: {}", sourceFile);
 		try {
-			CompilationUnit javaSource = StaticJavaParser.parse(sourceFile);
-			packageName = javaSource.getPackageDeclaration().orElseThrow(
+			CompilationUnit compilationUnit = StaticJavaParser.parse(sourceFile);
+			packageName = compilationUnit.getPackageDeclaration().orElseThrow(
 					() -> new RuntimeException("No package for meta-type.")).getNameAsString();
 			
 			// Get the class with the constants.
-			TypeDeclaration<?> metaType = javaSource.getPrimaryType().orElseThrow(
+			TypeDeclaration<?> metaType = compilationUnit.getPrimaryType().orElseThrow(
 					() -> new RuntimeException("No meta-type class found."));
 			for (FieldDeclaration field : metaType.getFields()) {
 				if (field.isPublic() && field.isStatic() && field.isFinal()) {
