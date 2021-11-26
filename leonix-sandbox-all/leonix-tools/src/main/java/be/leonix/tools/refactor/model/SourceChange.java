@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * This class defines a source-change that occurrs at several locations.
+ * This class defines a source-change that occurs at several locations.
  * 
  * @author Ken Audenaert
  */
