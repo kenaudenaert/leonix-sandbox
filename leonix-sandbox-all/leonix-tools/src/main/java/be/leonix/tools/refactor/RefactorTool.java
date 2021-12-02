@@ -253,7 +253,7 @@ public final class RefactorTool {
 			// Choose a default operation when none given.
 			if (operations.isEmpty()) {
 				logger.info("Using default refactor");
-				operations.add("meta-type");
+				operations.add("optionals");
 			}
 			
 			// Perform the operations in the given order.
