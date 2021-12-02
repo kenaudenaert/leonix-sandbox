@@ -21,6 +21,8 @@ import be.leonix.tools.refactor.operation.MetaTypeDirectory;
 import be.leonix.tools.refactor.operation.MetaTypeRefactor;
 import be.leonix.tools.refactor.operation.MetaTypeReplacer;
 import be.leonix.tools.refactor.operation.MetaTypeResolver;
+import be.leonix.tools.refactor.statistics.OptionalStatistics;
+import be.leonix.tools.refactor.statistics.RecordStatistics;
 
 /**
  * The application (tool) for refactoring Java source files.
@@ -212,7 +214,29 @@ public final class RefactorTool {
 			refactorTool.refactorRepo(sourceRepo, SLIMS_INCLUDES, SLIMS_EXCLUDES);
 		}
 	}
-	
+
+	/**
+	 * The code-refactor for {@link OptionalStatistics}.
+	 */
+	private static void printOptionalStats() {
+		FileRefactor fileRefactor = new OptionalStatistics();
+		RefactorTool refactorTool = new RefactorTool(fileRefactor, RefactorMode.LOG_CHANGE);
+
+		SourceRepo sourceRepo = new SourceRepo(new File(SLIMS_REPO_PATH));
+		refactorTool.refactorRepo(sourceRepo, SLIMS_INCLUDES, SLIMS_EXCLUDES);
+	}
+
+	/**
+	 * The code-refactor for {@link RecordStatistics}.
+	 */
+	private static void printRecordStats() {
+		FileRefactor fileRefactor = new RecordStatistics();
+		RefactorTool refactorTool = new RefactorTool(fileRefactor, RefactorMode.LOG_CHANGE);
+
+		SourceRepo sourceRepo = new SourceRepo(new File(SLIMS_REPO_PATH));
+		refactorTool.refactorRepo(sourceRepo, SLIMS_INCLUDES, SLIMS_EXCLUDES);
+	}
+
 	/**
 	 * The application for executing code-refactors.
 	 */
@@ -247,6 +271,12 @@ public final class RefactorTool {
 					break;
 				case "resolver":
 					resolveMetaType();
+					break;
+				case "optionals":
+					printOptionalStats();
+					break;
+				case "records":
+					printRecordStats();
 					break;
 				default:
 					logger.error("No such refactor: {}", operation);
