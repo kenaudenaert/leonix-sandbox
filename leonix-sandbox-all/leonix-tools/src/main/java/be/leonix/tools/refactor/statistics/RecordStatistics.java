@@ -75,7 +75,7 @@ public class RecordStatistics implements FileRefactor {
 			}
 			boolean useRecord = false;
 			for (VariableDeclarator var : compilationUnit.findAll(VariableDeclarator.class)) {
-				if (var.getTypeAsString().contains("Map<String, Object>")) {
+				if (var.getTypeAsString().equals("Map<String,Object>")) {
 					useRecord = true;
 				}
 			}
@@ -83,7 +83,7 @@ public class RecordStatistics implements FileRefactor {
 				recordUseFileCount++;
 			}
 		} catch (IOException | RuntimeException ex) {
-			throw new RuntimeException("Could not parse source-file: " + sourceFile, ex);
+			logger.error(ex.getMessage());
 		}
 	}
 }

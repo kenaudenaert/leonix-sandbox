@@ -74,7 +74,7 @@ public class OptionalStatistics implements FileRefactor {
 				memberOptionalCount += optionalCount;
 			}
 		} catch (IOException | RuntimeException ex) {
-			throw new RuntimeException("Could not parse source-file: " + sourceFile, ex);
+			logger.error(ex.getMessage());
 		}
 	}
 }
