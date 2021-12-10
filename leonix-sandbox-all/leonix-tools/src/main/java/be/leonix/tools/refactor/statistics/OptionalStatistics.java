@@ -28,7 +28,7 @@ public class OptionalStatistics implements FileRefactor {
 	public String getDescription() {
 		return getClass().getSimpleName();
 	}
-
+	
 	@Override
 	public void refactorStarted() {
 		importNoOptional    = 0;
