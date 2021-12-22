@@ -26,6 +26,9 @@ public class RefactorDemo {
 		FileUtils.write(sourceFile, compilationUnit.toString(), StandardCharsets.UTF_8);
 	}
 
+	/**
+	 * See https://javaparser.org/inspecting-an-ast/
+	 */
 	public static void printSyntaxTree(File sourceFile) throws IOException {
 		CompilationUnit compilationUnit = StaticJavaParser.parse(sourceFile);
 		YamlPrinter printer = new YamlPrinter(true);
