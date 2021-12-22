@@ -2,7 +2,6 @@ package be.leonix.tools.refactor.demo;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
@@ -13,17 +12,21 @@ import com.github.javaparser.printer.YamlPrinter;
 
 public class RefactorDemo {
 
-	private static final URL sourceFileURL = RefactorDemo.class.getResource("HelloWorld.java");
-
-	// Change the visibility of all static fields from private to public.
 	public static void refactorFile(File sourceFile) throws IOException {
 		CompilationUnit compilationUnit = StaticJavaParser.parse(sourceFile);
+		System.out.println("source=" + sourceFile);
+		System.out.println("package=" + compilationUnit.getPackageDeclaration().orElseThrow().getNameAsString());
+
+		// Change the visibility of all static fields from private to public.
 		for (FieldDeclaration field : compilationUnit.findAll(FieldDeclaration.class)) {
 			if (field.isStatic() && field.isPrivate()) {
+				field.setPrivate(false);
 				field.setPublic(true);
 			}
 		}
+
 		FileUtils.write(sourceFile, compilationUnit.toString(), StandardCharsets.UTF_8);
+		System.out.println(compilationUnit);
 	}
 
 	/**
@@ -37,7 +40,7 @@ public class RefactorDemo {
 
 	public static void main(String[] args) {
 		try {
-			File sourceFile = new File(sourceFileURL.getFile());
+			File sourceFile = new File("leonix-sandbox-all/leonix-tools/src/test/resources/be/leonix/tools/refactor/demo/HelloWorld.java");
 
 			// Analyze the syntax tree
 			printSyntaxTree(sourceFile);
