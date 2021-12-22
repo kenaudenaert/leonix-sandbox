@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.FileUtils;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.printer.YamlPrinter;
 
@@ -14,18 +15,17 @@ public class RefactorDemo {
 
 	public static void refactorFile(File sourceFile) throws IOException {
 		CompilationUnit compilationUnit = StaticJavaParser.parse(sourceFile);
-		System.out.println("source=" + sourceFile);
-		System.out.println("package=" + compilationUnit.getPackageDeclaration().orElseThrow().getNameAsString());
 
 		// Change the visibility of all static fields from private to public.
 		for (FieldDeclaration field : compilationUnit.findAll(FieldDeclaration.class)) {
 			if (field.isStatic() && field.isPrivate()) {
 				field.setPrivate(false);
 				field.setPublic(true);
+				field.getModifiers().add(0, Modifier.volatileModifier());
 			}
 		}
 
-		FileUtils.write(sourceFile, compilationUnit.toString(), StandardCharsets.UTF_8);
+		// FileUtils.write(sourceFile, compilationUnit.toString(), StandardCharsets.UTF_8);
 		System.out.println(compilationUnit);
 	}
 
