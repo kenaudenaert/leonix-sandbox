@@ -22,7 +22,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		
 		<spring.version>5.2.15.RELEASE</spring.version>
-		<spring-security.version>5.4.7</spring-security.version>
+		<spring-security.version>5.5.7</spring-security.version>
 		
 		<version.h2db>1.4.200</version.h2db>
 		<version.mysql>8.0.18</version.mysql>
