@@ -22,7 +22,7 @@
 		<version.jaxrs>2.0</version.jaxrs>
 		<version.boot>2.2.4.RELEASE</version.boot>
 		<version.mysql>8.0.18</version.mysql>
-		<version.pgsql>42.3.3</version.pgsql>
+		<version.pgsql>42.3.8</version.pgsql>
 		<version.h2db>2.1.210</version.h2db>
 		<version.mongo>3.12.0</version.mongo>
 		<version.jongo>1.4.0</version.jongo>
